@@ -2,4 +2,54 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="verde_musgo">#A3A380</color>
+    <color name="verde_pistachinho">#B3B792</color>
+    <color name="verde_abacate">#A8CA7E</color>
+    <color name="verde_limao">#CDE0C7</color>
+    <color name="verde_grama">#ACDD93</color>
+    <color name="verde_militar">#818263</color>
+    <color name="verde_folha">#a6d577</color>
+    <color name="verde_escurao">#656B45</color>
+    <color name="verde_apagado">#B2B5A0</color>
+    <color name="verde_matcha">#809671</color>
+    <color name="verde_eucalipto">#BFC9B3</color>
+    <color name="verde_escurinho">#767B39</color>
+    <color name="rosa_blush">#EFD9D5</color>
+    <color name="rosa_coral">#D77A7D</color>
+    <color name="rosa_melao">#F7BCB0</color>
+    <color name="rosa_pessego">#D8A48F</color>
+    <color name="rosine">#DDBAAE</color>
+    <color name="rosa_pesseguinho">#EFD7CF</color>
+    <color name="rosa_areia">#DFD0BF</color>
+    <color name="bege_baunilha">#E5D2B8</color>
+    <color name="bege_champagne">#EDE2CC</color>
+    <color name="bege_areia">#DCC9A7</color>
+    <color name="bege_porcelana">#F4F1EA</color>
+    <color name="bege_creme">#E6DAC8</color>
+    <color name="bege_quase_branco">#FAF9F6</color>
+    <color name="bege_coco">#FFFAF2</color>
+    <color name="bege_nozes">#E5E0D8</color>
+    <color name="bege_mel">#F6EAD4</color>
+    <color name="bege_latte">#DCD4C1</color>
+    <color name="bege_pedra">#CBB9A4</color>
+    <color name="bege_muitas_pedras">#A48D78</color>
+    <color name="bege_ambar">#B99668</color>
+    <color name="bege_chai">#D2AB80</color>
+    <color name="marrom_chacolate">#341F1A</color>
+    <color name="marrom_cafe">#452815</color>
+    <color name="marrom_expresso">#58473B</color>
+    <color name="marrom_escuro">#191419</color>
+    <color name="vermelho_murango">#960018</color>
+    <color name="vermelho_murango_maduro">#670010</color>
+    <color name="vermelho_clarinho">#F84848</color>
+    <color name="vermelho_mais_clarinho">#E56B6B</color>
+    <color name="amarelo_sol">#FFD544</color>
+    <color name="amarelinho">#FFE988</color>
+    <color name="amarelo_clarinho">#fff3b0</color>
+
+
+
+
+
+
 </resources>

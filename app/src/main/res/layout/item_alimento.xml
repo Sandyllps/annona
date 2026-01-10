@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:padding="0dp">
+
+        <View
+            android:id="@+id/indicator_status"
+            android:layout_width="8dp"
+            android:layout_height="0dp"
+            android:background="@color/marrom_cafe"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/img_alimento"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="8dp"
+            android:padding="12dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/item_padrao"
+            android:background="@color/white"
+            app:tint="#A68585"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_nome_alimento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:fontFamily="@font/century_gothic"
+            android:text="Maçã"
+            android:textColor="@color/marrom_escuro"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/img_alimento"
+            app:layout_constraintTop_toTopOf="@id/img_alimento" />
+
+        <TextView
+            android:id="@+id/txt_estado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@color/verde_abacate"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:text="ABERTO"
+            android:textColor="@color/marrom_cafe"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@id/txt_nome_alimento"
+            app:layout_constraintStart_toEndOf="@id/txt_nome_alimento"
+            app:layout_constraintTop_toTopOf="@id/txt_nome_alimento" />
+
+        <TextView
+            android:id="@+id/txt_dica_conservacao"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="12dp"
+            android:text="Armazenar na geladeira"
+            android:textColor="@color/vermelho_murango"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/txt_tempo_restante"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/txt_nome_alimento"
+            app:layout_constraintTop_toBottomOf="@id/txt_nome_alimento" />
+
+        <TextView
+            android:id="@+id/txt_tempo_restante"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:fontFamily="@font/century_gothic"
+            android:text="2 DIAS"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
