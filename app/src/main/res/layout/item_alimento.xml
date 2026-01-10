@@ -18,10 +18,11 @@
             android:id="@+id/indicator_status"
             android:layout_width="8dp"
             android:layout_height="0dp"
-            android:background="@color/marrom_cafe"
+            android:background="@color/vermelho_murango"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
             android:id="@+id/img_alimento"
