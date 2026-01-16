@@ -10,10 +10,10 @@
         android:title="Receitas" />
     <item
         android:id="@+id/nav_doacao"
-        android:icon="@drawable/ic_modo_doacao"
+        android:icon="@drawable/ic_doacao"
         android:title="Doação" />
     <item
         android:id="@+id/nav_perfil"
-        android:icon="@drawable/ic_perfil_ajustes"
+        android:icon="@drawable/ic_perfil"
         android:title="Perfil" />
 </menu>

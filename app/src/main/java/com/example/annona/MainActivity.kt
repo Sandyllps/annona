@@ -16,8 +16,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var bottomNav: BottomNavigationView
-
-    // Mapea posición <-> id del menu
     private val menuItemIdAtPos = listOf(
         R.id.nav_despensa,
         R.id.nav_receitas,
@@ -29,15 +27,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNav) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // Isso adiciona um espaço no fundo do menu igual ao tamanho da barra do Android
+            v.setPadding(0, 0, 0, systemBars.bottom)
+            insets
+        }
 
         viewPager = binding.viewPager
         bottomNav = binding.bottomNav
+        bottomNav.itemIconTintList = null
 
-        // Deshabilita swipe si quieres - aquí lo dejamos habilitado
         // viewPager.isUserInputEnabled = false
 
-        // Adapter con Fragments
+        // Adapter com Fragments
         val fragments = listOf(
             TelaDespensaFragment.newInstance("page", 0),
             //  TODO: criar os outros 3 fragments e substituir os nomes certos nessas 3 respectivas linhas
@@ -49,11 +53,10 @@ class MainActivity : AppCompatActivity() {
             override fun getItemCount() = fragments.size
             override fun createFragment(position: Int) = fragments[position]
         }
+        viewPager.post { viewPager.setCurrentItem(0, false) }
 
-        // Mantener algunos fragmentos en memoria para no recrearlos todo el tiempo
         viewPager.offscreenPageLimit = 1
 
-        // Cuando se desliza, actualizar el BottomNavigationView
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -64,7 +67,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Cuando se pulsa en el BottomNavigation, navegar en el ViewPager
         bottomNav.setOnItemSelectedListener { item ->
             val index = menuItemIdAtPos.indexOf(item.itemId)
             if (index >= 0 && viewPager.currentItem != index) {
