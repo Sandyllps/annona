@@ -1,97 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_item_padrao"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    android:layout_marginTop="24dp"
+    android:layout_marginStart="24dp"
+    android:layout_marginEnd="24dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:layout_constraintTop_toBottomOf="@id/card_filtro_status"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:padding="0dp">
+   <androidx.constraintlayout.widget.ConstraintLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
 
-        <View
-            android:id="@+id/indicator_status"
-            android:layout_width="8dp"
-            android:layout_height="0dp"
-            android:background="@color/vermelho_murango"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+       <LinearLayout
+           android:id="@+id/linearLayout"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:background="@color/white"
+           android:gravity="center_vertical"
+           android:orientation="horizontal"
+           android:padding="12dp"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/img_alimento"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginStart="8dp"
-            android:padding="12dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/item_padrao"
-            android:background="@color/white"
-            app:tint="#A68585"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+           <ImageView
+               android:layout_width="81dp"
+               android:layout_height="84dp"
+               android:padding="16dp"
+               android:scaleType="centerCrop"
+               android:src="@drawable/item_padrao" />
 
-        <TextView
-            android:id="@+id/txt_nome_alimento"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:fontFamily="@font/century_gothic"
-            android:text="Maçã"
-            android:textColor="@color/marrom_escuro"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/img_alimento"
-            app:layout_constraintTop_toTopOf="@id/img_alimento" />
+           <LinearLayout
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:layout_marginStart="16dp"
+               android:layout_weight="1"
+               android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/txt_estado"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:background="@color/verde_abacate"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="2dp"
-            android:text="ABERTO"
-            android:textColor="@color/marrom_cafe"
-            android:textSize="10sp"
-            app:layout_constraintBottom_toBottomOf="@id/txt_nome_alimento"
-            app:layout_constraintStart_toEndOf="@id/txt_nome_alimento"
-            app:layout_constraintTop_toTopOf="@id/txt_nome_alimento" />
+               <LinearLayout
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:gravity="center_vertical"
+                   android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/txt_dica_conservacao"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="12dp"
-            android:text="Armazenar na geladeira"
-            android:textColor="@color/vermelho_murango"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toStartOf="@+id/txt_tempo_restante"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@id/txt_nome_alimento"
-            app:layout_constraintTop_toBottomOf="@id/txt_nome_alimento" />
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:fontFamily="@font/century_gothic"
+                       android:text="Tomate"
+                       android:textColor="#333333"
+                       android:textSize="18sp"
+                       android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/txt_tempo_restante"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="30dp"
-            android:fontFamily="@font/century_gothic"
-            android:text="2 DIAS"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_marginStart="8dp"
+                       android:background="@drawable/bg_tag_aberto"
+                       android:paddingHorizontal="8dp"
+                       android:paddingVertical="2dp"
+                       android:text="@string/item_aberto"
+                       android:textColor="@color/white"
+                       android:textSize="10sp"
+                       android:textStyle="bold" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+               </LinearLayout>
+
+               <View
+                   android:layout_width="140dp"
+                   android:layout_height="1dp"
+                   android:layout_marginTop="4dp"
+                   android:background="#E0E0E0" />
+
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="8dp"
+                   android:text="Armazenar na geladeira"
+                   android:textColor="#757575"
+                   android:textSize="12sp" />
+
+           </LinearLayout>
+
+           <TextView
+               android:layout_width="55dp"
+               android:layout_height="wrap_content"
+               android:layout_marginEnd="8dp"
+               android:fontFamily="@font/century_gothic"
+               android:text="4 DIAS"
+               android:textColor="#333333"
+               android:textSize="14sp"
+               android:textStyle="bold"
+               android:layout_marginTop="17dp" />
+
+
+       </LinearLayout>
+
+       <View
+           android:layout_width="8dp"
+           android:layout_height="110dp"
+           android:background="@color/verde_folha"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintTop_toTopOf="parent" />
+
+       <ImageView
+           android:id="@+id/imageView"
+           android:layout_width="45dp"
+           android:layout_height="30dp"
+           android:layout_marginTop="10dp"
+           android:layout_marginEnd="17dp"
+           android:layout_weight="1"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintTop_toTopOf="parent"
+           app:srcCompat="@drawable/botao_opcoes" />
+
+   </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.cardview.widget.CardView>
