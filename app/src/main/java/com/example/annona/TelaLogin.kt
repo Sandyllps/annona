@@ -1,5 +1,6 @@
 package com.example.annona
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.annona.databinding.ActivityTelaLoginBinding
@@ -13,7 +14,12 @@ class TelaLogin : AppCompatActivity() {
 
         binding = ActivityTelaLoginBinding.inflate(layoutInflater)
 
-        setContentView(R.layout.activity_tela_login)
+        setContentView(binding.root)
+
+        binding.botaoLogin.setOnClickListener {
+            val intent = Intent(this, TelaUsuario::class.java)
+            startActivity(intent)
+        }
 
     }
 }
