@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/bege_quase_branco"
+    android:paddingTop="20dp"
     tools:context=".TelaDespensaFragment">
 
     <LinearLayout
@@ -32,7 +33,7 @@
         android:id="@+id/layout_filtros"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="10dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/txt_titulo_app"
