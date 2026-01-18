@@ -27,6 +27,14 @@ class TelaDespensaFragment : Fragment() {
         }
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_tela_despensa, container, false)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Inicializa RecyclerView, adapter, etc.
@@ -39,7 +47,8 @@ class TelaDespensaFragment : Fragment() {
 
     private fun sampleData(): List<Item> {
         return listOf(
-            Item( 1,"Feijão",  "Consumindo", "4 DIAS", "Armazenar na geladeira", R.drawable.hortifruti_tomate),
+            Item( 1,"Feijão",  "Consumindo", "4 DIAS", "Armazenar na geladeira", 1,R.drawable.hortifruti_tomate),
+            Item( 2,"Pão",  "Por consumir", "15 DIAS", "Manter em recipiente fechado", 3,R.drawable.item_padrao)
 
         )
     }

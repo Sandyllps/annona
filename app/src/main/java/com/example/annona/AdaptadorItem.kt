@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +32,7 @@ class AdaptadorItem(
         private val estado: TextView = itemView.findViewById(R.id.estado)
         private val prazo: TextView = itemView.findViewById(R.id.prazo_vencimento)
         private val dica : TextView = itemView.findViewById(R.id.dica)
+        private val flag : View = itemView.findViewById(R.id.flag)
 
         private var currentItem: Item? = null
 
@@ -46,6 +48,15 @@ class AdaptadorItem(
             estado.text = item.estado
             prazo.text = item.prazo
             dica.text = item.dica
+            if(item.flag == 1){
+                flag.setBackgroundColor(ContextCompat.getColor(flag.context,R.color.marrom_cafe))
+            }else if(item.flag == 2){
+                flag.setBackgroundColor(ContextCompat.getColor(flag.context,R.color.vermelho_murango))
+            }else if(item.flag == 3){
+                flag.setBackgroundColor(ContextCompat.getColor(flag.context,R.color.amarelo_sol))
+            }else {
+                flag.setBackgroundColor(ContextCompat.getColor(flag.context,R.color.verde_folha))
+            }
 
             imagem.setImageResource(item.imageRes)
 

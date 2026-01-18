@@ -8,5 +8,6 @@ data class Item(
     val estado: String,
     val prazo: String,
     val dica: String,
+    val flag: Int,
     @DrawableRes val imageRes: Int
 )
