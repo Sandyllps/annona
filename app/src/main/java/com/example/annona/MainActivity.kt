@@ -3,7 +3,6 @@ package com.example.annona
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -26,7 +25,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         binding = ActivityMainBinding.inflate(layoutInflater)
         enableEdgeToEdge()
         setContentView(binding.root)
@@ -47,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         val fragments = listOf(
             TelaDespensaFragment.newInstance("page", 0),
             //  TODO: criar os outros 3 fragments e substituir os nomes certos nessas 3 respectivas linhas
-            TelaDespensaFragment.newInstance("page", 1),
+            ReceitasFragment(),                                         //tela de Receitas
             TelaDespensaFragment.newInstance("page", 2),
             TelaDespensaFragment.newInstance("page", 3)
         )
