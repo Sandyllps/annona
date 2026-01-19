@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_despensa"
+        android:icon="@drawable/ic_despensa"
+        android:title="Despensa" />
+    <item
+        android:id="@+id/nav_receitas"
+        android:icon="@drawable/ic_receitas"
+        android:title="Receitas" />
+    <item
+        android:id="@+id/nav_doacao"
+        android:icon="@drawable/ic_doacao"
+        android:title="Doação" />
+    <item
+        android:id="@+id/nav_perfil"
+        android:icon="@drawable/ic_perfil"
+        android:title="Perfil" />
+</menu>
