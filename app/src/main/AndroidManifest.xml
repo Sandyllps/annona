@@ -11,7 +11,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ANNONA">
-
+        <activity
+            android:name=".AdicionarItem"
+            android:exported="false"
+            android:theme="@style/Theme.ANNONA" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
