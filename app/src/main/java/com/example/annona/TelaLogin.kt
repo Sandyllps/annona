@@ -13,13 +13,14 @@ class TelaLogin : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityTelaLoginBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
 
+        //quando clicar no botão
         binding.botaoLogin.setOnClickListener {
-            val intent = Intent(this, TelaUsuario::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-        }
+            finish()
 
+        }
     }
 }
