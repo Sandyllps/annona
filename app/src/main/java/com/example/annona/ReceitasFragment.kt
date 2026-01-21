@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,9 +37,14 @@ class ReceitasFragment : Fragment() {
             )
         )
 
-        recyclerView.adapter = ReceitasAdapter(receitasMock) { receita ->
+        recyclerView.adapter = ReceitasAdapter(receitasMock) {
 
+            val detalheFragment = DetalheReceitaFragment()
+
+            (requireActivity() as MainActivity)
+                .abrirFragment(detalheFragment)
         }
+
 
         return view
     }

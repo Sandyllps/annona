@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
 import androidx.core.view.WindowInsetsCompat
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -74,5 +75,11 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+    }
+    fun abrirFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .add(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
