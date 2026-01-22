@@ -1,5 +1,6 @@
 package com.example.annona
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -37,14 +38,14 @@ class ReceitasFragment : Fragment() {
             )
         )
 
-        recyclerView.adapter = ReceitasAdapter(receitasMock) {
-
-            val detalheFragment = DetalheReceitaFragment()
-
-            (requireActivity() as MainActivity)
-                .abrirFragment(detalheFragment)
+        //Abrir tela de detalhes das receitas
+        recyclerView.adapter = ReceitasAdapter(receitasMock) { receita ->
+            val intent = Intent(requireContext(), DetalheReceitaActivity::class.java)
+            intent.putExtra("NOME", receita.nome)
+            intent.putExtra("TEMPO", receita.tempoPreparo)
+            intent.putExtra("TAG", receita.tag)
+            startActivity(intent)
         }
-
 
         return view
     }

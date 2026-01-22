@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ANNONA">
         <activity
+            android:name=".DetalheReceitaActivity"
+            android:exported="false" />
+        <activity
             android:name=".AdicionarItem"
             android:exported="false"
             android:theme="@style/Theme.ANNONA" />
@@ -24,12 +27,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainActivity"
             android:exported="false" />
-
-
     </application>
 
 </manifest>

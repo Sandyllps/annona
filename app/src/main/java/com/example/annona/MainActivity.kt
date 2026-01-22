@@ -76,10 +76,4 @@ class MainActivity : AppCompatActivity() {
             true
         }
     }
-    fun abrirFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
-    }
 }
