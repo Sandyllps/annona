@@ -49,13 +49,13 @@ class AdaptadorItem(
             prazo.text = item.prazo
             dica.text = item.dica
             if(item.flag == 1){
-                flag.setBackgroundColor(ContextCompat.getColor(flag.context,R.color.marrom_cafe))
+                flag.setBackgroundColor(ContextCompat.getColor(flag.context,R.color.bege_muitas_pedras))
             }else if(item.flag == 2){
-                flag.setBackgroundColor(ContextCompat.getColor(flag.context,R.color.vermelho_murango))
+                flag.setBackgroundColor(ContextCompat.getColor(flag.context,R.color.vermelho_mais_clarinho))
             }else if(item.flag == 3){
                 flag.setBackgroundColor(ContextCompat.getColor(flag.context,R.color.amarelo_sol))
             }else {
-                flag.setBackgroundColor(ContextCompat.getColor(flag.context,R.color.verde_folha))
+                flag.setBackgroundColor(ContextCompat.getColor(flag.context,R.color.verde_alface))
             }
 
             imagem.setImageResource(item.imageRes)

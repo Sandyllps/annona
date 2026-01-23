@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bege_quase_branco"
+    android:background="@color/bege_coco"
     tools:context=".TelaDespensaFragment">
 
     <LinearLayout
@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_margin="4dp"
-                app:cardBackgroundColor="@color/vermelho_murango_maduro"
+                app:cardBackgroundColor="@color/bege_muitas_pedras"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp">
                 <TextView
@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_margin="4dp"
-                app:cardBackgroundColor="@color/vermelho_murango"
+                app:cardBackgroundColor="@color/vermelho_mais_clarinho"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp">
                 <TextView
@@ -100,7 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_margin="4dp"
-                app:cardBackgroundColor="@color/verde_folha"
+                app:cardBackgroundColor="@color/verde_alface"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp">
                 <TextView

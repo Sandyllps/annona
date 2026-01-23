@@ -84,7 +84,7 @@ class TelaDespensaFragment : Fragment() {
                 "4 DIAS",
                 "Armazenar na geladeira",
                 1,
-                R.drawable.hortifruti_tomate
+                R.drawable.hortifruti_tomates
             ),
             Item(
                 2,
