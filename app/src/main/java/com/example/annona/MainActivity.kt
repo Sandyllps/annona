@@ -29,9 +29,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         enableEdgeToEdge()
         setContentView(binding.root)
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNav) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            // Isso adiciona um espaço no fundo do menu igual ao tamanho da barra do Android
             v.setPadding(0, 0, 0, systemBars.bottom)
             insets
         }
@@ -40,20 +40,19 @@ class MainActivity : AppCompatActivity() {
         bottomNav = binding.bottomNav
         bottomNav.itemIconTintList = null
 
-        // viewPager.isUserInputEnabled = false
-
-        // Adapter com Fragments
+        // LISTA DE FRAGMENTS ATUALIZADA
         val fragments = listOf(
-            TelaDespensaFragment.newInstance("page", 0),
-            //  TODO: criar os outros 3 fragments e substituir os nomes certos nessas 3 respectivas linhas
-            ReceitasFragment(),                                         //tela de Receitas
-            TelaDespensaFragment.newInstance("page", 2),
-            TelaDespensaFragment.newInstance("page", 3)
+            TelaDespensaFragment.newInstance("page", 0), // Posição 0: Sua Despensa
+            ReceitasFragment(),                          // Posição 1: Suas Receitas
+            TelaDespensaFragment.newInstance("page", 2), // Posição 2: Doação (Temporário)
+            TelaPerfilFragment()                         // Posição 3: A SUA TELA DE PERFIL
         )
+
         viewPager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount() = fragments.size
             override fun createFragment(position: Int) = fragments[position]
         }
+
         viewPager.post { viewPager.setCurrentItem(0, false) }
 
         viewPager.offscreenPageLimit = 1
@@ -71,7 +70,8 @@ class MainActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             val index = menuItemIdAtPos.indexOf(item.itemId)
             if (index >= 0 && viewPager.currentItem != index) {
-                viewPager.currentItem = index
+                // Mude de 'true' para 'false' para remover o rastro visual
+                viewPager.setCurrentItem(index, false)
             }
             true
         }

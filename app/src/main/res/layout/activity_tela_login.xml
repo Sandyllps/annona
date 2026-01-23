@@ -2,25 +2,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3EC7BD"
+    android:background="#daf1dd"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="24dp"
 
-    <TextView
+    >
+
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Olá!"
-        android:textColor="@android:color/white"
-        android:textSize="32sp"
-        android:textStyle="bold" />
+        android:src="@mipmap/ic_launcher_foreground"
+        android:background="@android:color/transparent"
+        android:scaleType="centerCrop"
+        android:layout_gravity="center"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:text="Bem-vindo(a), ao ANNONA"
-        android:textColor="@android:color/white"
-        android:textSize="16sp" />
+        android:text="annona"
+        android:layout_gravity="center"
+        android:textColor="#767B39"
+        android:textSize="30dp"
+        />
 
 
     <LinearLayout
@@ -35,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="Login"
-            android:textColor="@color/white"
+            android:textColor="#767B39"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -66,16 +71,16 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
             android:text="Esqueceu a senha?"
-            android:textColor="@color/white" />
+            android:textColor="#767B39" />
 
         <Button
             android:id="@+id/botao_login"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_gravity="center"
-            android:backgroundTint="#9ad7d0"
+            android:backgroundTint="@android:color/white"
             android:text="Login"
-            android:textColor="@android:color/white" />
+            android:textColor="#767B39" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -83,11 +88,11 @@
             android:layout_marginVertical="16dp"
             android:layout_gravity="center"
             android:text="Logar com:"
-            android:textColor="@android:color/white" />
+            android:textColor="#767B39" />
 
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
