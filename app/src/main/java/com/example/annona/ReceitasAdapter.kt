@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ReceitasAdapter(
     private val listaReceitas: List<Receita>,
+    private val ingredientesUsuario: List<String>,
     private val onClick: (Receita) -> Unit
 ) : RecyclerView.Adapter<ReceitasAdapter.ReceitaViewHolder>() {
 
@@ -18,6 +19,7 @@ class ReceitasAdapter(
         val txtIngredientes: TextView = itemView.findViewById(R.id.txt_ingredientes_receita)
         val txtTempo: TextView = itemView.findViewById(R.id.txt_tempo_receita)
         val txtTag: TextView = itemView.findViewById(R.id.txt_tag_receita)
+        val container: View = itemView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReceitaViewHolder {
@@ -26,14 +28,32 @@ class ReceitasAdapter(
         return ReceitaViewHolder(view)
     }
 
+
     override fun onBindViewHolder(holder: ReceitaViewHolder, position: Int) {
         val receita = listaReceitas[position]
 
         holder.imgFoto.setImageResource(receita.imagem)
         holder.txtNome.text = receita.nome
-        holder.txtIngredientes.text = receita.ingredientesDisponiveis
         holder.txtTempo.text = receita.tempoPreparo
         holder.txtTag.text = receita.tag
+
+        holder.txtIngredientes.text =
+            "Você tem: " + receita.ingredientes.joinToString(" | ")
+
+        val compativel = receita.ingredientes.any { ingrediente ->
+            ingredientesUsuario.any { userIng ->
+                userIng.equals(ingrediente, ignoreCase = true)
+            }
+
+        }
+
+        holder.container.setBackgroundResource(
+            if (compativel)
+                R.drawable.bg_tag_receita
+            else
+                R.drawable.bg_tag_aberto
+        )
+
 
         holder.itemView.setOnClickListener {
             onClick(receita)

@@ -1,8 +1,6 @@
 package com.example.annona
 
 import android.os.Bundle
-import android.widget.ImageButton
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.annona.databinding.ActivityDetalheReceitaBinding
 
@@ -30,5 +28,13 @@ class DetalheReceitaActivity : AppCompatActivity() {
 
         binding.txtTagReceita.text =
             intent.getStringExtra("TAG")
+
+        val ingredientes =
+            intent.getStringArrayListExtra("INGREDIENTES") ?: emptyList()
+
+        binding.txtIngredientesReceita.text =
+            ingredientes.joinToString(" • ")
+
     }
+
 }

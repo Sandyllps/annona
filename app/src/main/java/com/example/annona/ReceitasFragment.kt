@@ -23,30 +23,44 @@ class ReceitasFragment : Fragment() {
 
         val receitasMock = listOf(
             Receita(
+                id = 1,
                 nome = "Feijoada",
-                ingredientesDisponiveis = "Você tem: Feijão | Couve",
+                ingredientes = listOf("Feijão", "Couve"),
                 tempoPreparo = "40 MIN",
                 tag = "PRINCIPAL",
                 imagem = R.drawable.ic_launcher_foreground
             ),
             Receita(
+                id = 2,
                 nome = "Arroz Branco",
-                ingredientesDisponiveis = "Você tem: Arroz",
+                ingredientes = listOf("Arroz"),
                 tempoPreparo = "20 MIN",
                 tag = "ACOMPANHAMENTO",
                 imagem = R.drawable.ic_launcher_foreground
             )
         )
 
+        val ingredientesUsuario = listOf(
+            "Feijão",
+            "Arroz"
+        )
+
+
+
         //Abrir tela de detalhes das receitas
-        recyclerView.adapter = ReceitasAdapter(receitasMock) { receita ->
+        recyclerView.adapter = ReceitasAdapter(listaReceitas = receitasMock, ingredientesUsuario = ingredientesUsuario) { receita ->
             val intent = Intent(requireContext(), DetalheReceitaActivity::class.java)
             intent.putExtra("NOME", receita.nome)
             intent.putExtra("TEMPO", receita.tempoPreparo)
             intent.putExtra("TAG", receita.tag)
+            intent.putStringArrayListExtra(
+                "INGREDIENTES",
+                ArrayList(receita.ingredientes)
+            )
             startActivity(intent)
         }
 
         return view
     }
+
 }
