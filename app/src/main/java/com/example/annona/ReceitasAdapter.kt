@@ -40,12 +40,12 @@ class ReceitasAdapter(
         holder.txtIngredientes.text =
             "Você tem: " + receita.ingredientes.joinToString(" | ")
 
-        val compativel = receita.ingredientes.any { ingrediente ->
-            ingredientesUsuario.any { userIng ->
-                userIng.equals(ingrediente, ignoreCase = true)
+        val compativel = receita.ingredientes.any { ingredienteReceita ->
+            ingredientesUsuario.any { ingredienteDespensa ->
+                ingredienteDespensa.equals(ingredienteReceita, ignoreCase = true)
             }
-
         }
+
 
         holder.container.setBackgroundResource(
             if (compativel)

@@ -40,10 +40,7 @@ class ReceitasFragment : Fragment() {
             )
         )
 
-        val ingredientesUsuario = listOf(
-            "Feijão",
-            "Arroz"
-        )
+        val ingredientesUsuario = DespensaRepository.getIngredientes()
 
 
 
