@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -12,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 
 class AdaptadorItem(
     private val onClick: (Item) -> Unit = {},
-    // NOVA PONTE: Função que será chamada quando clicar nos três pontinhos
     private val onOptionsMenuClick: (View, Item) -> Unit = { _, _ -> }
 ) : ListAdapter<Item, AdaptadorItem.VH>(DiffCallback()) {
 
@@ -29,7 +29,7 @@ class AdaptadorItem(
     class VH(
         itemView: View,
         private val onClick: (Item) -> Unit,
-        private val onOptionsMenuClick: (View, Item) -> Unit // Recebendo a nova ponte
+        private val onOptionsMenuClick: (View, Item) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
         private val imagem: ImageView = itemView.findViewById(R.id.imagem)
         private val titulo: TextView = itemView.findViewById(R.id.titulo)
@@ -37,7 +37,8 @@ class AdaptadorItem(
         private val prazo: TextView = itemView.findViewById(R.id.prazo_vencimento)
         private val dica : TextView = itemView.findViewById(R.id.dica)
         private val flag : View = itemView.findViewById(R.id.flag)
-        private val btnOpcoes: ImageView = itemView.findViewById(R.id.opcoes) // Mapeando o botão de opções
+        private val btnOpcoes: ImageView = itemView.findViewById(R.id.opcoes)
+        private val iconeLocal: ImageView = itemView.findViewById(R.id.icone_local)
 
         private var currentItem: Item? = null
 
@@ -46,10 +47,20 @@ class AdaptadorItem(
                 currentItem?.let { onClick(it) }
             }
 
-            // CONFIGURAÇÃO DO CLIQUE NOS TRÊS PONTINHOS
             btnOpcoes.setOnClickListener { anchorView ->
                 currentItem?.let { item ->
                     onOptionsMenuClick(anchorView, item)
+                }
+            }
+
+            // CONFIGURAÇÃO DO NOME AO LADO DO ÍCONE (ANCORADO)
+            iconeLocal.setOnClickListener { view ->
+                currentItem?.let { item ->
+                    // Criamos um menu pop-up preso à própria imagem do ícone
+                    val popup = PopupMenu(view.context, view)
+                    // Adicionamos o nome do local (ex: "Geladeira")
+                    popup.menu.add(item.localNome).isEnabled = false
+                    popup.show()
                 }
             }
         }
@@ -61,6 +72,7 @@ class AdaptadorItem(
             prazo.text = item.prazo
             dica.text = item.dica
 
+            // Cores da flag
             if(item.flag == 1){
                 flag.setBackgroundColor(ContextCompat.getColor(flag.context,R.color.bege_muitas_pedras))
             }else if(item.flag == 2){
@@ -72,6 +84,7 @@ class AdaptadorItem(
             }
 
             imagem.setImageResource(item.imageRes)
+            iconeLocal.setImageResource(item.localIconRes)
         }
     }
 
