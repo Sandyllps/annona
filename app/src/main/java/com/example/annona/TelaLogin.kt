@@ -33,7 +33,6 @@ interface ApiService {
 }
 
 class TelaLogin : AppCompatActivity() {
-
     private lateinit var binding: ActivityTelaLoginBinding
     private lateinit var apiService: ApiService
 
