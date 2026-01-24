@@ -11,9 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 class TelaDespensaFragment : Fragment() {
 
     companion object {
-        fun newInstance(key: String, pos: Int) = TelaDespensaFragment().apply {
+        fun newInstance(page: String, position: Int, userId: Int) = TelaDespensaFragment().apply {
             arguments = Bundle().apply {
-                putInt("pos", pos)
+                putString("page", page)
+                putInt("position", position)
+                putInt("USER_ID", userId) // passa ID
             }
         }
     }
