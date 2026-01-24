@@ -40,6 +40,7 @@
             android:showDividers="middle">
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_vencido"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_margin="4dp"
@@ -47,18 +48,20 @@
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp">
                 <TextView
+                    android:id="@+id/txt_vencido_contador"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/century_gothic"
                     android:gravity="center"
                     android:paddingHorizontal="12dp"
-                    android:text="Vencidos 1"
+                    android:text="Vencido: 1"
                     android:textColor="@color/white"
                     android:textSize="11sp"
                     android:textStyle="bold" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_critico"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_margin="4dp"
@@ -66,11 +69,12 @@
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp">
                 <TextView
+                    android:id="@+id/txt_critico_contador"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingHorizontal="12dp"
-                    android:text="Crítico 5"
+                    android:text="Crítico: 5"
                     android:textColor="@color/white"
                     android:fontFamily="@font/century_gothic"
                     android:textSize="11sp"
@@ -78,6 +82,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_atencao"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_margin="4dp"
@@ -85,11 +90,12 @@
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp">
                 <TextView
+                    android:id="@+id/txt_atencao_contador"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingHorizontal="12dp"
-                    android:text="Atenção 2"
+                    android:text="Atenção: 2"
                     android:textColor="@color/white"
                     android:fontFamily="@font/century_gothic"
                     android:textSize="11sp"
@@ -97,6 +103,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_seguro"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_margin="4dp"
@@ -104,11 +111,12 @@
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp">
                 <TextView
+                    android:id="@+id/txt_seguro_contador"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingHorizontal="12dp"
-                    android:text="Seguro 6"
+                    android:text="Seguro: 6"
                     android:textColor="@color/white"
                     android:fontFamily="@font/century_gothic"
                     android:textSize="11sp"
