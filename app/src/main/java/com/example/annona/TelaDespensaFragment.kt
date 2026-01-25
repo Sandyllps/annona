@@ -71,16 +71,6 @@ class TelaDespensaFragment : Fragment() {
         val btnAdd = view.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fab_add_item)
 
 
-
-        //ligação com a tela de receitas
-        val lista = sampleData()
-        adapter.submitList(lista)
-
-        // EXPÕE A DESPENSA PARA O APP (Receitas, futuro backend, etc)
-        DespensaRepository.setItens(lista)
-
-
-
         btnAdd.setOnClickListener {
             // Aqui criei  a Intent para navegar do Fragment para a Activity
             val intent = android.content.Intent(requireContext(), AdicionarItem::class.java)

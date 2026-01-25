@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ReceitasAdapter(
     private val listaReceitas: List<Receita>,
-    private val ingredientesUsuario: List<String>,
     private val onClick: (Receita) -> Unit
 ) : RecyclerView.Adapter<ReceitasAdapter.ReceitaViewHolder>() {
 
@@ -36,23 +35,6 @@ class ReceitasAdapter(
         holder.txtNome.text = receita.nome
         holder.txtTempo.text = receita.tempoPreparo
         holder.txtTag.text = receita.tag
-
-        holder.txtIngredientes.text =
-            "Você tem: " + receita.ingredientes.joinToString(" | ")
-
-        val compativel = receita.ingredientes.any { ingredienteReceita ->
-            ingredientesUsuario.any { ingredienteDespensa ->
-                ingredienteDespensa.equals(ingredienteReceita, ignoreCase = true)
-            }
-        }
-
-
-        holder.container.setBackgroundResource(
-            if (compativel)
-                R.drawable.bg_tag_receita
-            else
-                R.drawable.bg_tag_aberto
-        )
 
 
         holder.itemView.setOnClickListener {

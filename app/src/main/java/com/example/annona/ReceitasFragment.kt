@@ -21,41 +21,17 @@ class ReceitasFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.rv_receitas)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        val receitasMock = listOf(
-            Receita(
-                id = 1,
-                nome = "Feijoada",
-                ingredientes = listOf("Feijão", "Couve"),
-                tempoPreparo = "40 MIN",
-                tag = "PRINCIPAL",
-                imagem = R.drawable.ic_launcher_foreground
-            ),
-            Receita(
-                id = 2,
-                nome = "Arroz Branco",
-                ingredientes = listOf("Arroz"),
-                tempoPreparo = "20 MIN",
-                tag = "ACOMPANHAMENTO",
-                imagem = R.drawable.ic_launcher_foreground
-            )
-        )
-
-        val ingredientesUsuario = DespensaRepository.getIngredientes()
-
-
+        val receitas = ReceitasData.receitas
 
         //Abrir tela de detalhes das receitas
-        recyclerView.adapter = ReceitasAdapter(listaReceitas = receitasMock, ingredientesUsuario = ingredientesUsuario) { receita ->
+        recyclerView.adapter = ReceitasAdapter(listaReceitas = receitas) { receita ->
             val intent = Intent(requireContext(), DetalheReceitaActivity::class.java)
+
             intent.putExtra("NOME", receita.nome)
-            intent.putExtra("TEMPO", receita.tempoPreparo)
-            intent.putExtra("TAG", receita.tag)
-            intent.putStringArrayListExtra(
-                "INGREDIENTES",
-                ArrayList(receita.ingredientes)
-            )
+
             startActivity(intent)
         }
+
 
         return view
     }
