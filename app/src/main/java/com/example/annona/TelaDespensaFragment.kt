@@ -116,15 +116,21 @@ class TelaDespensaFragment : Fragment() {
         popup.menu.add("Editar item")
         val textoConsumo = if (item.estado == "Consumindo") "Por consumir" else "Consumir item"
         popup.menu.add(textoConsumo)
-        popup.menu.add("Item Consumido")
+
+        // RECUPERADO: Opção Doar Item volta para o menu principal
         popup.menu.add("Doar Item")
-        popup.menu.add("Jogar fora")
+
         popup.menu.add("Excluir item")
 
         popup.setOnMenuItemClickListener { menuIt ->
             when (menuIt.title) {
                 "Editar item" -> {
                     val intent = android.content.Intent(requireContext(), AdicionarItem::class.java)
+                    intent.putExtra("ITEM_ID", item.id)
+                    intent.putExtra("TITULO", item.titulo)
+                    intent.putExtra("ESTADO", item.estado)
+                    intent.putExtra("LOCAL", item.localNome)
+                    intent.putExtra("DICA", item.dica)
                     startActivity(intent)
                 }
                 "Consumir item", "Por consumir" -> {
@@ -135,10 +141,14 @@ class TelaDespensaFragment : Fragment() {
                         adapterGlobal?.submitList(listaCompleta.toList())
                     }
                 }
+                "Doar Item" -> {
+                    // Lógica para marcar como doação (remove da lista atual e mostra toast)
+                    listaCompleta.remove(item)
+                    adapterGlobal?.submitList(listaCompleta.toList())
+                    atualizarContadores(requireView())
+                    Toast.makeText(requireContext(), "Item marcado para doação", Toast.LENGTH_SHORT).show()
+                }
                 "Excluir item" -> confirmarExclusao(item)
-                "Item Consumido" -> Toast.makeText(requireContext(), "Enviado para o histórico", Toast.LENGTH_SHORT).show()
-                "Doar Item" -> Toast.makeText(requireContext(), "Item marcado para doação", Toast.LENGTH_SHORT).show()
-                else -> Toast.makeText(requireContext(), "Ação: ${menuIt.title}", Toast.LENGTH_SHORT).show()
             }
             true
         }
@@ -146,19 +156,28 @@ class TelaDespensaFragment : Fragment() {
     }
 
     private fun confirmarExclusao(item: Item) {
+        // Motivos de exclusão (onde o usuário explica por que está deletando)
+        val motivos = arrayOf("Item consumido", "Item vencido/estragado", "Item doado", "Outro")
+        var motivoSelecionado = motivos[0]
+
         val dialog = android.app.AlertDialog.Builder(requireContext())
-            .setTitle("Excluir Item")
-            .setMessage("Deseja realmente excluir \"${item.titulo}\"?")
-            .setPositiveButton("Excluir") { d, _ ->
+            .setTitle("Excluir \"${item.titulo}\"")
+            .setSingleChoiceItems(motivos, 0) { _, which ->
+                motivoSelecionado = motivos[which]
+            }
+            .setPositiveButton("Confirmar Exclusão") { d, _ ->
                 listaCompleta.remove(item)
                 adapterGlobal?.submitList(listaCompleta.toList())
                 atualizarContadores(requireView())
+
+                Toast.makeText(requireContext(), "Removido: $motivoSelecionado", Toast.LENGTH_SHORT).show()
                 d.dismiss()
             }
             .setNegativeButton("Cancelar") { d, _ -> d.dismiss() }
             .create()
 
         dialog.show()
+
         dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.vermelho_murango))
         dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(android.graphics.Color.GRAY)
     }
@@ -174,7 +193,6 @@ class TelaDespensaFragment : Fragment() {
         view.findViewById<TextView>(R.id.txt_seguro_contador).text = "Seguro $s"
     }
 
-    // LISTA ATUALIZADA COM OS NOMES DOS LOCAIS PARA O TOAST
     private fun sampleData(): List<Item> {
         return listOf(
             Item(1, "Feijão", "Consumindo", "4 DIAS", "Armazenar na geladeira", 1, R.drawable.graos_feijao, R.drawable.local_icone_geladeira, "Geladeira"),
