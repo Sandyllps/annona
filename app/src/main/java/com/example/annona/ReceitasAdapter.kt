@@ -32,7 +32,7 @@ class ReceitasAdapter(
 
         holder.imgFoto.setImageResource(receita.imagem)
         holder.txtNome.text = receita.nome
-        holder.txtTempo.text = receita.tempoPreparo
+        holder.txtTempo.text = "Tempo: ${receita.tempoPreparo}"
         holder.txtTag.text = receita.tag
 
 
