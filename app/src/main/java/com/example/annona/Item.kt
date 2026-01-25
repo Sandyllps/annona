@@ -9,5 +9,7 @@ data class Item(
     val prazo: String,
     val dica: String,
     val flag: Int,
-    @DrawableRes val imageRes: Int
+    @DrawableRes val imageRes: Int,      // Imagem principal do alimento (ex: Tomate)
+    @DrawableRes val localIconRes: Int,  // Ícone do local de armazenamento
+    val localNome: String                // NOVO: Nome do local por extenso (ex: "Geladeira")
 )

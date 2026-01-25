@@ -14,6 +14,9 @@
     <color name="verde_matcha">#809671</color>
     <color name="verde_eucalipto">#BFC9B3</color>
     <color name="verde_escurinho">#767B39</color>
+    <color name="verde_menta">#CDE8D3</color>
+    <color name="verde_barbuleta">#8FBC93</color>
+    <color name="verde_alface">#A8CA7E</color>
     <color name="rosa_blush">#EFD9D5</color>
     <color name="rosa_coral">#D77A7D</color>
     <color name="rosa_melao">#F7BCB0</color>
@@ -45,7 +48,9 @@
     <color name="vermelho_mais_clarinho">#E56B6B</color>
     <color name="amarelo_sol">#FFD544</color>
     <color name="amarelinho">#FFE988</color>
-    <color name="amarelo_clarinho">#fff3b0</color>
+    <color name="amarelo_clarinho">#FFF3B0</color>
+    <color name="amarelo_manteiga">#FAE7A1</color>
+
 
 
 

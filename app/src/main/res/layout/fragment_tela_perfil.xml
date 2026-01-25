@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bege_quase_branco"
+    android:background="@color/bege_coco"
     android:orientation="vertical"
     android:padding="24dp">
 
@@ -15,9 +15,11 @@
 
         <ImageView
             android:id="@+id/img_perfil_foto"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:src="@drawable/item_padrao" /> <LinearLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/cornucopia" />
+
+        <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
