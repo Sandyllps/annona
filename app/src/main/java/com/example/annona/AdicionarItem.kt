@@ -50,6 +50,23 @@ class AdicionarItem : AppCompatActivity() {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
 
+        // --- LÓGICA DE RECEBIMENTO DE DADOS PARA EDIÇÃO ---
+        val idExistente = intent.getLongExtra("ITEM_ID", -1L)
+        if (idExistente != -1L) {
+            // Preenche o nome do alimento vindo da Intent
+            binding.autoNomeAlimento.setText(intent.getStringExtra("TITULO"))
+
+            // Recupera Local e Estado e seleciona a posição correta nos Spinners
+            val localRec = intent.getStringExtra("LOCAL")
+            val estadoRec = intent.getStringExtra("ESTADO")
+
+            binding.spinnerLocal.setSelection(locais.indexOf(localRec).takeIf { it != -1 } ?: 0)
+            binding.spinnerEstado.setSelection(estados.indexOf(estadoRec).takeIf { it != -1 } ?: 0)
+
+            // Muda o texto do botão para indicar edição
+            binding.btnAdicionarItem.text = "Salvar Alterações"
+        }
+
         // 2. CALENDÁRIO NATIVO
         binding.editDataExibicao.setOnClickListener {
             val c = Calendar.getInstance()
@@ -143,7 +160,9 @@ class AdicionarItem : AppCompatActivity() {
                 // Aqui você salvaria os dados no Banco ou enviaria via Intent
                 // Ex: salvarNoBanco(nome, categoriaTexto, local, ...)
 
-                Toast.makeText(this, "$nome cadastrado com sucesso!", Toast.LENGTH_SHORT).show()
+                // Ajuste na mensagem para diferenciar Cadastro de Edição
+                val acao = if (idExistente == -1L) "cadastrado" else "atualizado"
+                Toast.makeText(this, "$nome $acao com sucesso!", Toast.LENGTH_SHORT).show()
 
                 // Finaliza e fecha a tela
                 finish()

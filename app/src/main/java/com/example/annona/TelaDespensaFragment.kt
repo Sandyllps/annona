@@ -5,10 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class TelaDespensaFragment : Fragment() {
+
+    private var listaCompleta: MutableList<Item> = mutableListOf()
+    private var adapterGlobal: AdaptadorItem? = null
 
     companion object {
         fun newInstance(page: String, position: Int, userId: Int) = TelaDespensaFragment().apply {
@@ -34,27 +40,31 @@ class TelaDespensaFragment : Fragment() {
         val cardFiltro = view.findViewById<View>(R.id.card_filtro_status)
         val txtStatus = view.findViewById<android.widget.TextView>(R.id.txt_status_selecionado)
 
-        // Define o texto inicial como "Adicionados Recentemente". Esse será o filtro pré selecionado quando o usuário logado abrir o app.
         txtStatus.text = "Adicionados Recentemente"
 
         cardFiltro.setOnClickListener {
-            // Esta linha cria o popup
             val popup = android.widget.PopupMenu(requireContext(), cardFiltro)
 
-            // As 10 opções de filtro
             popup.menu.add("Todos os Itens")
             popup.menu.add("Consumindo")
             popup.menu.add("Por consumir")
             popup.menu.add("Adicionados Recentemente")
-            popup.menu.add("Vencidos")
-            popup.menu.add("Críticos")
+            popup.menu.add("Vencido")
+            popup.menu.add("Crítico")
             popup.menu.add("Atenção")
-            popup.menu.add("Seguros")
+            popup.menu.add("Seguro")
             popup.menu.add("Alimentos e Bebidas")
             popup.menu.add("Higiene, Perfumaria, Farmácia e Limpeza")
 
             popup.setOnMenuItemClickListener { item ->
-                txtStatus.text = item.title // Atualiza o visual sem mudar a fonte/cor
+                txtStatus.text = item.title
+                when(item.title) {
+                    "Todos os Itens" -> adapterGlobal?.submitList(listaCompleta.toList())
+                    "Vencido" -> adapterGlobal?.submitList(listaCompleta.filter { it.flag == 1 })
+                    "Crítico" -> adapterGlobal?.submitList(listaCompleta.filter { it.flag == 2 })
+                    "Atenção" -> adapterGlobal?.submitList(listaCompleta.filter { it.flag == 3 })
+                    "Seguro" -> adapterGlobal?.submitList(listaCompleta.filter { it.flag == 4 })
+                }
                 true
             }
             popup.show()
@@ -63,40 +73,134 @@ class TelaDespensaFragment : Fragment() {
         // 2. Configuração da LISTA (RecyclerView)
         val rv = view.findViewById<RecyclerView>(R.id.rvItems)
         rv.layoutManager = LinearLayoutManager(requireContext())
-        val adapter = AdaptadorItem()
+
+        val adapter = AdaptadorItem(
+            onClick = { item -> /* Clique no card inteiro */ },
+            onOptionsMenuClick = { anchorView, item ->
+                mostrarMenuOpcoes(anchorView, item)
+            }
+        )
+
         rv.adapter = adapter
-        adapter.submitList(sampleData())
+        adapterGlobal = adapter
 
-        // Configuração de click para adicionar item. Ao clicar no botão adiiconar, o usuário irá para a activity_adicionar_item.xml
+        listaCompleta = sampleData().toMutableList()
+        adapter.submitList(listaCompleta.toList())
+        atualizarContadores(view)
+
+        // --- CLIQUES NO SEMÁFORO ---
+        view.findViewById<View>(R.id.card_vencido).setOnClickListener {
+            adapter.submitList(listaCompleta.filter { it.flag == 1 })
+            txtStatus.text = "Vencido"
+        }
+        view.findViewById<View>(R.id.card_critico).setOnClickListener {
+            adapter.submitList(listaCompleta.filter { it.flag == 2 })
+            txtStatus.text = "Crítico"
+        }
+        view.findViewById<View>(R.id.card_atencao).setOnClickListener {
+            adapter.submitList(listaCompleta.filter { it.flag == 3 })
+            txtStatus.text = "Atenção"
+        }
+        view.findViewById<View>(R.id.card_seguro).setOnClickListener {
+            adapter.submitList(listaCompleta.filter { it.flag == 4 })
+            txtStatus.text = "Seguro"
+        }
+
         val btnAdd = view.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fab_add_item)
-
         btnAdd.setOnClickListener {
-            // Aqui criei  a Intent para navegar do Fragment para a Activity
             val intent = android.content.Intent(requireContext(), AdicionarItem::class.java)
             startActivity(intent)
         }
     }
 
+    private fun mostrarMenuOpcoes(anchorView: View, item: Item) {
+        val popup = android.widget.PopupMenu(requireContext(), anchorView)
+        popup.menu.add("Editar item")
+        val textoConsumo = if (item.estado == "Consumindo") "Por consumir" else "Consumir item"
+        popup.menu.add(textoConsumo)
+
+        // RECUPERADO: Opção Doar Item volta para o menu principal
+        popup.menu.add("Doar Item")
+
+        popup.menu.add("Excluir item")
+
+        popup.setOnMenuItemClickListener { menuIt ->
+            when (menuIt.title) {
+                "Editar item" -> {
+                    val intent = android.content.Intent(requireContext(), AdicionarItem::class.java)
+                    intent.putExtra("ITEM_ID", item.id)
+                    intent.putExtra("TITULO", item.titulo)
+                    intent.putExtra("ESTADO", item.estado)
+                    intent.putExtra("LOCAL", item.localNome)
+                    intent.putExtra("DICA", item.dica)
+                    startActivity(intent)
+                }
+                "Consumir item", "Por consumir" -> {
+                    val novoEstado = if (item.estado == "Consumindo") "Por consumir" else "Consumindo"
+                    val index = listaCompleta.indexOf(item)
+                    if (index != -1) {
+                        listaCompleta[index] = item.copy(estado = novoEstado)
+                        adapterGlobal?.submitList(listaCompleta.toList())
+                    }
+                }
+                "Doar Item" -> {
+                    // Lógica para marcar como doação (remove da lista atual e mostra toast)
+                    listaCompleta.remove(item)
+                    adapterGlobal?.submitList(listaCompleta.toList())
+                    atualizarContadores(requireView())
+                    Toast.makeText(requireContext(), "Item marcado para doação", Toast.LENGTH_SHORT).show()
+                }
+                "Excluir item" -> confirmarExclusao(item)
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun confirmarExclusao(item: Item) {
+        // Motivos de exclusão (onde o usuário explica por que está deletando)
+        val motivos = arrayOf("Item consumido", "Item vencido/estragado", "Item doado", "Outro")
+        var motivoSelecionado = motivos[0]
+
+        val dialog = android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Excluir \"${item.titulo}\"")
+            .setSingleChoiceItems(motivos, 0) { _, which ->
+                motivoSelecionado = motivos[which]
+            }
+            .setPositiveButton("Confirmar Exclusão") { d, _ ->
+                listaCompleta.remove(item)
+                adapterGlobal?.submitList(listaCompleta.toList())
+                atualizarContadores(requireView())
+
+                Toast.makeText(requireContext(), "Removido: $motivoSelecionado", Toast.LENGTH_SHORT).show()
+                d.dismiss()
+            }
+            .setNegativeButton("Cancelar") { d, _ -> d.dismiss() }
+            .create()
+
+        dialog.show()
+
+        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.vermelho_murango))
+        dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(android.graphics.Color.GRAY)
+    }
+
+    private fun atualizarContadores(view: View) {
+        val v = listaCompleta.count { it.flag == 1 }
+        val c = listaCompleta.count { it.flag == 2 }
+        val a = listaCompleta.count { it.flag == 3 }
+        val s = listaCompleta.count { it.flag == 4 }
+        view.findViewById<TextView>(R.id.txt_vencido_contador).text = "Vencido $v"
+        view.findViewById<TextView>(R.id.txt_critico_contador).text = "Crítico $c"
+        view.findViewById<TextView>(R.id.txt_atencao_contador).text = "Atenção $a"
+        view.findViewById<TextView>(R.id.txt_seguro_contador).text = "Seguro $s"
+    }
+
     private fun sampleData(): List<Item> {
         return listOf(
-            Item(
-                1,
-                "Feijão",
-                "Consumindo",
-                "4 DIAS",
-                "Armazenar na geladeira",
-                1,
-                R.drawable.hortifruti_tomate
-            ),
-            Item(
-                2,
-                "Pão",
-                "Por consumir",
-                "15 DIAS",
-                "Manter em recipiente fechado",
-                3,
-                R.drawable.item_padrao
-            )
+            Item(1, "Feijão", "Consumindo", "4 DIAS", "Armazenar na geladeira", 1, R.drawable.graos_feijao, R.drawable.local_icone_geladeira, "Geladeira"),
+            Item(2, "Pão", "Por consumir", "15 DIAS", "Manter em recipiente fechado", 3, R.drawable.paes_massas_e_doces_pao_frances, R.drawable.local_icone_armario, "Armário"),
+            Item(3, "Tomate", "Por consumir", "7 DIAS", "Lavar antes de guardar", 4, R.drawable.hortifruti_tomates, R.drawable.local_icone_fruteira, "Fruteira"),
+            Item(4, "Leite Fermentando Xamito", "Consumindo", "1 DIA", "Consumir urgente", 2, R.drawable.laticinios_leite, R.drawable.local_icone_freezer, "Freezer")
         )
     }
 }
