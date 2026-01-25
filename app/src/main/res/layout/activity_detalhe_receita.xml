@@ -4,16 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6EFE6">
-
-    <!-- Botão voltar -->
-    <ImageView
-        android:id="@+id/btnVoltar"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_voltar"
-        android:contentDescription="Voltar" />
+    android:background="#FCF3EA">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -22,110 +13,157 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:layout_height="wrap_content">
 
-            <!-- Imagem principal -->
-            <ImageView
-                android:id="@+id/imgReceita"
+            <!-- IMAGEM -->
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_launcher_foreground" />
+                android:layout_height="260dp">
 
-            <!-- Nome -->
-            <TextView
-                android:id="@+id/txtNomeReceita"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Feijoada"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:textColor="#3E2723"
-                android:layout_marginTop="12dp" />
+                <ImageView
+                    android:id="@+id/imgReceita"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/feijoada_capa" />
 
-            <TextView
-                android:id="@+id/txtTagReceita"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PRINCIPAL"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:background="@drawable/bg_tag_receita"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp"
-                android:layout_marginTop="4dp"/>
+                <ImageView
+                    android:id="@+id/btnVoltar"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="16dp"
+                    android:src="@drawable/btn_voltar_receitas"
+                    android:contentDescription="Voltar"
+                    android:scaleType="center"
+                    android:layout_gravity="top|start" />
 
-            <!-- Tempo e porções -->
+                <!-- TAG sobre a imagem -->
+                <TextView
+                    android:id="@+id/txtTagReceita"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Prato: Principal"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#3E2723"
+                    android:background="@drawable/bg_tag_receita"
+                    android:paddingHorizontal="9dp"
+                    android:paddingVertical="4dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginEnd="20dp"/>
+
+            </FrameLayout>
+
+            <!-- NOME + TEMPO/PORÇÕES -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="4dp">
+                android:layout_marginTop="12dp">
 
                 <TextView
-                    android:id="@+id/txtTempoReceita"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/txtNomeReceita"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Tempo: 50 min"
-                    android:textSize="14sp"
-                    android:layout_marginEnd="16dp"
-                    android:textColor="#6D4C41" />
+                    android:layout_weight="1"
+                    android:layout_marginStart="20dp"
+                    android:text="Feijoada"
+                    android:textSize="35sp"
+                    android:textStyle="bold"
+                    android:textColor="#3E2723" />
 
-                <TextView
-                    android:id="@+id/txtPorcoesReceita"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Porções: 4"
-                    android:textSize="14sp"
-                    android:textColor="#6D4C41" />
+                    android:layout_marginEnd="35dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtTempoReceita"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tempo: 50min"
+                        android:textSize="14sp"
+                        android:textColor="#6D4C41" />
+
+                    <TextView
+                        android:id="@+id/txtPorcoesReceita"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:text="Porções: 4"
+                        android:textSize="14sp"
+                        android:textColor="#6D4C41" />
+                </LinearLayout>
 
             </LinearLayout>
 
-            <!-- Descrição -->
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/linha_divisoria_nome" />
+
             <TextView
                 android:id="@+id/txtDescricaoReceita"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="5dp"
                 android:text="Descrição da receita"
                 android:textSize="14sp"
-                android:textColor="#5D4037"
-                android:layout_marginTop="12dp" />
+                android:textColor="#5D4037" />
 
-            <!-- Ingredientes -->
+            <!-- INGREDIENTES -->
             <TextView
-                android:layout_marginTop="20dp"
                 android:text="Ingredientes"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#3E2723"
+                android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp" />
+
+            <ImageView
+                android:layout_width="370dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/linha_divisoria_ingemodop"
+                android:layout_marginStart="10dp"/>
 
             <TextView
                 android:id="@+id/txtIngredientesReceita"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#5D4037"
-                android:layout_marginTop="8dp" />
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="3dp"
 
-            <!-- Modo de preparo -->
+                android:textSize="13sp"
+                android:textColor="#5D4037" />
+
+            <!-- MODO DE PREPARO -->
             <TextView
-                android:layout_marginTop="20dp"
                 android:text="Modo de Preparo"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#3E2723"
+                android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp" />
+
+            <ImageView
+                android:layout_width="370dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/linha_divisoria_ingemodop"
+                android:layout_marginStart="10dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvModoPreparo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:nestedScrollingEnabled="false"/>
 
         </LinearLayout>

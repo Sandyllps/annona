@@ -15,7 +15,6 @@ class ReceitasAdapter(
     class ReceitaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgFoto: ImageView = itemView.findViewById(R.id.img_foto_receita)
         val txtNome: TextView = itemView.findViewById(R.id.txt_nome_receita)
-        val txtIngredientes: TextView = itemView.findViewById(R.id.txt_ingredientes_receita)
         val txtTempo: TextView = itemView.findViewById(R.id.txt_tempo_receita)
         val txtTag: TextView = itemView.findViewById(R.id.txt_tag_receita)
         val container: View = itemView

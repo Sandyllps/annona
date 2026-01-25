@@ -76,7 +76,7 @@ private class ModoPreparoAdapter(
     override fun onBindViewHolder(holder: EtapaViewHolder, position: Int) {
         val etapa = etapas[position]
 
-        holder.txtNumero.text = "Etapa ${etapa.numero}"
+        holder.txtNumero.text = "${etapa.numero}"
         holder.txtDescricao.text = etapa.descricao
         holder.imgEtapa.setImageResource(etapa.imagem)
     }
