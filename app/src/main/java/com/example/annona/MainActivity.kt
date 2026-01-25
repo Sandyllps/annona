@@ -40,11 +40,12 @@ class MainActivity : AppCompatActivity() {
         bottomNav.itemIconTintList = null
 
         // LISTA DE FRAGMENTS ATUALIZADA
+        val userId = intent.getIntExtra("USER_ID", 0) // pegar o ID do login
         val fragments = listOf(
-            TelaDespensaFragment.newInstance("page", 0), // Posição 0: Sua Despensa
-            ReceitasFragment(),                          // Posição 1: Suas Receitas
-            TelaDespensaFragment.newInstance("page", 2), // Posição 2: Doação (Temporário)
-            TelaPerfilFragment()                         // Posição 3: A SUA TELA DE PERFIL
+            TelaDespensaFragment.newInstance("page", 0, userId),
+            ReceitasFragment(),
+            TelaDespensaFragment.newInstance("page", 2, userId),
+            TelaPerfilFragment()
         )
 
         viewPager.adapter = object : FragmentStateAdapter(this) {
