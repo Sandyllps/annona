@@ -25,6 +25,17 @@ class AdicionarItem : AppCompatActivity() {
         binding = ActivityAdicionarItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // --- CONFIGURAÇÃO DA BARRA SUPERIOR (SETINHA DE VOLTAR) [novo] ---
+        // Aqui configuramos a toolbar para aceitar o botão de "voltar" nativo
+        setSupportActionBar(binding.toolbarAdicionar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true) // Ativa a setinha no canto esquerdo
+        supportActionBar?.setDisplayShowTitleEnabled(false) // Esconde o título padrão da Activity
+
+        // Faz a setinha fechar a tela e voltar para a despensa quando clicada
+        binding.toolbarAdicionar.setNavigationOnClickListener {
+            finish()
+        }
+
         // --- 1. CONFIGURAÇÃO DAS LISTAS DE ESCOLHA (Spinners) ---
 
         // Lista de Categorias: Define o tipo do alimento (Grãos, Bebidas, etc.)
@@ -71,6 +82,9 @@ class AdicionarItem : AppCompatActivity() {
         // Verifica se veio um ID da tela anterior; se veio, significa que é EDIÇÃO
         val idExistente = intent.getLongExtra("ITEM_ID", -1L)
         if (idExistente != -1L) {
+            // AJUSTE: Muda o título no topo da página para "Editar" quando for edição [novo]
+            binding.btnAdicionarItemTopo.text = "Editar"
+
             // Pega o nome que veio da outra tela e escreve no campo de texto
             binding.autoNomeAlimento.setText(intent.getStringExtra("TITULO"))
 
@@ -83,6 +97,9 @@ class AdicionarItem : AppCompatActivity() {
 
             // Troca o texto do botão para o usuário saber que está editando e não criando do 0. Então ao invés de "Adicionar Item" aparece "Salvar Alterações".
             binding.btnAdicionarItem.text = "Salvar Alterações"
+        } else {
+            // Se não for edição, garante que o título seja "Adicionar novo item" [novo]
+            binding.btnAdicionarItemTopo.text = "Adicionar novo item"
         }
 
         // --- 2. CALENDÁRIO (Para escolher a data de validade)  ---
