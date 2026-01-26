@@ -30,5 +30,16 @@ data class Item(
     @DrawableRes val localIconRes: Int,
 
     // O nome do lugar onde ele está guardado escrito por extenso
-    val localNome: String
+    val localNome: String,
+
+    // --- NOVAS PROPRIEDADES PARA O CÁLCULO INTELIGENTE DE VALIDADE ---
+
+    // Armazena a categoria escolhida (ex: "Hortifruti") para que o sistema saiba qual prazo padrão buscar no banco de dados
+    val categoria: String,
+
+    // Guarda o momento exato do vencimento em milissegundos; essencial para calcular a diferença em relação ao dia de hoje
+    val dataVencimentoMs: Long,
+
+    // Registra se o usuário optou por digitar a data manualmente (marcando o CheckBox) ou se prefere o prazo automático do sistema
+    val possuiDataValidade: Boolean
 )

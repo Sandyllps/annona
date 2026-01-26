@@ -7,12 +7,16 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.annona.databinding.ActivityAdicionarItemBinding // Ferramenta que facilita achar os componentes da tela
 import java.util.Calendar
+import java.util.concurrent.TimeUnit // Importado para ajudar no cálculo de dias
 
 // Esta tela serve tanto para cadastrar um novo alimento quanto para editar um que já existe
 class AdicionarItem : AppCompatActivity() {
 
     // O 'binding' é como um mapa da tela; com ele, acessamos botões e textos sem erro
     private lateinit var binding: ActivityAdicionarItemBinding
+
+    // --- VARIÁVEIS PARA O CÁLCULO DE DATA ---
+    private var dataVencimentoSelecionadaMs: Long = 0 // Armazena a data final em milissegundos
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +56,17 @@ class AdicionarItem : AppCompatActivity() {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
 
+        // --- LÓGICA DO CHECKBOX DE VALIDADE ---
+        // Se o checkbox estiver marcado, o campo de data fica habilitado; se não, fica bloqueado.
+        binding.editDataExibicao.isEnabled = false // Começa bloqueado por padrão
+        binding.checkValidade.setOnCheckedChangeListener { _, isChecked ->
+            binding.editDataExibicao.isEnabled = isChecked
+            if (!isChecked) {
+                binding.editDataExibicao.setText("") // Limpa o texto se desmarcar
+                dataVencimentoSelecionadaMs = 0
+            }
+        }
+
         // --- LÓGICA DE EDIÇÃO (Caso o usuário queira mudar um item já cadastrado) ---
         // Verifica se veio um ID da tela anterior; se veio, significa que é EDIÇÃO
         val idExistente = intent.getLongExtra("ITEM_ID", -1L)
@@ -78,6 +93,11 @@ class AdicionarItem : AppCompatActivity() {
                 // Formata a data para o padrão brasileiro: DD/MM/AAAA
                 val dataFormatada = String.format("%02d/%02d/%d", day, month + 1, year)
                 binding.editDataExibicao.setText(dataFormatada)
+
+                // --- ARMAZENAMENTO DA DATA EM MILISSEGUNDOS ---
+                val calendarVencimento = Calendar.getInstance()
+                calendarVencimento.set(year, month, day, 23, 59, 59)
+                dataVencimentoSelecionadaMs = calendarVencimento.timeInMillis
             }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
             dpd.show()
         }
@@ -143,11 +163,12 @@ class AdicionarItem : AppCompatActivity() {
             // Pega tudo o que o usuário escreveu ou escolheu nos campos
             val nome = binding.autoNomeAlimento.text.toString().trim()
             val categoriaPosicao = binding.spinnerCategoria.selectedItemPosition
+            val categoriaTexto = binding.spinnerCategoria.selectedItem.toString()
             val local = binding.spinnerLocal.selectedItem.toString()
             val quantidade = binding.editQuantidade.text.toString()
             val medida = binding.spinnerMedida.selectedItem.toString()
             val preco = binding.editPreco.text.toString()
-            val data = binding.editDataExibicao.text.toString()
+            val possuiData = binding.checkValidade.isChecked
 
             // --- VALIDAÇÃO (Para evitar salvar campos vazios) ---
             var erro = false
@@ -158,17 +179,62 @@ class AdicionarItem : AppCompatActivity() {
                 erro = true
             }
 
-            // O usuário DEVE escolher uma categoria (não pode deixar na opção inicial vazia, sem nome do item)
+            // O usuário DEVE escolher uma categoria
             if (categoriaPosicao == 0) {
                 Toast.makeText(this, "Por favor, selecione uma categoria", Toast.LENGTH_SHORT).show()
                 erro = true
             }
 
-            // --- FINALIZAÇÃO ---
+            // Se marcou que possui data, mas não selecionou no calendário
+            if (possuiData && dataVencimentoSelecionadaMs == 0L) {
+                Toast.makeText(this, "Por favor, selecione a data no calendário", Toast.LENGTH_SHORT).show()
+                erro = true
+            }
+
+            // --- CÁLCULO INTELIGENTE DE PRAZO (REGRA DA TABELA) ---
             if (!erro) {
-                // Se estiver tudo certo, decide se a mensagem é de "cadastrado" ou "atualizado"
+                val dataFinalMs: Long
+                val diasRestantes: Long
+                val hojeMs = Calendar.getInstance().timeInMillis
+
+                if (possuiData) {
+                    // Se tem rotulo com data de validade, usa a data que o usuário adicionar
+                    dataFinalMs = dataVencimentoSelecionadaMs
+                } else {
+                    // --- TABELA DE PRAZOS FIXOS (Simulação do BD com regras de conservação) ---
+                    var prazoPadrao = when (categoriaTexto) {
+                        "Hortifruti" -> 9
+                        "Carnes e Peixes" -> 3
+                        "Laticínios" -> 7
+                        "Ovos" -> 20
+                        "Pães, Massas e Doces" -> 5
+                        "Bebidas" -> 30
+                        else -> 15 // Prazo padrão para outras categorias
+                    }
+
+                    // --- REGRA DE INCREMENTO PARA CONGELAMENTO ---
+                    // Se o item for guardado no Freezer, o prazo aumenta consideravelmente
+                    if (local == "Freezer") {
+                        if (categoriaTexto == "Carnes e Peixes") {
+                            prazoPadrao = 90 // Carnes ganham 90 dias de validade no freezer
+                        } else if (categoriaTexto == "Laticínios") {
+                            prazoPadrao = 60 // Laticínios ganham 60 dias de validade no freezer
+                        }
+                    }
+
+                    val cal = Calendar.getInstance()
+                    cal.add(Calendar.DAY_OF_YEAR, prazoPadrao)
+                    dataFinalMs = cal.timeInMillis
+                }
+
+                // Calcula a diferença entre a data final e hoje para exibir no card
+                val diff = dataFinalMs - hojeMs
+                diasRestantes = if (diff > 0) TimeUnit.MILLISECONDS.toDays(diff) else 0
+                val prazoTexto = if (diasRestantes <= 0) "VENCIDO" else "$diasRestantes DIAS"
+
+                // --- FINALIZAÇÃO ---
                 val acao = if (idExistente == -1L) "cadastrado" else "atualizado"
-                Toast.makeText(this, "$nome $acao com sucesso!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "$nome $acao com sucesso! Restam $prazoTexto", Toast.LENGTH_SHORT).show()
 
                 // Fecha esta tela e volta para a despensa
                 finish()
