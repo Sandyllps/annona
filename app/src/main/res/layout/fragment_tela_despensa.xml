@@ -166,7 +166,7 @@
                         android:id="@+id/txt_status_selecionado"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Adicionados Recentemente"
+                        android:text="Todos os Itens"
                         android:textColor="#5E6D88"
                         android:fontFamily="@font/century_gothic"
                         android:textSize="14sp"
@@ -197,7 +197,10 @@
                 android:id="@+id/rvItems"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"/>
+                android:nestedScrollingEnabled="false"
+                android:paddingBottom="80dp"
+                android:clipToPadding="false"
+                android:scrollbarStyle="outsideOverlay"/>
         </LinearLayout>
     </LinearLayout>
 
