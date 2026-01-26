@@ -28,4 +28,116 @@ async function login(req, res){
 }
 
 
-export{login}
+
+async function adicionarItemUsuario(req, res){
+    try{
+        const id_usuario = req.body.id_usuario
+        const nome = req.body.nome
+        const id_categoria = req.body.id_categoria
+        const imagem = req.body.imagem
+        const consumindo = req.body.consumindo
+        const possui_data_validade = req.body.possui_data_validade
+        const data_validade = req.body.data_validade
+        const id_local_armazenamento = req.body.id_local_armazenamento
+        const quantidade = req.body.quantidade
+        const id_medida = req.body.id_medida
+        const preco = req.body.preco
+        const id_flag = req.body.id_flag
+        
+        const resposta = await pool.execute('INSERT INTO itens_usuario (id_usuario, nome, id_categoria, imagem, consumindo, possui_data_validade, data_validade, id_local_armazenamento, quantidade, id_medida, preco, id_flag) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [id_usuario, nome, id_categoria, imagem, consumindo, possui_data_validade, data_validade, id_local_armazenamento, quantidade, id_medida, preco, id_flag]);
+        const resultado = resposta[0] //No caso do insert, pool.execute() retorna um array onde a posição [0] é um objeto com a informação do insert.
+
+        return res.status(200).json({
+            response:"OK",
+            "id_item_usuario": resultado.insertId
+        })
+    }
+    catch(error){
+        console.error(error)
+        return res.status(500).json({
+            response:"Erro interno :("
+        })
+    }
+}
+
+
+
+
+async function listarItensUsuario(req, res){
+    try{
+        const id_usuario = req.params.id_usuario //aqui usei params no lugar de body porque estou lendo o id na rota (no GET não se utiliza o body)
+        const resposta = await pool.execute('SELECT * FROM itens_usuario WHERE id_usuario = ? and deletado = FALSE', [id_usuario]);
+        const linhas = resposta[0]
+        
+        return res.status(200).json({
+            "listaItens": linhas
+        })
+    }
+    catch(error){
+        console.error(error)
+        return res.status(500).json({
+            response:"Erro interno :("
+        })
+    }
+}
+
+
+
+
+async function editarItemUsuario(req, res){
+     try{
+        const id_item_usuario = req.params.id_item_usuario
+        const nome = req.body.nome
+        const id_categoria = req.body.id_categoria
+        const imagem = req.body.imagem
+        const consumindo = req.body.consumindo
+        const possui_data_validade = req.body.possui_data_validade
+        const data_validade = req.body.data_validade
+        const id_local_armazenamento = req.body.id_local_armazenamento
+        const quantidade = req.body.quantidade
+        const id_medida = req.body.id_medida
+        const preco = req.body.preco
+        const id_flag = req.body.id_flag
+        
+        const resposta = await pool.execute('UPDATE itens_usuario SET nome = ?, id_categoria = ?, imagem = ? , consumindo = ?, possui_data_validade = ?, data_validade = ?, id_local_armazenamento = ?, quantidade = ?, id_medida = ?, preco = ?, id_flag = ? WHERE id_item_usuario = ?', [nome, id_categoria, imagem, consumindo, possui_data_validade, data_validade, id_local_armazenamento, quantidade, id_medida, preco, id_flag, id_item_usuario]);
+        const resultado = resposta[0] //No caso do insert, pool.execute() retorna um array onde a posição [0] é um objeto com a informação do insert.
+
+        return res.status(200).json({
+            response:"OK"
+            
+        })
+    }
+    catch(error){
+        console.error(error)
+        return res.status(500).json({
+            response:"Erro interno :("
+        })
+    }
+}
+
+
+
+
+
+
+async function deletarItemUsuario(req, res){
+    try{
+        const id_item_usuario = req.params.id_item_usuario //aqui estou pegando id_item_usuario da rota, mas também poderia pegar do body
+        const razao_delecao = req.body.razao_delecao //aqui estou pegando razao_delecao do body.
+        const resposta = await pool.execute('UPDATE itens_usuario SET deletado = TRUE, razao_delecao = ? WHERE id_item_usuario = ? ', [razao_delecao, id_item_usuario]);
+        const resultado = resposta[0]
+        
+        return res.status(200).json({
+            "response": "ok"
+        })
+    }
+    catch(error){
+        console.error(error)
+        return res.status(500).json({
+            response:"Erro interno :("
+        })
+    }
+}
+
+
+export{login, adicionarItemUsuario, listarItensUsuario, editarItemUsuario, deletarItemUsuario}

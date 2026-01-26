@@ -165,7 +165,7 @@ INSERT INTO flags (id_flag, nome_flag) VALUES
 
 
 CREATE TABLE itens_usuario (
-    id_item_usuario INT PRIMARY KEY,
+    id_item_usuario INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
     id_categoria INT NOT NULL,
@@ -178,6 +178,8 @@ CREATE TABLE itens_usuario (
     id_medida INT,
     preco DECIMAL(10,2),
     id_flag INT,
+    deletado BOOLEAN DEFAULT FALSE,
+    razao_delecao VARCHAR(100),
 
 	FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
     FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria),
