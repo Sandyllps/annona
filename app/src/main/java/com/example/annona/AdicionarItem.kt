@@ -18,16 +18,22 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Esta tela é responsável por cadastrar um item na despensa do usuário.
+ * Ela consome a API para sugerir nomes de alimentos e salvar o novo item no banco de dados.
+ */
 class AdicionarItem : AppCompatActivity() {
 
+    // O 'binding' permite acessar os componentes do XML (botões, campos de texto) sem usar 'findViewById'
     private lateinit var binding: ActivityAdicionarItemBinding
+
+    // Guarda a data escolhida no calendário para ser enviada ao banco de dados
     private var dataVencimentoSelecionadaMs: Long = 0
 
-    // [NOVO] Aqui vamos guardar a lista de itens que o seu Node.js vai enviar
+    // [DADOS DA API] Lista que armazena os objetos 'ModeloItemSugestao' (nome, categoria e imagem) vindos do Node.js
     private var listaDeSugestoesBackend: List<ModeloItemSugestao> = emptyList()
 
-    // [NOVO] Guarda o nome da imagem que vamos enviar para o banco (ex: arroz.png)
-    // Começa com o nome padrão, caso o usuário digite algo que não está na lista
+    // [DADOS DA API] Nome do arquivo de imagem (ex: "arroz.png") que será persistido no banco de dados
     private var imagemSelecionada: String = "item_padrao.png"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,52 +41,53 @@ class AdicionarItem : AppCompatActivity() {
         binding = ActivityAdicionarItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Configuração da Toolbar e botão voltar
+        // Configura a barra superior (Toolbar) com o botão de voltar
         setSupportActionBar(binding.toolbarAdicionar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.toolbarAdicionar.setNavigationOnClickListener { finish() }
 
-        // --- [PASSO 4] CHAMADA PARA BUSCAR OS ITENS DO BACKEND ---
-        // Assim que a tela abre, ela "liga" para o servidor para buscar os nomes
+        //CONSUMO DE API: BUSCA DE SUGESTÕES
+        // Assim que a tela é criada, chamamos o servidor para baixar a lista de itens padrão
         buscarSugestoesDoServidor()
 
-        // --- [PASSO 5] LÓGICA DO AUTOCOMPLETE (QUANDO O USUÁRIO CLICA) ---
+        //LÓGICA DO AUTOCOMPLETE
+        // Quando o usuário clica em um nome sugerido (ex: "Milho"), preenchemos os outros campos automaticamente
         binding.autoNomeAlimento.setOnItemClickListener { parent, _, position, _ ->
-            // Descobre qual nome foi clicado (ex: "Milho em Conserva")
             val nomeClicado = parent.getItemAtPosition(position).toString()
 
-            // Procura na nossa lista qual objeto tem esse nome para pegarmos a categoria e a imagem
+            // Filtrei a lista local pra achar o objeto completo correspondente ao nome clicado
             val itemEncontrado = listaDeSugestoesBackend.find { it.nome == nomeClicado }
 
             if (itemEncontrado != null) {
-                // 1. Muda o Spinner de categoria sozinho (ex: pula para "Enlatados")
+                // 1. O seletor de categoria (Spinner) muda automaticamente para a categoria do item
                 binding.spinnerCategoria.setSelection(itemEncontrado.id_categoria)
 
-                // 2. Guarda o nome da imagem correta (ex: enlatados_milho.png)
+                // 2. Atualizamos a variável com a imagem real (ex: "enlatado_milho.png") vinda da API
                 imagemSelecionada = itemEncontrado.imagem
 
-                // 3. Atualiza a dica de conservação automaticamente
+                // 3. Disparamos a função que mostra a dica de conservação baseada na nova categoria
                 atualizarDica()
 
-                Toast.makeText(this, "Sugestão aplicada!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Item reconhecido pelo sistema!", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Configuração dos Spinners (Categorias, Locais, etc)
+        // Funções que organizam a interface (Spinners e Calendário)
         configurarListasDeEscolha()
-
-        // Lógica do Checkbox de Validade e Calendário
         configurarValidadeECalendario()
 
-        // Botão Salvar
+        // Clique no botão principal para validar os dados e enviar para a API
         binding.btnAdicionarItem.setOnClickListener {
             validarESalvar()
         }
     }
 
-    // [NOVO] Função simples que busca os dados no seu Node.js
+
+     //FUNÇÃO DE CONSUMO DE API (GET):
+     //Conecta ao Node.js para buscar a lista de alimentos sugeridos.
     private fun buscarSugestoesDoServidor() {
+        // Configuramos o Retrofit com a URL base e o conversor de JSON.
         val urlApi = this.getString(R.string.api_base_url)
         val retrofit = Retrofit.Builder()
             .baseUrl(urlApi)
@@ -88,34 +95,38 @@ class AdicionarItem : AppCompatActivity() {
             .build()
         val api = retrofit.create(ServicoApi::class.java)
 
+        // O 'lifecycleScope.launch' inicia uma Coroutine (tarefa em segundo plano)
+        // Isso evita que o aplicativo trave (congele) enquanto espera a resposta da internet
         lifecycleScope.launch {
             try {
-                // Chama a rota que você testou no Postman
+                // Realiza a chamada para a rota 'itens_padrao' definida na classe ServicoApi.
                 val resposta = api.listarItensPadrao()
 
-                // Guarda a lista que chegou na nossa variável de memória
+                // Armazena a lista de objetos vinda do JSON na variável global
                 listaDeSugestoesBackend = resposta.listaDeSugestoes
 
-                // Cria uma lista só com os nomes para mostrar nas sugestões do campo de texto
+                // Mapeia apenas os nomes (Strings) para que o AutoCompleteTextView possa exibi-los
                 val apenasNomes = listaDeSugestoesBackend.map { it.nome }
 
-                // Avisa o campo de texto (AutoComplete) quais nomes ele deve sugerir
+                // O Adapter serve para "desenhar" a lista de nomes dentro do campo de texto
                 val adapterSugestao = ArrayAdapter(this@AdicionarItem, android.R.layout.simple_dropdown_item_1line, apenasNomes)
                 binding.autoNomeAlimento.setAdapter(adapterSugestao)
 
             } catch (e: Exception) {
-                // Se o servidor estiver desligado, o app apenas não mostra sugestões, mas não trava
+                // Se o servidor estiver fora do ar ou o IP estiver errado, cai aqui
+                println("Erro ao buscar sugestões: ${e.message}")
             }
         }
     }
 
-    // --- FUNÇÕES DE APOIO (ORGANIZAÇÃO DO CÓDIGO) ---
 
+     // Dicas de conservação baseadas na categoria selecionada.
     private fun atualizarDica() {
         val categoriaSelecionada = binding.spinnerCategoria.selectedItem.toString()
         if (binding.spinnerCategoria.selectedItemPosition > 0) {
             binding.txtDicaCategoria.visibility = View.VISIBLE
-            // Dicas baseadas na categoria
+
+            // O 'when' é uma forma mais limpa de fazer vários 'if/else'
             when (categoriaSelecionada) {
                 "Bebidas" -> binding.txtDicaCategoria.text = "Mantenha em local fresco e longe da luz direta."
                 "Carnes e Peixes" -> binding.txtDicaCategoria.text = "Mantenha no congelador se não for consumir em 24h."
@@ -123,7 +134,7 @@ class AdicionarItem : AppCompatActivity() {
                 "Grãos" -> binding.txtDicaCategoria.text = "Guarde em potes bem fechados, em local seco e longe da luz."
                 "Hortifruti" -> binding.txtDicaCategoria.text = "Lave bem antes de guardar."
                 "Pães, Massas e Doces" -> binding.txtDicaCategoria.text = "Mantenha em local fresco e longe da umidade."
-                "Laticínios" -> binding.txtDicaCategoria.text = "Guarde nas prateleiras superiores onde é mais frio."
+                "Laticínios" -> binding.txtDicaCategoria.text = "Guarde na geladeira, nas prateleiras superiores onde é mais frio."
                 "Ovos" -> binding.txtDicaCategoria.text = "Guarde na geladeira."
                 "Higiene, Perfumaria e Farmacia" -> binding.txtDicaCategoria.text = "Mantenha longe do calor."
                 "Limpeza" -> binding.txtDicaCategoria.text = "Mantenha em local arejado."
@@ -134,6 +145,7 @@ class AdicionarItem : AppCompatActivity() {
         }
     }
 
+    //VALIDAÇÃO: Garante que o usuário preencheu os campos mínimos antes de enviar ao servidor.
     private fun validarESalvar() {
         val nome = binding.autoNomeAlimento.text.toString().trim()
         val categoriaPosicao = binding.spinnerCategoria.selectedItemPosition
@@ -150,23 +162,27 @@ class AdicionarItem : AppCompatActivity() {
             return
         }
         if (possuiData && dataVencimentoSelecionadaMs == 0L) {
-            Toast.makeText(this, "Selecione a data de validade", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Selecione a data de validade no calendário", Toast.LENGTH_SHORT).show()
             return
         }
 
+        // Se passar por todas as validações, chama a função que faz o POST
         enviarParaOBanco()
     }
 
+    //FUNÇÃO DE CONSUMO DE API (POST):
+     //Envia o novo item para ser salvo definitivamente no banco de dados.
     private fun enviarParaOBanco() {
+        // Recuperamos o ID do usuário logado através da sessão, por isso criei a classe SecaoUsuario.
         val secaoUsuario = SecaoUsuario(this)
         val userId = secaoUsuario.obterUserId() ?: 0
 
-        // Criamos o objeto que será enviado para o servidor
+        // Criei o 'BodyCriarItem', que é o "pacote" de dados que o Node.js espera receber (a ideia era fazer de uma forma mais fácil mas não deu)
         val itemNovo = BodyCriarItem(
             userId,
             binding.autoNomeAlimento.text.toString(),
             Categoria.obterPeloNome(binding.spinnerCategoria.selectedItem.toString()).id_categoria,
-            imagemSelecionada, // Envia o nome da imagem que o Autocomplete descobriu!
+            imagemSelecionada, // Envia o nome da imagem (arroz.png) descoberto pelo Autocomplete
             binding.spinnerEstado.selectedItem.toString() == "Consumindo",
             binding.checkValidade.isChecked,
             dateToString(obterDataValidade(binding), "yyyy-MM-dd"),
@@ -174,7 +190,7 @@ class AdicionarItem : AppCompatActivity() {
             binding.editQuantidade.text.toString().toIntOrNull() ?: 0,
             Medida.obterPeloNome(binding.spinnerMedida.selectedItem.toString()).idMedida,
             binding.editPreco.text.toString().toDoubleOrNull() ?: 0.0,
-            1
+            1 // ID da flag inicial (será recalculado pela regra da despensa)
         )
 
         val urlApi = this.getString(R.string.api_base_url)
@@ -183,24 +199,30 @@ class AdicionarItem : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
+                // Envia os dados para a rota 'users/itensUsuario'
                 val resp = api.criarItemUsuario(itemNovo)
+
                 if (resp.isSuccessful) {
-                    // Avisa a tela principal para atualizar a lista
+                    // Aqui avisamos a tela da Despensa para recarregar a lista automaticamente
                     LocalBroadcastManager.getInstance(this@AdicionarItem).sendBroadcast(Intent("ATUALIZAR_LISTA_ANONA"))
-                    Toast.makeText(this@AdicionarItem, "Sucesso!", Toast.LENGTH_SHORT).show()
-                    finish()
+
+                    Toast.makeText(this@AdicionarItem, "Alimento salvo com sucesso!", Toast.LENGTH_SHORT).show()
+                    finish() // Fecha a tela de cadastro e volta para a lista
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@AdicionarItem, "Erro de conexão", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AdicionarItem, "Erro ao conectar com o servidor", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // --- FUNÇÕES DE CONFIGURAÇÃO INICIAL ---
+    //FUNÇÕES DE INTERFACE/CONFIGURAÇÕES TÉCNICAS
 
     private fun configurarListasDeEscolha() {
+        // Preenchemos os Spinners com as opções de texto
         val categorias = listOf("Selecione uma categoria", "Bebidas", "Carnes e Peixes", "Enlatados", "Grãos", "Hortifruti", "Pães, Massas e Doces", "Laticínios", "Ovos", "Higiene, Perfumaria e Farmacia", "Limpeza")
         binding.spinnerCategoria.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categorias).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+
+        // Listener que "escuta" quando o usuário muda a categoria manualmente para trocar a dica
         binding.spinnerCategoria.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) { atualizarDica() }
             override fun onNothingSelected(p0: AdapterView<*>?) {}
@@ -217,28 +239,37 @@ class AdicionarItem : AppCompatActivity() {
     }
 
     private fun configurarValidadeECalendario() {
+        // Bloqueia o campo de data de validade se o usuario não clicar na caixinha checkbox, ou libera o campo se ele selecionar.
         binding.editDataExibicao.isEnabled = false
         binding.checkValidade.setOnCheckedChangeListener { _, isChecked ->
             binding.editDataExibicao.isEnabled = isChecked
-            if (!isChecked) { binding.editDataExibicao.setText(""); dataVencimentoSelecionadaMs = 0 }
+            if (!isChecked) {
+                binding.editDataExibicao.setText("")
+                dataVencimentoSelecionadaMs = 0
+            }
         }
+        // Abre o seletor de data de validade (Calendário nativo) ao clicar no campo
         binding.editDataExibicao.setOnClickListener {
             val c = Calendar.getInstance()
             DatePickerDialog(this, { _, year, month, day ->
                 val dataFormatada = String.format("%02d/%02d/%d", day, month + 1, year)
                 binding.editDataExibicao.setText(dataFormatada)
+
+                // Converte a data para milissegundos para facilitar cálculos de prazo
                 val cal = Calendar.getInstance().apply { set(year, month, day, 23, 59, 59) }
                 dataVencimentoSelecionadaMs = cal.timeInMillis
             }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show()
         }
     }
 
+    //AUXILIAR: Transforma o texto do campo de data em um objeto 'Date'
     private fun obterDataValidade(binding: ActivityAdicionarItemBinding): Date? {
         val str = binding.editDataExibicao.text.toString()
         if (str.isBlank()) return null
         return try { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(str) } catch (e: Exception) { null }
     }
 
+    //AUXILIAR: Transforma um objeto 'Date' em String formatada para o Banco de Dados (yyyy-MM-dd)
     private fun dateToString(date: Date?, pattern: String): String? {
         if (date == null) return null
         return SimpleDateFormat(pattern, Locale.getDefault()).format(date)
