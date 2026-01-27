@@ -101,14 +101,16 @@ class TelaDespensaFragment : Fragment() {
 
         // --- TRAZENDO A LISTA DE ITENS DO BACKEND DEPENDENDO DO ID DO USUÁRIO ---
 
+        val urlApi = requireContext().getString(R.string.api_base_url)
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://innumerable-mesogloeal-ammie.ngrok-free.dev/") // emulador -> http://10.0.2.2:8080 ; em device real use a IP do servidor
+            .baseUrl(urlApi)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(ServicoApi::class.java)
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val resp = api.listarItens(2)
+                val userId = arguments?.getInt("USER_ID") ?: 1
+                val resp = api.listarItens(userId)
                 val itens = resp.listaItens.onEach { it.mapearCampos(requireContext()) }
 
 
@@ -121,7 +123,7 @@ class TelaDespensaFragment : Fragment() {
                 atualizarContadores(view) // Atualiza os números coloridos lá no topo
 
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Erro: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "Erro ao tentar carregar os itens: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
 

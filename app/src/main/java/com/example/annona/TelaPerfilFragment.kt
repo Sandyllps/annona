@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import androidx.navigation.fragment.findNavController
@@ -23,12 +24,19 @@ class TelaPerfilFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Obtendo a sesao salva no SharedPreferences
+        val session = SecaoUsuario(requireContext())
+
         // Referências
         val btnSair = view.findViewById<View>(R.id.btn_sair_perfil)
         val btnHistorico = view.findViewById<View>(R.id.btn_historico_perfil)
         val btnAjustes = view.findViewById<View>(R.id.btn_ajustes_perfil)
         val btnFechar = view.findViewById<View>(R.id.btn_fechar_perfil)
         val switchNotif = view.findViewById<SwitchCompat>(R.id.switch_notificacoes_perfil)
+        val textEmail = view.findViewById<TextView>(R.id.txt_email)
+
+        // Mostrando o email do usuario
+        textEmail.setText(session.obterEmail())
 
         // Switch Bolinha Invertida
         switchNotif.setOnCheckedChangeListener { _, isChecked ->
@@ -47,6 +55,9 @@ class TelaPerfilFragment : Fragment() {
 
         // Sair do app e voltar para a tela de login
         btnSair.setOnClickListener {
+            // Removendo a sesao do usuario do aplicativo
+            session.logout()
+
             val intent = Intent(requireContext(), TelaLogin::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
