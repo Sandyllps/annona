@@ -8,8 +8,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.Calendar // Importado para pegar a data atual [novo]
 import java.util.concurrent.TimeUnit // Importado para converter milissegundos em dias [novo]
 
@@ -93,10 +97,37 @@ class TelaDespensaFragment : Fragment() {
         rv.adapter = adapter
         adapterGlobal = adapter
 
-        // --- AJUSTE INTELIGENTE: Pega os dados e já calcula os prazos reais antes de mostrar ---
-        listaCompleta = processarValidades(sampleData().toMutableList())
-        adapter.submitList(listaCompleta.toList())
-        atualizarContadores(view) // Atualiza os números coloridos lá no topo
+
+
+        // --- TRAZENDO A LISTA DE ITENS DO BACKEND DEPENDENDO DO ID DO USUÁRIO ---
+
+        val urlApi = requireContext().getString(R.string.api_base_url)
+        val retrofit = Retrofit.Builder()
+            .baseUrl(urlApi)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(ServicoApi::class.java)
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val userId = arguments?.getInt("USER_ID") ?: 1
+                val resp = api.listarItens(userId)
+                val itens = resp.listaItens.onEach { it.mapearCampos(requireContext()) }
+
+
+
+                // --- AJUSTE INTELIGENTE: Pega os dados e já calcula os prazos reais antes de mostrar ---
+
+                listaCompleta = processarValidades(itens.toMutableList())
+                // listaCompleta = processarValidades(sampleData().toMutableList())
+                adapter.submitList(listaCompleta.toList())
+                atualizarContadores(view) // Atualiza os números coloridos lá no topo
+
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Erro ao tentar carregar os itens: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+
+
 
         // --- PARTE 3: O SEMÁFORO (BOTÕES COLORIDOS DO TOPO) ---
         // Se clicar no botão Marrom, mostra só os Vencidos (Flag 1)
@@ -154,7 +185,7 @@ class TelaDespensaFragment : Fragment() {
 
         return lista.map { item ->
             // Calcula a diferença entre a data de vencimento salva e o dia de hoje
-            val diffMs = item.dataVencimentoMs - hojeMs
+            val diffMs = (item.dataVencimentoMs ?: 0) - hojeMs
             val dias = if (diffMs > 0) TimeUnit.MILLISECONDS.toDays(diffMs) else 0
 
             // Define a Flag (cor do semáforo) com base nos dias que faltam
@@ -190,7 +221,7 @@ class TelaDespensaFragment : Fragment() {
                     // Manda as informações atuais do item para a tela de edição
                     val intent = android.content.Intent(requireContext(), AdicionarItem::class.java)
                     intent.putExtra("ITEM_ID", item.id)
-                    intent.putExtra("TITULO", item.titulo)
+                    intent.putExtra("TITULO", item.nome)
                     intent.putExtra("ESTADO", item.estado)
                     intent.putExtra("LOCAL", item.localNome)
                     intent.putExtra("DICA", item.dica)
@@ -224,7 +255,7 @@ class TelaDespensaFragment : Fragment() {
         var motivoSelecionado = motivos[0]
 
         val dialog = android.app.AlertDialog.Builder(requireContext())
-            .setTitle("Excluir \"${item.titulo}\"")
+            .setTitle("Excluir \"${item.nome}\"")
             .setSingleChoiceItems(motivos, 0) { _, which ->
                 motivoSelecionado = motivos[which]
             }
@@ -262,14 +293,17 @@ class TelaDespensaFragment : Fragment() {
     }
 
     // Estes são os produtos de teste que aparecem assim que abro o app. Como não tenho integração com bd ainda, faço isso pra testar.
-    private fun sampleData(): List<Item> {
-        val cal = Calendar.getInstance()
+//    private fun sampleData(): List<Item> {
+//        val cal = Calendar.getInstance()
+//
+//        return listOf(
+//            Item(1, "Feijão", "Consumindo", "", "Armazenar na geladeira", 0, R.drawable.graos_feijao, R.drawable.local_icone_geladeira, "Geladeira", "Grãos", cal.timeInMillis + (2 * 24 * 60 * 60 * 1000L), true),
+//            Item(2, "Pão", "Por consumir", "", "Manter em recipiente fechado", 0, R.drawable.paes_massas_e_doces_pao_frances, R.drawable.local_icone_armario, "Armário", "Pães, Massas e Doces", cal.timeInMillis + (10 * 24 * 60 * 60 * 1000L), false),
+//            Item(3, "Tomate", "Por consumir", "", "Lavar antes de guardar", 0, R.drawable.hortifruti_tomates, R.drawable.local_icone_fruteira, "Fruteira", "Hortifruti", cal.timeInMillis + (5 * 24 * 60 * 60 * 1000L), false),
+//            Item(4, "Leite", "Consumindo", "", "Consumir urgente", 0, R.drawable.laticinios_leite, R.drawable.local_icone_freezer, "Freezer", "Laticínios", cal.timeInMillis - (1 * 24 * 60 * 60 * 1000L), true)
+//        )
+//    }
 
-        return listOf(
-            Item(1, "Feijão", "Consumindo", "", "Armazenar na geladeira", 0, R.drawable.graos_feijao, R.drawable.local_icone_geladeira, "Geladeira", "Grãos", cal.timeInMillis + (2 * 24 * 60 * 60 * 1000L), true),
-            Item(2, "Pão", "Por consumir", "", "Manter em recipiente fechado", 0, R.drawable.paes_massas_e_doces_pao_frances, R.drawable.local_icone_armario, "Armário", "Pães, Massas e Doces", cal.timeInMillis + (10 * 24 * 60 * 60 * 1000L), false),
-            Item(3, "Tomate", "Por consumir", "", "Lavar antes de guardar", 0, R.drawable.hortifruti_tomates, R.drawable.local_icone_fruteira, "Fruteira", "Hortifruti", cal.timeInMillis + (5 * 24 * 60 * 60 * 1000L), false),
-            Item(4, "Leite", "Consumindo", "", "Consumir urgente", 0, R.drawable.laticinios_leite, R.drawable.local_icone_freezer, "Freezer", "Laticínios", cal.timeInMillis - (1 * 24 * 60 * 60 * 1000L), true)
-        )
-    }
+
+
 }

@@ -74,7 +74,7 @@ class AdaptadorItem(
         // Esta função "preenche" o card com os dados reais de cada alimento
         fun bind(item: Item) {
             currentItem = item
-            titulo.text = item.titulo
+            titulo.text = item.nome
             estado.text = item.estado
             prazo.text = item.prazo
             dica.text = item.dica
@@ -96,8 +96,8 @@ class AdaptadorItem(
             }
 
             // Coloca a foto do produto e o ícone do local de armazenamento
-            imagem.setImageResource(item.imageRes)
-            iconeLocal.setImageResource(item.localIconRes)
+            imagem.setImageResource(item.imageRes ?: R.drawable.item_padrao)
+            iconeLocal.setImageResource(item.localIconRes ?: R.drawable.local_icone_armario)
         }
     }
 

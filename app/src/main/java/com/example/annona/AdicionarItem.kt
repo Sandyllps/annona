@@ -1,12 +1,22 @@
 package com.example.annona
 
 import android.app.DatePickerDialog
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.annona.databinding.ActivityAdicionarItemBinding // Ferramenta que facilita achar os componentes da tela
+import com.example.annona.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit // Importado para ajudar no cálculo de dias
 
 // Esta tela serve tanto para cadastrar um novo alimento quanto para editar um que já existe
@@ -24,6 +34,17 @@ class AdicionarItem : AppCompatActivity() {
         // Prepara o mapa (binding) para que o código reconheça os itens do XML
         binding = ActivityAdicionarItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // --- CONFIGURAÇÃO DA BARRA SUPERIOR (SETINHA DE VOLTAR) [novo] ---
+        // Aqui configuramos a toolbar para aceitar o botão de "voltar" nativo
+        setSupportActionBar(binding.toolbarAdicionar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true) // Ativa a setinha no canto esquerdo
+        supportActionBar?.setDisplayShowTitleEnabled(false) // Esconde o título padrão da Activity
+
+        // Faz a setinha fechar a tela e voltar para a despensa quando clicada
+        binding.toolbarAdicionar.setNavigationOnClickListener {
+            finish()
+        }
 
         // --- 1. CONFIGURAÇÃO DAS LISTAS DE ESCOLHA (Spinners) ---
 
@@ -71,6 +92,9 @@ class AdicionarItem : AppCompatActivity() {
         // Verifica se veio um ID da tela anterior; se veio, significa que é EDIÇÃO
         val idExistente = intent.getLongExtra("ITEM_ID", -1L)
         if (idExistente != -1L) {
+            // AJUSTE: Muda o título no topo da página para "Editar" quando for edição [novo]
+            binding.btnAdicionarItemTopo.text = "Editar"
+
             // Pega o nome que veio da outra tela e escreve no campo de texto
             binding.autoNomeAlimento.setText(intent.getStringExtra("TITULO"))
 
@@ -83,6 +107,9 @@ class AdicionarItem : AppCompatActivity() {
 
             // Troca o texto do botão para o usuário saber que está editando e não criando do 0. Então ao invés de "Adicionar Item" aparece "Salvar Alterações".
             binding.btnAdicionarItem.text = "Salvar Alterações"
+        } else {
+            // Se não for edição, garante que o título seja "Adicionar novo item" [novo]
+            binding.btnAdicionarItemTopo.text = "Adicionar novo item"
         }
 
         // --- 2. CALENDÁRIO (Para escolher a data de validade)  ---
@@ -164,7 +191,9 @@ class AdicionarItem : AppCompatActivity() {
             val nome = binding.autoNomeAlimento.text.toString().trim()
             val categoriaPosicao = binding.spinnerCategoria.selectedItemPosition
             val categoriaTexto = binding.spinnerCategoria.selectedItem.toString()
+            val localPosicao = binding.spinnerLocal.selectedItemPosition
             val local = binding.spinnerLocal.selectedItem.toString()
+            val estadoPosicao = binding.spinnerEstado.selectedItemPosition
             val quantidade = binding.editQuantidade.text.toString()
             val medida = binding.spinnerMedida.selectedItem.toString()
             val preco = binding.editPreco.text.toString()
@@ -185,60 +214,122 @@ class AdicionarItem : AppCompatActivity() {
                 erro = true
             }
 
+
+            if (estadoPosicao == 0) {
+                Toast.makeText(this, "Por favor, selecione um estado", Toast.LENGTH_SHORT).show()
+                erro = true
+            }
+
             // Se marcou que possui data, mas não selecionou no calendário
             if (possuiData && dataVencimentoSelecionadaMs == 0L) {
                 Toast.makeText(this, "Por favor, selecione a data no calendário", Toast.LENGTH_SHORT).show()
                 erro = true
             }
 
-            // --- CÁLCULO INTELIGENTE DE PRAZO (REGRA DA TABELA) ---
+            if ( localPosicao == 0) {
+                Toast.makeText(this, "Por favor, selecione uma local", Toast.LENGTH_SHORT).show()
+                erro = true
+            }
+
+            // --- CÁLCULO DE PRAZO (REGRA DA TABELA) ---
             if (!erro) {
-                val dataFinalMs: Long
-                val diasRestantes: Long
-                val hojeMs = Calendar.getInstance().timeInMillis
-
-                if (possuiData) {
-                    // Se tem rotulo com data de validade, usa a data que o usuário adicionar
-                    dataFinalMs = dataVencimentoSelecionadaMs
-                } else {
-                    // --- TABELA DE PRAZOS FIXOS (Simulação do BD com regras de conservação) ---
-                    var prazoPadrao = when (categoriaTexto) {
-                        "Hortifruti" -> 9
-                        "Carnes e Peixes" -> 3
-                        "Laticínios" -> 7
-                        "Ovos" -> 20
-                        "Pães, Massas e Doces" -> 5
-                        "Bebidas" -> 30
-                        else -> 15 // Prazo padrão para outras categorias
-                    }
-
-                    // --- REGRA DE INCREMENTO PARA CONGELAMENTO ---
-                    // Se o item for guardado no Freezer, o prazo aumenta consideravelmente
-                    if (local == "Freezer") {
-                        if (categoriaTexto == "Carnes e Peixes") {
-                            prazoPadrao = 90 // Carnes ganham 90 dias de validade no freezer
-                        } else if (categoriaTexto == "Laticínios") {
-                            prazoPadrao = 60 // Laticínios ganham 60 dias de validade no freezer
-                        }
-                    }
-
-                    val cal = Calendar.getInstance()
-                    cal.add(Calendar.DAY_OF_YEAR, prazoPadrao)
-                    dataFinalMs = cal.timeInMillis
-                }
-
-                // Calcula a diferença entre a data final e hoje para exibir no card
-                val diff = dataFinalMs - hojeMs
-                diasRestantes = if (diff > 0) TimeUnit.MILLISECONDS.toDays(diff) else 0
-                val prazoTexto = if (diasRestantes <= 0) "VENCIDO" else "$diasRestantes DIAS"
-
-                // --- FINALIZAÇÃO ---
-                val acao = if (idExistente == -1L) "cadastrado" else "atualizado"
-                Toast.makeText(this, "$nome $acao com sucesso! Restam $prazoTexto", Toast.LENGTH_SHORT).show()
-
-                // Fecha esta tela e volta para a despensa
-                finish()
+                criarItem(binding, this)
             }
         }
+    }
+
+    private fun criarItem(binding: ActivityAdicionarItemBinding, context: Context) {
+        val secaoUsuario = SecaoUsuario(context) //esse secaoUsuario é para ter a informação da seção do usuário.
+        val userId = secaoUsuario.obterUserId()
+        val itemNovo = BodyCriarItem(
+            userId ?:0,
+            binding.autoNomeAlimento.text.toString(),
+            Categoria.obterPeloNome(binding.spinnerCategoria.selectedItem.toString()).id_categoria,
+            context.resources.getResourceEntryName(R.drawable.item_padrao)+".png",
+            binding.spinnerEstado.selectedItem.toString()=="Consumindo",
+            binding.checkValidade.isChecked,
+            dateToString(obterDataValidade(binding),"yyyy-MM-dd"),
+            LocalArmazenamento.obterPeloNome(binding.spinnerLocal.selectedItem.toString()).idLocal,
+            binding.editQuantidade.text.toString().toIntOrNull()?:0,
+            Medida.obterPeloNome(binding.spinnerMedida.selectedItem.toString()).idMedida,
+            binding.editPreco.text.toString().toDoubleOrNull()?:0.0,
+            1
+        )
+
+        // Criando objeto de retrofit para fazer a requisiçâo à API
+        val urlApi = this.getString(R.string.api_base_url)
+        val retrofit = Retrofit.Builder()
+            .baseUrl(urlApi)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(ServicoApi::class.java)
+
+        val activityContext = this
+
+        lifecycleScope.launch {
+            try {
+
+                val resp = api.criarItemUsuario(itemNovo)
+
+                // checa status code
+                if (resp.isSuccessful && resp.body() != null) {
+                    // ---------- LOGIN COM SUCESO (HTTP 200) ------------
+
+                    val body = resp.body()!!
+
+                    // --- FINALIZAÇÃO ---
+                    var adicionando = true // TODO: Pegar o valor real
+                    val acao = if (adicionando) "cadastrado" else "atualizado"
+                    Toast.makeText(context, "${itemNovo.nome} $acao com sucesso!", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(activityContext, MainActivity::class.java)
+                    startActivity(intent)
+
+                    // Fecha esta tela e volta para a despensa
+                    finish()
+
+
+                } else {
+                    // ---------- LOGIN COM ERRO (CODIGO HTTP DE ERRO) ------------
+
+                    val errorBody = resp.errorBody()?.string()
+
+                    Toast.makeText(
+                        activityContext,
+                        "Erro no login: HTTP ${resp.code()} - ${errorBody}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            } catch (e: Exception) {
+                // ---------- LOGIN COM ERRO (FALHA NA CONEXAO COM A API) ------------
+                Toast.makeText(
+                    activityContext,
+                    "Falha na requisição: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    fun obterDataValidade(binding: ActivityAdicionarItemBinding, pattern: String = "dd/MM/yyyy"): Date? {
+        var dataValidadeString = binding.editDataExibicao.text.toString()
+        if (dataValidadeString.isBlank()) return null
+        return try {
+            val df = SimpleDateFormat(pattern, Locale.getDefault())
+            df.isLenient = false
+            df.parse(dataValidadeString)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun dateToString(
+        date: Date?,
+        pattern: String = "dd/MM/yyyy"
+    ): String? {
+        if(date == null){
+            return null
+        }
+        val df = SimpleDateFormat(pattern, Locale.getDefault())
+        return df.format(date)
     }
 }
