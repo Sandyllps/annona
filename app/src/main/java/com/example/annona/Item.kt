@@ -52,10 +52,10 @@ data class Item(
     var estado: String? = "",
 
     // O texto que diz quanto tempo falta (ex: "4 DIAS")
-    val prazo: String? = "",
+    var prazo: String? = "", // Alterado para 'var' para podermos limpar o texto se não houver validade
 
     // A dica de conservação que aparece no card (ex: "Armazenar na geladeira")
-    val dica: String? = "",
+    var dica: String? = "", // Alterado para 'var' para preenchermos com as regras de categoria abaixo
 
     // O desenho/foto do alimento que aparece no lado esquerdo do card
     @DrawableRes var imageRes: Int? = R.drawable.item_padrao,
@@ -82,6 +82,32 @@ fun Item.mapearCampos(context: Context) {
     categoria = Categoria.obterPeloId(idCategoria).nomeCategoria
     localNome = LocalArmazenamento.obterPeloId(idLocal).nomeLocal
 
+    // [AJUSTE 2] Preenchendo a dica automaticamente baseada no ID da Categoria (Lógica IF/ELSE)
+    // Essa dica aparecerá no card principal da despensa
+    if (idCategoria == 1) { // Bebidas
+        dica = "Mantenha em local fresco e longe da luz direta."
+    } else if (idCategoria == 2) { // Carnes e Peixes
+        dica = "Mantenha no congelador se não for consumir em 24h."
+    } else if (idCategoria == 3) { // Enlatados
+        dica = "Após aberto, guarde na geladeira."
+    } else if (idCategoria == 4) { // Grãos
+        dica = "Guarde em potes bem fechados, em local seco e longe da luz."
+    } else if (idCategoria == 5) { // Hortifruti
+        dica = "Lave bem antes de guardar."
+    } else if (idCategoria == 6) { // Pães, Massas e Doces
+        dica = "Mantenha em local fresco e longe da umidade."
+    } else if (idCategoria == 7) { // Laticínios
+        dica = "Guarde nas prateleiras superiores onde é mais frio."
+    } else if (idCategoria == 8) { // Ovos
+        dica = "Guarde na geladeira."
+    } else if (idCategoria == 9) { // Higiene
+        dica = "Mantenha longe do calor."
+    } else if (idCategoria == 10) { // Limpeza
+        dica = "Mantenha em local arejado."
+    } else {
+        dica = "Verifique o melhor local para armazenamento 😊"
+    }
+
     localIconRes = when(idLocal) {
         1 -> R.drawable.local_icone_geladeira
         2 -> R.drawable.local_icone_freezer
@@ -107,14 +133,21 @@ fun Item.mapearCampos(context: Context) {
     }
 
     val hoje = Calendar.getInstance().timeInMillis
-    if(possuiDataValidade == 1) {
-        dataVencimentoMs = dataValidade?.time ?: (hoje + TimeUnit.DAYS.toMillis(3650))
-    }
 
-    // flag será recalculada depois por processarValidades()
-    flag = 0
+    // [AJUSTE 3] Lógica para tratar itens COM e SEM data de validade
+    if(possuiDataValidade == 1) {
+        // Se tem validade, calculamos os milissegundos normalmente
+        dataVencimentoMs = dataValidade?.time ?: (hoje + TimeUnit.DAYS.toMillis(3650))
+        flag = 0 // Será recalculado pelo processarValidades no Fragment
+    } else {
+        // Se NÃO tem validade (Ajuste 3):
+        dataVencimentoMs = null
+        prazo = "" // Removemos qualquer texto de dias
+        flag = 4   // Forçamos a cor Verde (Seguro) para itens sem vencimento definido
+    }
 }
 
+// ... (Restante do código de Categorias, Locais e Medidas mantido exatamente igual)
 var listaCategorias = listOf(
     Categoria(1, "Bebidas"),
     Categoria(2, "Carnes e Peixes"),
@@ -126,8 +159,6 @@ var listaCategorias = listOf(
     Categoria(8, "Ovos"),
     Categoria(9, "Higiene, Perfumaria e Farmacia"),
     Categoria(10, "Limpeza")
-
-
 )
 data class Categoria(
     var id_categoria: Int,
@@ -200,4 +231,3 @@ data class Medida(
         }
     }
 }
-

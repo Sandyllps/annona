@@ -1,7 +1,9 @@
 package com.example.annona
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
@@ -27,6 +29,12 @@ class MainActivity : AppCompatActivity() {
         R.id.nav_doacao,
         R.id.nav_perfil
     )
+
+    // [AJUSTE] Mantemos o launcher, mas agora ele não precisa mais procurar o fragmento manualmente,
+    // pois a própria TelaDespensaFragment já está "ouvindo" o aviso global de atualização.
+    private val adicionarItemLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        // O código de recarregar agora é disparado via Broadcast dentro do AdicionarItem e capturado na Fragment.
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,5 +103,12 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+    }
+
+    // [AJUSTE] Esta função abre a tela de cadastro.
+    // Como a TelaDespensaFragment agora tem um "ouvinte" (Broadcast), a atualização será automática ao fechar esta tela.
+    fun abrirAdicionarItem() {
+        val intent = Intent(this, AdicionarItem::class.java)
+        adicionarItemLauncher.launch(intent)
     }
 }

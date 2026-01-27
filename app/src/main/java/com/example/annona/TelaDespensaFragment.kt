@@ -1,5 +1,9 @@
 package com.example.annona
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
@@ -29,6 +34,13 @@ class TelaDespensaFragment : Fragment() {
     // Guarda qual filtro está selecionado para não "perder" a seleção ao consumir um item [novo]
     private var filtroAtual: String = "Todos os Itens"
 
+    // [NOVO] Este receptor fica "ouvindo" o aviso de que um item foi salvo para recarregar a lista na hora
+    private val recarregarReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            carregarItensApi()
+        }
+    }
+
     companion object {
         // Esta função serve para "abrir" a tela da despensa dentro do menu principal
         fun newInstance(page: String, position: Int, userId: Int) = TelaDespensaFragment().apply {
@@ -46,6 +58,27 @@ class TelaDespensaFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_tela_despensa, container, false)
+    }
+
+    // [AJUSTE 1] O onResume roda toda vez que a tela volta a ficar visível (ex: após fechar a tela de Adicionar)
+    override fun onResume() {
+        super.onResume()
+        // Chamamos a função de carregar itens sempre que voltamos para a tela para garantir que a lista atualize
+        carregarItensApi()
+    }
+
+    // [NOVO] Registramos o "ouvido" do app quando a tela inicia
+    override fun onStart() {
+        super.onStart()
+        LocalBroadcastManager.getInstance(requireContext())
+            .registerReceiver(recarregarReceiver, IntentFilter("ATUALIZAR_LISTA_ANONA"))
+    }
+
+    // [NOVO] Removemos o receptor ao parar para economizar recursos
+    override fun onStop() {
+        super.onStop()
+        LocalBroadcastManager.getInstance(requireContext())
+            .unregisterReceiver(recarregarReceiver)
     }
 
     // Aqui é onde damos vida aos botões e listas depois que a tela aparece
@@ -97,37 +130,7 @@ class TelaDespensaFragment : Fragment() {
         rv.adapter = adapter
         adapterGlobal = adapter
 
-
-
-        // --- TRAZENDO A LISTA DE ITENS DO BACKEND DEPENDENDO DO ID DO USUÁRIO ---
-
-        val urlApi = requireContext().getString(R.string.api_base_url)
-        val retrofit = Retrofit.Builder()
-            .baseUrl(urlApi)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val api = retrofit.create(ServicoApi::class.java)
-        viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val userId = arguments?.getInt("USER_ID") ?: 1
-                val resp = api.listarItens(userId)
-                val itens = resp.listaItens.onEach { it.mapearCampos(requireContext()) }
-
-
-
-                // --- AJUSTE INTELIGENTE: Pega os dados e já calcula os prazos reais antes de mostrar ---
-
-                listaCompleta = processarValidades(itens.toMutableList())
-                // listaCompleta = processarValidades(sampleData().toMutableList())
-                adapter.submitList(listaCompleta.toList())
-                atualizarContadores(view) // Atualiza os números coloridos lá no topo
-
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Erro ao tentar carregar os itens: ${e.message}", Toast.LENGTH_LONG).show()
-            }
-        }
-
-
+        // [AJUSTE 1] A chamada inicial foi movida para carregarItensApi() que é executada no onResume
 
         // --- PARTE 3: O SEMÁFORO (BOTÕES COLORIDOS DO TOPO) ---
         // Se clicar no botão Marrom, mostra só os Vencidos (Flag 1)
@@ -158,9 +161,35 @@ class TelaDespensaFragment : Fragment() {
         // --- PARTE 4: BOTÃO DE ADICIONAR (+) ---
         val btnAdd = view.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fab_add_item)
         btnAdd.setOnClickListener {
-            // Abre a tela para cadastrar um novo alimento na despensa
-            val intent = android.content.Intent(requireContext(), AdicionarItem::class.java)
-            startActivity(intent)
+            // [AJUSTE] Agora chamamos a função da MainActivity para que o Launcher de lá funcione
+            (activity as? MainActivity)?.abrirAdicionarItem()
+        }
+    }
+
+    // [AJUSTE 1] Função isolada para carregar os dados. Criamos ela para poder chamar tanto no início quanto no retorno da tela de adição.
+    private fun carregarItensApi() {
+        // --- TRAZENDO A LISTA DE ITENS DO BACKEND DEPENDENDO DO ID DO USUÁRIO ---
+        val urlApi = requireContext().getString(R.string.api_base_url)
+        val retrofit = Retrofit.Builder()
+            .baseUrl(urlApi)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(ServicoApi::class.java)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val userId = arguments?.getInt("USER_ID") ?: 1
+                val resp = api.listarItens(userId)
+                val itens = resp.listaItens.onEach { it.mapearCampos(requireContext()) }
+
+                // --- AJUSTE INTELIGENTE: Pega os dados e já calcula os prazos reais antes de mostrar ---
+                listaCompleta = processarValidades(itens.toMutableList())
+                atualizarListaNaTela() // Mantém o filtro que o usuário já tinha selecionado
+                view?.let { atualizarContadores(it) } // Atualiza os números coloridos lá no topo
+
+            } catch (e: Exception) {
+                // Toast.makeText(requireContext(), "Erro ao tentar carregar os itens: ${e.message}", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -180,26 +209,35 @@ class TelaDespensaFragment : Fragment() {
     }
 
     // --- NOVA FUNÇÃO: CALCULA O PRAZO E A COR (FLAG) PARA CADA ITEM DA LISTA ---
+    // Esta função percorre a lista e define as cores baseadas no tempo de validade
     private fun processarValidades(lista: MutableList<Item>): MutableList<Item> {
         val hojeMs = Calendar.getInstance().timeInMillis
 
         return lista.map { item ->
-            // Calcula a diferença entre a data de vencimento salva e o dia de hoje
-            val diffMs = (item.dataVencimentoMs ?: 0) - hojeMs
-            val dias = if (diffMs > 0) TimeUnit.MILLISECONDS.toDays(diffMs) else 0
 
-            // Define a Flag (cor do semáforo) com base nos dias que faltam
-            val novaFlag = when {
-                diffMs <= 0 -> 1 // Vencido (Marrom)
-                dias <= 3 -> 2   // Crítico (Vermelho) - Menos de 3 dias
-                dias <= 7 -> 3   // Atenção (Amarelo) - Entre 4 e 7 dias
-                else -> 4        // Seguro (Verde) - Mais de 7 dias
+            // [AJUSTE 3] Proteção para itens sem data: se não tem validade, não calculamos o semáforo.
+            // Isso evita que itens sem data apareçam como "Vencidos" ou com "0 dias".
+            if (item.possuiDataValidade == 0) {
+                // Retornamos o item como ele está (com a flag 4 verde que definimos no Item.kt)
+                item
+            } else {
+                // Se o item POSSUI data, fazemos o cálculo normal de diferença de dias
+                val diffMs = (item.dataVencimentoMs ?: 0) - hojeMs
+                val dias = if (diffMs > 0) TimeUnit.MILLISECONDS.toDays(diffMs) else 0
+
+                // Define a Flag (cor do semáforo) com base nos dias que faltam
+                val novaFlag = when {
+                    diffMs <= 0 -> 1 // Vencido (Marrom)
+                    dias <= 3 -> 2   // Crítico (Vermelho) - Menos de 3 dias
+                    dias <= 7 -> 3   // Atenção (Amarelo) - Entre 4 e 7 dias
+                    else -> 4        // Seguro (Verde) - Mais de 7 dias
+                }
+
+                val novoPrazo = if (diffMs <= 0) "VENCIDO" else "$dias DIAS"
+
+                // Cria uma cópia do item com os dados calculados na hora para exibir no card
+                item.copy(prazo = novoPrazo, flag = novaFlag)
             }
-
-            val novoPrazo = if (diffMs <= 0) "VENCIDO" else "$dias DIAS"
-
-            // Cria uma cópia do item com os dados calculados na hora
-            item.copy(prazo = novoPrazo, flag = novaFlag)
         }.toMutableList()
     }
 
@@ -291,19 +329,4 @@ class TelaDespensaFragment : Fragment() {
         view.findViewById<TextView>(R.id.txt_atencao_contador).text = "Atenção $a"
         view.findViewById<TextView>(R.id.txt_seguro_contador).text = "Seguro $s"
     }
-
-    // Estes são os produtos de teste que aparecem assim que abro o app. Como não tenho integração com bd ainda, faço isso pra testar.
-//    private fun sampleData(): List<Item> {
-//        val cal = Calendar.getInstance()
-//
-//        return listOf(
-//            Item(1, "Feijão", "Consumindo", "", "Armazenar na geladeira", 0, R.drawable.graos_feijao, R.drawable.local_icone_geladeira, "Geladeira", "Grãos", cal.timeInMillis + (2 * 24 * 60 * 60 * 1000L), true),
-//            Item(2, "Pão", "Por consumir", "", "Manter em recipiente fechado", 0, R.drawable.paes_massas_e_doces_pao_frances, R.drawable.local_icone_armario, "Armário", "Pães, Massas e Doces", cal.timeInMillis + (10 * 24 * 60 * 60 * 1000L), false),
-//            Item(3, "Tomate", "Por consumir", "", "Lavar antes de guardar", 0, R.drawable.hortifruti_tomates, R.drawable.local_icone_fruteira, "Fruteira", "Hortifruti", cal.timeInMillis + (5 * 24 * 60 * 60 * 1000L), false),
-//            Item(4, "Leite", "Consumindo", "", "Consumir urgente", 0, R.drawable.laticinios_leite, R.drawable.local_icone_freezer, "Freezer", "Laticínios", cal.timeInMillis - (1 * 24 * 60 * 60 * 1000L), true)
-//        )
-//    }
-
-
-
 }

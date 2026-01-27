@@ -17,6 +17,11 @@ interface ServicoApi {
 
     @POST("users/itensUsuario")
     suspend fun criarItemUsuario(@Body bodyCriarItem: BodyCriarItem): Response<RespostaCriarItem>
+
+    // [NOVO] Esta rota busca a lista de itens que o sistema sugere (itens padrão) do seu Node.js
+    // Ela vai chamar o endereço que você configurou no seu servidor: http://seu-ip:porta/itens_padrao
+    @GET("itens_padrao")
+    suspend fun listarItensPadrao(): RespostaItensPadrao
 }
 
 
@@ -67,4 +72,20 @@ data class RespostaCriarItem(
 
     @SerializedName("id_item_usuario")
     val IdItemUsuario: Int,
+)
+
+// [NOVO] Classes com nomes humanos para lidar com as sugestões de alimentos
+// Elas servem para "desembrulhar" o JSON que vem do banco de dados e transformar em objetos Kotlin
+
+data class RespostaItensPadrao(
+    // O SerializedName garante que o Android ache a chave "itens" no seu JSON do Node (que vimos no Postman)
+    // Mas dentro do nosso código, chamamos de 'listaDeSugestoes' para ficar mais fácil de entender
+    @SerializedName("itens")
+    val listaDeSugestoes: List<ModeloItemSugestao>
+)
+
+data class ModeloItemSugestao(
+    val nome: String,
+    val id_categoria: Int,
+    val imagem: String
 )
