@@ -2,21 +2,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F0EADD"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/bege_coco"
     tools:context=".DoacoesFragment">
 
+    <!-- CONTEÚDO PRINCIPAL -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- CABEÇALHO -->
+        <!-- CABEÇALHO VERDE -->
+
         <LinearLayout
+            android:id="@+id/header_verde"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:paddingBottom="12dp"
-            android:background="#7D9770"
+            android:layout_height="105dp"
+            android:background="@color/bege_coco"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -24,53 +26,64 @@
                 android:id="@+id/txt_titulo_app"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
                 android:text="annona"
-                android:textColor="@color/bege_mel"
+                android:textColor="@color/marrom_cafe"
                 android:textSize="32sp"
-                android:fontFamily="@font/century_gothic" />
+                android:fontFamily="@font/century_gothic"/>
         </LinearLayout>
 
-        <!-- TEXTO EXPLICATIVO -->
-        <TextView
-            android:id="@+id/txt_explicacao_doacoes"
+        <!-- ESPAÇO PARA SOBREPOSIÇÃO -->
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:padding="14dp"
-            android:text="Aqui estão listados alimentos próximos do vencimento. Caso perceba que não conseguirá consumi-los a tempo, você pode gerar uma lista para doação e compartilhar."
-            android:textColor="@color/marrom_escuro"
-            android:textSize="14sp"
-            android:fontFamily="@font/century_gothic"/>
+            android:layout_height="70dp" />
 
-        <!-- LISTA DE ITENS (ROLÁVEL) -->
+        <!-- LISTA -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_doacoes"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="2000dp"
             android:layout_weight="1"
-            android:paddingHorizontal="16dp"
-            android:clipToPadding="false" />
+            android:paddingHorizontal="1dp"
+            android:clipToPadding="false"/>
 
-        <!-- BOTÃO GERAR LISTA -->
+        <!-- BOTÃO -->
         <Button
             android:id="@+id/btn_gerar_lista_doacao"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="30dp"
-            android:paddingVertical="16dp"
+            android:layout_margin="11dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:paddingVertical="14dp"
             android:text="Gerar lista de doação"
             android:textAllCaps="false"
-            android:textSize="16sp"
-            android:textColor="@android:color/holo_orange_dark"
-            android:backgroundTint="@color/bege_coco"
+            android:textColor="@android:color/white"
+            android:textSize="18dp"
+            android:backgroundTint="@color/bege_chai"
             android:fontFamily="@font/century_gothic"
             android:textStyle="bold"/>
-
     </LinearLayout>
+
+    <!-- TEXTO EXPLICATIVO SOBREPOSTO -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="90dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="8dp">
+
+        <TextView
+            android:id="@+id/txt_explicacao_doacoes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="16dp"
+            android:text="Aqui estão listados alimentos próximos do vencimento. Caso perceba que não conseguirá consumi-los a tempo, você pode gerar uma lista para doação e compartilhar."
+            android:textColor="@color/marrom_escuro"
+            android:textSize="12sp"
+            android:fontFamily="@font/century_gothic"/>
+
+    </com.google.android.material.card.MaterialCardView>
 
 </FrameLayout>

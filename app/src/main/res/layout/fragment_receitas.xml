@@ -13,9 +13,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:gravity="center"
         android:orientation="vertical">
-
         <TextView
             android:id="@+id/txt_titulo_app"
             android:layout_width="wrap_content"
@@ -24,7 +24,7 @@
             android:text="annona"
             android:textColor="@color/marrom_escuro"
             android:textSize="32sp"
-            android:fontFamily="@font/century_gothic"/>
+            android:fontFamily="@font/century_gothic" />
     </LinearLayout>
 
 
