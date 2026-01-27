@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         val fragments = listOf(
             TelaDespensaFragment.newInstance("page", 0, userId), // Aba 0: Despensa
             ReceitasFragment(),                                 // Aba 1: Receitas
-            TelaDespensaFragment.newInstance("page", 2, userId), // Aba 2: Doação (Temporário)
+            DoacoesFragment(), // Aba 2: Doação (Temporário)
             TelaPerfilFragment()                                // Aba 3: Perfil
         )
 

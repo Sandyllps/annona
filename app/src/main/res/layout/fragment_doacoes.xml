@@ -1,0 +1,76 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0EADD"
+    tools:context=".DoacoesFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- CABEÇALHO -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingBottom="12dp"
+            android:background="#7D9770"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_titulo_app"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:text="annona"
+                android:textColor="@color/bege_mel"
+                android:textSize="32sp"
+                android:fontFamily="@font/century_gothic" />
+        </LinearLayout>
+
+        <!-- TEXTO EXPLICATIVO -->
+        <TextView
+            android:id="@+id/txt_explicacao_doacoes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:padding="14dp"
+            android:text="Aqui estão listados alimentos próximos do vencimento. Caso perceba que não conseguirá consumi-los a tempo, você pode gerar uma lista para doação e compartilhar."
+            android:textColor="@color/marrom_escuro"
+            android:textSize="14sp"
+            android:fontFamily="@font/century_gothic"/>
+
+        <!-- LISTA DE ITENS (ROLÁVEL) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_doacoes"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingHorizontal="16dp"
+            android:clipToPadding="false" />
+
+        <!-- BOTÃO GERAR LISTA -->
+        <Button
+            android:id="@+id/btn_gerar_lista_doacao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="30dp"
+            android:paddingVertical="16dp"
+            android:text="Gerar lista de doação"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textColor="@android:color/holo_orange_dark"
+            android:backgroundTint="@color/bege_coco"
+            android:fontFamily="@font/century_gothic"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+</FrameLayout>
