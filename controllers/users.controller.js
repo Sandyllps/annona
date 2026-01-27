@@ -1,17 +1,20 @@
 import { response } from "express"
 import{pool} from "../bd.js"
 
+//req: Requisição (o que vem do front-end)
+//res: Resposta (o que o servidor envia de volta)
 async function login(req, res){
     try{
-        const email = req.body.email
+        const email = req.body.email //a requisição de login precisa receber no body email e senha.
         const senha = req.body.senha
         const resposta = await pool.execute('SELECT id_usuario, nome_usuario, email FROM usuarios WHERE email = ? and senha = ?', [email, senha]);
         const linhas = resposta[0]
-        if(!linhas[0]){
+        if(!linhas[0]){ //se na posição [0] do array não tiver resposta com esse usuario e senha, retorna "usuário inválido"
             return res.status(401).json({
                 response:"Usuário inválido"
             }) 
         }
+        //se chegar a essa parte, é porque email e senha do usuário coincidiram com os do banco de dados.
         return res.status(200).json({
             response:"OK",
             "id_usuario": linhas[0].id_usuario,
@@ -28,9 +31,11 @@ async function login(req, res){
 }
 
 
-
+//Função para cadastrar um novo item para o usuário no banco de dados.
 async function adicionarItemUsuario(req, res){
     try{
+        // Aqui estamos pegando as informações que o front-end enviou no corpo da requisição, o body
+        // armazeno em constantes para facilitar o uso na query SQL.
         const id_usuario = req.body.id_usuario
         const nome = req.body.nome
         const id_categoria = req.body.id_categoria
@@ -44,6 +49,8 @@ async function adicionarItemUsuario(req, res){
         const preco = req.body.preco
         const id_flag = req.body.id_flag
         
+
+        // Usamos 'await' para o código parar aqui até que o banco confirme o salvamento.
         const resposta = await pool.execute('INSERT INTO itens_usuario (id_usuario, nome, id_categoria, imagem, consumindo, possui_data_validade, data_validade, id_local_armazenamento, quantidade, id_medida, preco, id_flag) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [id_usuario, nome, id_categoria, imagem, consumindo, possui_data_validade, data_validade, id_local_armazenamento, quantidade, id_medida, preco, id_flag]);
         const resultado = resposta[0] //No caso do insert, pool.execute() retorna um array onde a posição [0] é um objeto com a informação do insert.
 
