@@ -91,6 +91,8 @@
                     android:id="@+id/prazo_vencimento"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
                     android:fontFamily="@font/century_gothic"
                     android:gravity="center"
                     android:text="4 DIAS"
@@ -98,22 +100,6 @@
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:maxLines="1" />
-
-                <TextView
-                    android:id="@+id/btn_remover"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="6dp"
-                    android:text="Remover"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    android:fontFamily="@font/century_gothic"
-                    android:background="@drawable/bg_btn_remover_capsula"
-                    android:clickable="true"
-                    android:focusable="true" />
 
             </LinearLayout>
 
