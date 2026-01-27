@@ -1,5 +1,7 @@
 package com.example.annona
 
+import android.R.attr.data
+import android.R.attr.x
 import android.content.Context
 import androidx.annotation.DrawableRes
 import com.google.gson.annotations.SerializedName
@@ -77,29 +79,8 @@ fun Item.mapearCampos(context: Context) {
 
     estado = if (consumindo == 1) "Consumindo" else "Por consumir"
 
-    categoria = when (idCategoria) {
-        1 -> "Bebidas"
-        2 -> "Carnes e Peixes"
-        3 -> "Enlatados"
-        4 -> "Grãos"
-        5 -> "Hortifruti"
-        6 -> "Pães, Massas e Doces"
-        7 -> "Laticínios"
-        8 -> "Ovos"
-        9 -> "Higiene, Perfumaria e Farmacia"
-        10 -> "Limpeza"
-        else -> "Categoria desconhecida"
-    }
-
-    localNome = when (idLocal) {
-        1 -> "Geladeira"
-        2 -> "Freezer"
-        3 -> "Fruteira"
-        4 -> "Armário"
-        5 -> "Banheiro"
-        6 -> "Lavanderia"
-        else -> "Local desconhecido"
-    }
+    categoria = Categoria.obterPeloId(idCategoria).nomeCategoria
+    localNome = LocalArmazenamento.obterPeloId(idLocal).nomeLocal
 
     localIconRes = when(idLocal) {
         1 -> R.drawable.local_icone_geladeira
@@ -133,3 +114,90 @@ fun Item.mapearCampos(context: Context) {
     // flag será recalculada depois por processarValidades()
     flag = 0
 }
+
+var listaCategorias = listOf(
+    Categoria(1, "Bebidas"),
+    Categoria(2, "Carnes e Peixes"),
+    Categoria(3, "Enlatados"),
+    Categoria(4, "Grãos"),
+    Categoria(5, "Hortifruti"),
+    Categoria(6, "Pães, Massas e Doces"),
+    Categoria(7, "Laticínios"),
+    Categoria(8, "Ovos"),
+    Categoria(9, "Higiene, Perfumaria e Farmacia"),
+    Categoria(10, "Limpeza")
+
+
+)
+data class Categoria(
+    var id_categoria: Int,
+    var nomeCategoria: String
+){
+    companion object{
+        fun obterPeloNome(nome: String): Categoria{
+            val categoria = listaCategorias.first{categoria -> categoria.nomeCategoria == nome}
+            return categoria;
+        }
+
+        fun obterPeloId(id: Int): Categoria{
+            val categoria = listaCategorias.first{categoria -> categoria.id_categoria == id}
+            return categoria;
+        }
+    }
+}
+
+
+var listaLocais = listOf(
+    LocalArmazenamento(1, "Geladeira"),
+    LocalArmazenamento(2, "Freezer"),
+    LocalArmazenamento(3, "Fruteira"),
+    LocalArmazenamento(4, "Armário"),
+    LocalArmazenamento(5, "Banheiro"),
+    LocalArmazenamento(6, "Lavanderia"),
+    LocalArmazenamento(7, "Outro"),
+)
+data class LocalArmazenamento(
+    var idLocal: Int,
+    var nomeLocal: String
+){
+    companion object{
+        fun obterPeloNome(nome: String): LocalArmazenamento{
+            val local = listaLocais.first{x -> x.nomeLocal == nome}
+            return local;
+        }
+
+        fun obterPeloId(id: Int): LocalArmazenamento{
+            val local = listaLocais.first{x -> x.idLocal == id}
+            return local;
+        }
+    }
+}
+
+
+
+var listaMedidas = listOf(
+    Medida(1, "unidade"),
+    Medida(2, "kg"),
+    Medida(3, "g"),
+    Medida(4, "ml"),
+    Medida(5, "l"),
+    Medida(6, "caixa"),
+    Medida(7, "pacote"),
+)
+data class Medida(
+    var idMedida: Int,
+    var nomeMedida: String
+){
+    companion object{
+        fun obterPeloNome(nome: String): Medida{
+            val medida = listaMedidas.first{x -> x.nomeMedida == nome}
+            return medida;
+        }
+
+        fun obterPeloId(id: Int): Medida{
+            val medida = listaMedidas.first{x -> x.idMedida == id}
+            return medida;
+        }
+    }
+}
+
