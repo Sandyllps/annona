@@ -6,7 +6,7 @@ object ReceitasData {
         Receita(
             nome = "Feijoada",
             descricao = "Essa feijoada é ideal para quem busca o sabor autêntico do prato, sem um longo tempo de preparo. Assim, você pode fazê-la para um almoço delicioso em qualquer dia da semana.",
-            tempoPreparo = "50 MIN",
+            tempoPreparo = "50 Min",
             porcoes = "10",
             ingredientes = listOf("1 kg de feijão preto\n", "800 gramas de pé de porco\n",
                 "800 gramas de costelinha de porco\n", "350 gramas de linguiça calabresa\n",
@@ -72,7 +72,7 @@ object ReceitasData {
         Receita(
             nome = "Moqueca de peixe",
             descricao = "Moqueca tem que ter azeite de dendê e leite de coco. Capriche no refogado de tomate, cebola e pimentão, pois ele é a base para saborizar o caldo. Fique de olho no ponto do peixe: queremos ele macio, mas sem se desmanchar na panela.",
-            tempoPreparo = "35 MIN",
+            tempoPreparo = "35 Min",
             porcoes = "4",
             ingredientes = listOf("\n" +
                     "500 gramas de filé de tilápia\n" +
@@ -129,7 +129,7 @@ object ReceitasData {
         Receita(
             nome = "Escondidinho de frango",
             descricao = "Esse escondidinho de frango é uma receita prática, cremosa e cheia de sabor. O recheio temperado se mistura ao purê de batatas macio e ganha o toque irresistível do queijo gratinado. Ideal para o almoço de domingo ou para transformar o jantar em um momento especial!",
-            tempoPreparo = "70 MIN",
+            tempoPreparo = "70 Min",
             porcoes = "10",
             ingredientes = listOf("800 gramas de frango cozido e desfiado\n" +
                     "1 colher de sopa de manteiga (20 gramas)\n" +
@@ -205,7 +205,7 @@ object ReceitasData {
         Receita(
             nome = "Farofa de Banana",
             descricao = "A farofa de banana é uma adição encantadora e saborosa para complementar suas refeições. Com poucos ingredientes e um processo simples, esta receita oferece um toque especial e delicioso para acompanhar diversos pratos.",
-            tempoPreparo = "20 MIN",
+            tempoPreparo = "20 Min",
             porcoes = "4",
             ingredientes = listOf("\n" +
                     "2 bananas-prata\n" +
@@ -254,7 +254,7 @@ object ReceitasData {
         Receita(
             nome = "Arroz à Grega",
             descricao = "Todo colorido e muito saboroso, o arroz à grega é um prato festivo, que acompanha muito bem carnes assadas e legumes grelhados. A uva-passa traz um sabor adocicado, que não fica enjoativo com o contraste dos pimentões. Um prato que transforma qualquer refeição em um momento especial.",
-            tempoPreparo = "50 MIN",
+            tempoPreparo = "50 Min",
             porcoes = "9",
             ingredientes = listOf("2 xícaras de chá de arroz agulhinha cru\n" +
                     "1 fio de azeite\n" +
@@ -318,7 +318,7 @@ object ReceitasData {
         Receita(
             nome = "Batata Sauté",
             descricao = "Uma entrada prática, saborosa e muito fácil de preparar! A batata sauté é douradinha por fora e macia por dentro, levando poucos ingredientes e pronta em poucos minutos, graças a um truque simples com o micro-ondas.",
-            tempoPreparo = "20 MIN",
+            tempoPreparo = "20 Min",
             porcoes = "4",
             ingredientes = listOf("\n" +
                     "4 batatas médias\n" +
@@ -366,7 +366,7 @@ object ReceitasData {
         Receita(
             nome = "Salada de Lentilha",
             descricao = "Dizem que comer lentilha no Ano Novo atrai fartura e prosperidade. Então, vamos preparar uma salada no capricho, com um toque refrescante de hortelã. Cozinhe a lentilha no ponto al dente para ela não se desmanchar na travessa. Seja para a ceia da virada ou para o dia a dia, uma delícia.",
-            tempoPreparo = "20 MIN",
+            tempoPreparo = "20 Min",
             porcoes = "8",
             ingredientes = listOf("\n" +
                     "1 xícara de chá de lentilha crua\n" +
@@ -415,7 +415,7 @@ object ReceitasData {
         Receita(
             nome = "Pavê de Bolacha",
             descricao = "Com camadas de biscoito umedecido, creme suave e cobertura de ganache, esse pavê tradicional é cremoso e irresistível. A combinação entre o doce equilibrado e a textura leve faz dele um sucesso garantido em qualquer ocasião. Para um toque especial, finalize com decoração de chocolate branco e surpreenda na apresentação.",
-            tempoPreparo = "40h",
+            tempoPreparo = "40 h",
             porcoes = "15",
             ingredientes = listOf("Ingredientes do creme\n" +
                     "2 latas de leite condensado (790 gramas)\n" +
@@ -490,7 +490,7 @@ object ReceitasData {
         Receita(
             nome = "Bolo de Cenoura",
             descricao = "O cheirinho de bolo de cenoura saindo do forno traz alegria para a casa, a sensação de lar. Nessa receita, a massa fica fofinha, cresce que é uma beleza. O sabor equilibrado, doce na medida certa. Na cobertura, uma calda de chocolate cremosa. Já pode passar um cafezinho!",
-            tempoPreparo = "60 min",
+            tempoPreparo = "60 Min",
             porcoes = "10",
             ingredientes = listOf("Ingredientes da massa\n" +
                     "3 cenouras médias (cerca de 360 gramas)\n" +
