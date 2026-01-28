@@ -1,12 +1,17 @@
 package com.example.annona
 
 import com.google.gson.annotations.SerializedName
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import java.util.Date
+import java.util.Objects
 
 //INTERFACE SERVICO API
 //Esta interface é o "catálogo" de todas as chamadas que o Android pode fazer ao Servidor (Node.js).
@@ -31,11 +36,26 @@ interface ServicoApi {
     // Esta é a função que alimenta o Autocomplete na tela de cadastro.
     @GET("itens_padrao")
     suspend fun listarItensPadrao(): RespostaItensPadrao
+
+    // [PUT] Envia os dados atualizados de um alimento que já existe.
+    // Usamos o @Path("id") para enviar o ID do item na URL, igual fizemos no Node.js.
+    @PUT("users/editarItem/{id}")
+    suspend fun editarItemUsuario(
+        @Path("id") itemId: Long,
+        @Body bodyEditarItem: BodyCriarItem
+    ): Response<ResponseBody>
+
+
+    // [AJUSTE] Usamos @HTTP(method = "DELETE") para permitir o uso de @Body
+    @HTTP(method = "DELETE", path = "users/deletarItem/{id_item_usuario}", hasBody = true)
+    suspend fun deletarItemUsuario(
+        @Path("id_item_usuario") idItem: Int,
+        @Body bodyDeletarItem: BodyDeletarItem): Response<Object>
 }
 
 //CLASSES DE CORPO (BODY)/
- //Estas classes representam o que o Android ENVIA para o servidor.
- //É como se fosse a ficha que você preenche e entrega no balcão.
+//Estas classes representam o que o Android ENVIA para o servidor.
+//É como se fosse a ficha que você preenche e entrega no balcão.
 
 // Dados necessários para realizar o login.
 data class BodyLogin(
@@ -56,11 +76,16 @@ data class BodyCriarItem(
     val quantidade: Int,
     val id_medida: Int,
     val preco: Double,
-    val id_flag: Int,
+    val id_flag: Int
+)
+
+
+data class BodyDeletarItem(
+    val razao_delecao: String
 )
 
 //CLASSES DE RESPOSTA (RESPONSE)/
- //Estas classes representam o que o Android RECEBE do servidor.
+//Estas classes representam o que o Android RECEBE do servidor.
 //Elas transformam o texto JSON que o Node.js envia em objetos que o Kotlin consegue ler.
 
 // Resposta da lista de despensa. O servidor manda um JSON com "listaItens": [...]
@@ -95,7 +120,7 @@ data class RespostaCriarItem(
 )
 
 
-// MODELOS PARA SUGESTÕES (AUTOCAMPLETE)
+// MODELOS PARA SUGESTÕES (AUTOCOMPLETE)
 //Classes criadas para facilitar a leitura dos itens padrão que vêm do banco.
 data class RespostaItensPadrao(
     // No servidor Node, eu  envioi: res.json({ itens: [...] })
@@ -109,4 +134,8 @@ data class ModeloItemSugestao(
     val nome: String,
     val id_categoria: Int,
     val imagem: String
+)
+
+data class RespostaDelecao(
+    val response: String
 )
