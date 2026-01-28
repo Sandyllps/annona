@@ -1,14 +1,17 @@
 package com.example.annona
 
+import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -19,8 +22,10 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.Calendar // Importado para pegar a data atual [novo]
-import java.util.concurrent.TimeUnit // Importado para converter milissegundos em dias [novo]
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 // Esta é a tela principal da Despensa, onde os alimentos aparecem listados
 class TelaDespensaFragment : Fragment() {
@@ -87,14 +92,14 @@ class TelaDespensaFragment : Fragment() {
 
         // --- PARTE 1: O BOTÃO DE FILTRAR (A BARRA AZUL) ---
         val cardFiltro = view.findViewById<View>(R.id.card_filtro_status)
-        val txtStatus = view.findViewById<android.widget.TextView>(R.id.txt_status_selecionado)
+        val txtStatus = view.findViewById<TextView>(R.id.txt_status_selecionado)
 
         // Ajustado: Agora o texto inicial padrão é "Todos os Itens"
         txtStatus.text = "Todos os Itens"
 
         // Quando o usuário clica na barra de filtro, sobe uma listinha de opções
         cardFiltro.setOnClickListener {
-            val popup = android.widget.PopupMenu(requireContext(), cardFiltro)
+            val popup = PopupMenu(requireContext(), cardFiltro)
 
             // Opções simplificadas: Apenas estados e cores do semáforo
             popup.menu.add("Todos os Itens")
@@ -130,45 +135,29 @@ class TelaDespensaFragment : Fragment() {
         rv.adapter = adapter
         adapterGlobal = adapter
 
-        // [AJUSTE 1] A chamada inicial foi movida para carregarItensApi() que é executada no onResume
-
         // --- PARTE 3: O SEMÁFORO (BOTÕES COLORIDOS DO TOPO) ---
-        // Se clicar no botão Marrom, mostra só os Vencidos (Flag 1)
         view.findViewById<View>(R.id.card_vencido).setOnClickListener {
-            filtroAtual = "Vencido"
-            txtStatus.text = "Vencido"
-            atualizarListaNaTela()
+            filtroAtual = "Vencido"; txtStatus.text = "Vencido"; atualizarListaNaTela()
         }
-        // Se clicar no botão Vermelho, mostra os Críticos (Flag 2)
         view.findViewById<View>(R.id.card_critico).setOnClickListener {
-            filtroAtual = "Crítico"
-            txtStatus.text = "Crítico"
-            atualizarListaNaTela()
+            filtroAtual = "Crítico"; txtStatus.text = "Crítico"; atualizarListaNaTela()
         }
-        // Se clicar no botão Amarelo, mostra os de Atenção (Flag 3)
         view.findViewById<View>(R.id.card_atencao).setOnClickListener {
-            filtroAtual = "Atenção"
-            txtStatus.text = "Atenção"
-            atualizarListaNaTela()
+            filtroAtual = "Atenção"; txtStatus.text = "Atenção"; atualizarListaNaTela()
         }
-        // Se clicar no botão Verde, mostra os Seguros (Flag 4)
         view.findViewById<View>(R.id.card_seguro).setOnClickListener {
-            filtroAtual = "Seguro"
-            txtStatus.text = "Seguro"
-            atualizarListaNaTela()
+            filtroAtual = "Seguro"; txtStatus.text = "Seguro"; atualizarListaNaTela()
         }
 
         // --- PARTE 4: BOTÃO DE ADICIONAR (+) ---
         val btnAdd = view.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fab_add_item)
         btnAdd.setOnClickListener {
-            // [AJUSTE] Agora chamamos a função da MainActivity para que o Launcher de lá funcione
             (activity as? MainActivity)?.abrirAdicionarItem()
         }
     }
 
-    // [AJUSTE 1] Função isolada para carregar os dados. Criamos ela para poder chamar tanto no início quanto no retorno da tela de adição.
+    // [AJUSTE 1] Função isolada para carregar os dados.
     private fun carregarItensApi() {
-        // --- TRAZENDO A LISTA DE ITENS DO BACKEND DEPENDENDO DO ID DO USUÁRIO ---
         val urlApi = requireContext().getString(R.string.api_base_url)
         val retrofit = Retrofit.Builder()
             .baseUrl(urlApi)
@@ -184,17 +173,16 @@ class TelaDespensaFragment : Fragment() {
 
                 // --- AJUSTE INTELIGENTE: Pega os dados e já calcula os prazos reais antes de mostrar ---
                 listaCompleta = processarValidades(itens.toMutableList())
-                atualizarListaNaTela() // Mantém o filtro que o usuário já tinha selecionado
-                view?.let { atualizarContadores(it) } // Atualiza os números coloridos lá no topo
+                atualizarListaNaTela()
+                view?.let { atualizarContadores(it) }
 
             } catch (e: Exception) {
-                // Toast.makeText(requireContext(), "Erro ao tentar carregar os itens: ${e.message}", Toast.LENGTH_LONG).show()
+                // Erro tratado silenciosamente para não atrapalhar a UX
             }
         }
     }
 
     // --- NOVA FUNÇÃO: REAPLICA O FILTRO SELECIONADO NA TELA ---
-    // Esta função garante que, ao mudar um status, o app continue respeitando o filtro ativo (ex: Crítico) [novo]
     private fun atualizarListaNaTela() {
         val listaFiltrada = when (filtroAtual) {
             "Consumindo" -> listaCompleta.filter { it.estado == "Consumindo" }
@@ -203,39 +191,30 @@ class TelaDespensaFragment : Fragment() {
             "Crítico" -> listaCompleta.filter { it.flag == 2 }
             "Atenção" -> listaCompleta.filter { it.flag == 3 }
             "Seguro" -> listaCompleta.filter { it.flag == 4 }
-            else -> listaCompleta // "Todos os Itens"
+            else -> listaCompleta
         }
         adapterGlobal?.submitList(listaFiltrada.toList())
     }
 
     // --- NOVA FUNÇÃO: CALCULA O PRAZO E A COR (FLAG) PARA CADA ITEM DA LISTA ---
-    // Esta função percorre a lista e define as cores baseadas no tempo de validade
     private fun processarValidades(lista: MutableList<Item>): MutableList<Item> {
         val hojeMs = Calendar.getInstance().timeInMillis
 
         return lista.map { item ->
-
-            // [AJUSTE 3] Proteção para itens sem data: se não tem validade, não calculamos o semáforo.
-            // Isso evita que itens sem data apareçam como "Vencidos" ou com "0 dias".
             if (item.possuiDataValidade == 0) {
-                // Retornamos o item como ele está (com a flag 4 verde que definimos no Item.kt)
                 item
             } else {
-                // Se o item POSSUI data, fazemos o cálculo normal de diferença de dias
                 val diffMs = (item.dataVencimentoMs ?: 0) - hojeMs
                 val dias = if (diffMs > 0) TimeUnit.MILLISECONDS.toDays(diffMs) else 0
 
-                // Define a Flag (cor do semáforo) com base nos dias que faltam
                 val novaFlag = when {
-                    diffMs <= 0 -> 1 // Vencido (Marrom)
-                    dias <= 3 -> 2   // Crítico (Vermelho) - Menos de 3 dias
-                    dias <= 7 -> 3   // Atenção (Amarelo) - Entre 4 e 7 dias
-                    else -> 4        // Seguro (Verde) - Mais de 7 dias
+                    diffMs <= 0 -> 1
+                    dias <= 3 -> 2
+                    dias <= 7 -> 3
+                    else -> 4
                 }
 
                 val novoPrazo = if (diffMs <= 0) "VENCIDO" else "$dias DIAS"
-
-                // Cria uma cópia do item com os dados calculados na hora para exibir no card
                 item.copy(prazo = novoPrazo, flag = novaFlag)
             }
         }.toMutableList()
@@ -243,39 +222,41 @@ class TelaDespensaFragment : Fragment() {
 
     // Esta função mostra o menu de "Editar", "Consumir" ou "Excluir" cada alimento
     private fun mostrarMenuOpcoes(anchorView: View, item: Item) {
-        val popup = android.widget.PopupMenu(requireContext(), anchorView)
+        val popup = PopupMenu(requireContext(), anchorView)
         popup.menu.add("Editar item")
 
-        // Verifica se o item já está sendo usado para mudar o texto do botão
         val textoConsumo = if (item.estado == "Consumindo") "Por consumir" else "Consumir item"
         popup.menu.add(textoConsumo)
-
-        // REMOVIDO: A opção "Doar Item" foi excluída conforme solicitado
         popup.menu.add("Excluir item")
 
         popup.setOnMenuItemClickListener { menuIt ->
             when (menuIt.title) {
                 "Editar item" -> {
-                    // Manda as informações atuais do item para a tela de edição
-                    val intent = android.content.Intent(requireContext(), AdicionarItem::class.java)
+                    // [AJUSTE EDIÇÃO] Enviamos os dados EXATOS que a tela AdicionarItem espera receber
+                    val intent = Intent(requireContext(), AdicionarItem::class.java)
                     intent.putExtra("ITEM_ID", item.id)
-                    intent.putExtra("TITULO", item.nome)
-                    intent.putExtra("ESTADO", item.estado)
+                    intent.putExtra("NOME", item.nome)
+                    intent.putExtra("QUANTIDADE", item.id) // Você pode ajustar se tiver o campo qtd real no objeto
+                    intent.putExtra("PRECO", 0.0) // Ajustar se tiver o campo preço
+                    intent.putExtra("CATEGORIA_ID", item.idCategoria)
                     intent.putExtra("LOCAL", item.localNome)
-                    intent.putExtra("DICA", item.dica)
-                    // Passamos também a categoria e a data para a tela de edição [novo]
-                    intent.putExtra("CATEGORIA", item.categoria)
-                    intent.putExtra("DATA_MS", item.dataVencimentoMs)
-                    intent.putExtra("POSSUI_DATA", item.possuiDataValidade)
+                    intent.putExtra("CONSUMINDO", item.consumindo == 1)
+                    intent.putExtra("IMAGEM", item.imagem)
+
+                    // Formata a data para exibir no campo de texto do formulário
+                    if (item.possuiDataValidade == 1 && item.dataValidade != null) {
+                        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                        intent.putExtra("DATA_VALIDADE", sdf.format(item.dataValidade))
+                    }
+
                     startActivity(intent)
                 }
                 "Consumir item", "Por consumir" -> {
-                    // Troca o estado do produto (ex: de fechado para aberto/usando)
-                    val novoEstado = if (item.estado == "Consumindo") "Por consumir" else "Consumindo"
+                    // Lógica de consumo rápido (Offline por enquanto até integrar o PUT de consumo)
+                    val novoEstadoNum = if (item.consumindo == 1) 0 else 1
                     val index = listaCompleta.indexOf(item)
                     if (index != -1) {
-                        listaCompleta[index] = item.copy(estado = novoEstado)
-                        // Ajuste: Agora chamamos a função que respeita o filtro selecionado [novo]
+                        listaCompleta[index] = item.copy(consumindo = novoEstadoNum).apply { mapearCampos(requireContext()) }
                         atualizarListaNaTela()
                     }
                 }
@@ -286,23 +267,17 @@ class TelaDespensaFragment : Fragment() {
         popup.show()
     }
 
-    // Janela que pergunta o motivo antes de apagar o item da lista
     private fun confirmarExclusao(item: Item) {
-        // Ajustado: Removido "Item doado" da lista de motivos de exclusão
         val motivos = arrayOf("Item consumido", "Item vencido/estragado", "Outro")
         var motivoSelecionado = motivos[0]
 
-        val dialog = android.app.AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Excluir \"${item.nome}\"")
-            .setSingleChoiceItems(motivos, 0) { _, which ->
-                motivoSelecionado = motivos[which]
-            }
+            .setSingleChoiceItems(motivos, 0) { _, which -> motivoSelecionado = motivos[which] }
             .setPositiveButton("Confirmar Exclusão") { d, _ ->
-                listaCompleta.remove(item) // Tira o produto da lista
-                // Ajuste: Após excluir, também precisamos respeitar o filtro ativo [novo]
+                listaCompleta.remove(item)
                 atualizarListaNaTela()
-                atualizarContadores(requireView()) // Atualiza os números do semáforo
-
+                atualizarContadores(requireView())
                 Toast.makeText(requireContext(), "Removido: $motivoSelecionado", Toast.LENGTH_SHORT).show()
                 d.dismiss()
             }
@@ -310,20 +285,16 @@ class TelaDespensaFragment : Fragment() {
             .create()
 
         dialog.show()
-
-        // Coloca cor nos botões da janelinha para ficar bonito
-        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.vermelho_murango))
-        dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(android.graphics.Color.GRAY)
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.vermelho_murango))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.GRAY)
     }
 
-    // Esta função conta quantos produtos têm em cada cor do semáforo (1, 2, 3 ou 4)
     private fun atualizarContadores(view: View) {
-        val v = listaCompleta.count { it.flag == 1 } // Marrom (Vencido)
-        val c = listaCompleta.count { it.flag == 2 } // Vermelho (Crítico)
-        val a = listaCompleta.count { it.flag == 3 } // Amarelo (Atenção)
-        val s = listaCompleta.count { it.flag == 4 } // Verde (Seguro)
+        val v = listaCompleta.count { it.flag == 1 }
+        val c = listaCompleta.count { it.flag == 2 }
+        val a = listaCompleta.count { it.flag == 3 }
+        val s = listaCompleta.count { it.flag == 4 }
 
-        // Escreve os números nos cartões lá do topo da tela
         view.findViewById<TextView>(R.id.txt_vencido_contador).text = "Vencido $v"
         view.findViewById<TextView>(R.id.txt_critico_contador).text = "Crítico $c"
         view.findViewById<TextView>(R.id.txt_atencao_contador).text = "Atenção $a"
