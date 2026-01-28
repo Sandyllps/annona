@@ -5,10 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class DoacoesFragment : Fragment() {
+
+    private val viewModel: ItensCompartilhadosViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -20,7 +23,14 @@ class DoacoesFragment : Fragment() {
 
         val recycler = view.findViewById<RecyclerView>(R.id.recycler_doacoes)
         recycler.layoutManager = LinearLayoutManager(requireContext())
-        recycler.adapter = DoacoesAdapter()
+
+        // adapter que vai mostrar os itens
+        val adapter = AdaptadorItem()
+        recycler.adapter = adapter
+
+        viewModel.itensDoacao.observe(viewLifecycleOwner) { lista ->
+            adapter.submitList(lista)
+        }
 
         return view
     }

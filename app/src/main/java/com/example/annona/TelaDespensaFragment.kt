@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,6 +34,8 @@ class TelaDespensaFragment : Fragment() {
     // --- VARIÁVEL DE MEMÓRIA PARA O FILTRO ---
     // Guarda qual filtro está selecionado para não "perder" a seleção ao consumir um item [novo]
     private var filtroAtual: String = "Todos os Itens"
+    //walysson
+    private val viewModel: ItensCompartilhadosViewModel by activityViewModels()
 
     // [NOVO] Este receptor fica "ouvindo" o aviso de que um item foi salvo para recarregar a lista na hora
     private val recarregarReceiver = object : BroadcastReceiver() {
@@ -184,6 +187,11 @@ class TelaDespensaFragment : Fragment() {
 
                 // --- AJUSTE INTELIGENTE: Pega os dados e já calcula os prazos reais antes de mostrar ---
                 listaCompleta = processarValidades(itens.toMutableList())
+                //walysson
+                viewModel.atualizarItensParaDoacao(
+                    listaCompleta.filter { (it.flag == 2 || it.flag == 3) && it.estado != "Consumindo" }
+                )
+
                 atualizarListaNaTela() // Mantém o filtro que o usuário já tinha selecionado
                 view?.let { atualizarContadores(it) } // Atualiza os números coloridos lá no topo
 
