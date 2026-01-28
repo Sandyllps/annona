@@ -27,8 +27,25 @@
         android:textSize="14sp"
         android:textColor="@color/marrom_escuro"
         android:fontFamily="@font/century_gothic"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/txt_bullet"
         app:layout_constraintTop_toTopOf="@id/txt_bullet"
         app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- DATA DE VENCIMENTO -->
+    <TextView
+        android:id="@+id/txt_validade"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="1dp"
+        android:text="Vence em: 28/01/2026"
+        android:textSize="12sp"
+        android:textColor="@color/marrom_expresso"
+        android:fontFamily="@font/century_gothic"
+        app:layout_constraintStart_toEndOf="@id/txt_bullet"
+        app:layout_constraintTop_toBottomOf="@id/txt_nome_item"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
