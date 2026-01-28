@@ -275,10 +275,7 @@ class TelaDespensaFragment : Fragment() {
             .setTitle("Excluir \"${item.nome}\"")
             .setSingleChoiceItems(motivos, 0) { _, which -> motivoSelecionado = motivos[which] }
             .setPositiveButton("Confirmar Exclusão") { d, _ ->
-                listaCompleta.remove(item)
-                atualizarListaNaTela()
-                atualizarContadores(requireView())
-                Toast.makeText(requireContext(), "Removido: $motivoSelecionado", Toast.LENGTH_SHORT).show()
+                deletarItem(item.id.toInt(), motivoSelecionado)
                 d.dismiss()
             }
             .setNegativeButton("Cancelar") { d, _ -> d.dismiss() }
@@ -300,4 +297,37 @@ class TelaDespensaFragment : Fragment() {
         view.findViewById<TextView>(R.id.txt_atencao_contador).text = "Atenção $a"
         view.findViewById<TextView>(R.id.txt_seguro_contador).text = "Seguro $s"
     }
+
+
+
+
+    private fun deletarItem(id_item: Int, razao_delecao: String) {
+
+        val bodyDelecao = BodyDeletarItem(
+            razao_delecao
+        )
+
+        val urlApi = requireContext().getString(R.string.api_base_url)
+        val retrofit = Retrofit.Builder().baseUrl(urlApi).addConverterFactory(GsonConverterFactory.create()).build()
+        val api = retrofit.create(ServicoApi::class.java)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val resp = api.deletarItemUsuario(id_item,bodyDelecao)
+
+                if (resp.isSuccessful) {
+                    LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(Intent("ATUALIZAR_LISTA_ANONA"))
+                    Toast.makeText(requireContext(), "Item excluido", Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(requireContext(), "Erro ao deletar item. ", Toast.LENGTH_SHORT).show()
+
+                }
+            } catch (e: Exception) {
+                val erro = e.message
+                Toast.makeText(requireContext(), "Erro ao conectar com o servidor", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 }
+
+
