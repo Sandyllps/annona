@@ -1,21 +1,38 @@
 import express from "express"
-import 'dotenv/config'
+import 'dotenv/config' // Carrega as variáveis de ambiente do arquivo .env (Segurança)
+
+// Importação dos roteadores: Cada um cuida de uma "área" do sistema
 import {usersRouter} from "./routers/users.router.js"
 import { infoGeralRouter } from "./routers/info_geral.router.js"
 import { receitasRouter } from "./routers/receitas.router.js"
+import { itensPadraoRouter } from "./routers/itens_padrao.router.js"
 
-const app = express() //chamando a função express que retorna o objeto do servidor
+const app = express() // Chamando a função express que retorna o objeto do servidor
 
-app.use(express.json()) // indicando pro meu servidor que vou trabalhar com json nas minhas respostas e requisições
+// MIDDLEWARE: Indicando pro meu servidor que vou trabalhar com JSON 
+// Isso permite que o Node entenda quando o Android envia dados em formato de texto JSON
+app.use(express.json()) 
 
+// DEFINIÇÃO DAS ROTAS "PAI" (Prefixos)
+// Todas as rotas de usuários começarão com http://ip:porta/users
 app.use("/users", usersRouter)
 
+// Todas as rotas de informações gerais (categorias, locais)
 app.use("/infoGeral", infoGeralRouter)
 
+// Todas as rotas relacionadas ao livro de receitas
 app.use("/receitas", receitasRouter)
 
-const port = process.env.PORT //aqui estou dizendo "utilize meu valor que está em PORT"
+// [NOVO] Rota para buscar os itens do sistema (Autocomplete do Android)
+app.use("/itens_padrao", itensPadraoRouter)
 
+// CONFIGURAÇÃO DA PORTA
+// O processo tenta ler do arquivo .env. Se não achar, usa o valor que estiver lá.
+const port = process.env.PORT 
+
+// INICIALIZAÇÃO DO SERVIDOR
+// Aqui o servidor começa efetivamente a "ouvir" as chamadas que o Android faz
 app.listen(port, function(){
-    console.log("Servidor escutando em: http://localhost:"+ port)
+    console.log("Servidor Annona rodando com sucesso!");
+    console.log("Escutando em: http://localhost:"+ port);
 })

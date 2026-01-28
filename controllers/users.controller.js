@@ -42,12 +42,13 @@ async function adicionarItemUsuario(req, res){
         const imagem = req.body.imagem
         const consumindo = req.body.consumindo
         const possui_data_validade = req.body.possui_data_validade
-        const data_validade = req.body.data_validade
+        const data_validade = req.body.data_validade || null
         const id_local_armazenamento = req.body.id_local_armazenamento
         const quantidade = req.body.quantidade
         const id_medida = req.body.id_medida
         const preco = req.body.preco
         const id_flag = req.body.id_flag
+        console.log(req.body)
         
 
         // Usamos 'await' para o código parar aqui até que o banco confirme o salvamento.
@@ -93,13 +94,15 @@ async function listarItensUsuario(req, res){
 
 async function editarItemUsuario(req, res){
      try{
+        console.log(req.body)
+        console.log(req.params)
         const id_item_usuario = req.params.id_item_usuario
         const nome = req.body.nome
         const id_categoria = req.body.id_categoria
         const imagem = req.body.imagem
         const consumindo = req.body.consumindo
         const possui_data_validade = req.body.possui_data_validade
-        const data_validade = req.body.data_validade
+        const data_validade = req.body.data_validade || null
         const id_local_armazenamento = req.body.id_local_armazenamento
         const quantidade = req.body.quantidade
         const id_medida = req.body.id_medida

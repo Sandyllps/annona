@@ -14,9 +14,6 @@ async function pegarInfoGeral(req, res){
         const resposta_categorias = await pool.execute('SELECT id_categoria, nome FROM categorias');
         const linhas_categorias = resposta_categorias[0]
 
-        const resposta_itens_padrao = await pool.execute('SELECT id_item_padrao, nome, id_categoria, imagem FROM itens_padrao');
-        const linhas_itens_padrao = resposta_itens_padrao[0]
-
         const resposta_flags = await pool.execute('SELECT id_flag, nome_flag FROM flags');
         const linhas_flags = resposta_flags[0]
 
