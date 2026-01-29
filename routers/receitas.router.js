@@ -1,3 +1,4 @@
+//rota não utilizada
 import express from "express"
 import {listarReceitas} from "../controllers/receitas.controller.js"
 

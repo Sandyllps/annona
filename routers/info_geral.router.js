@@ -1,3 +1,4 @@
+//rota não utilizada
 import express from "express"
 import {pegarInfoGeral} from "../controllers/info_geral.controller.js"
 

@@ -7,10 +7,10 @@ async function listarItensPadrao(req, res) {
         // O 'await' faz o código esperar o banco responder antes de continuar
         const resposta = await pool.execute('SELECT * FROM itens_padrao'); 
         
-        // O MySQL retorna um array onde a posição [0] são as linhas da tabela
+        // O MySQL retorna um array onde a posição [0] são as linhas da tabela e a posição [1] são as colunas!
         const itens = resposta[0]; 
         
-        // Retornamos o status 200 (Sucesso) e enviamos os dados em formato JSON
+        // Retornamos o status 200 e enviamos os dados em formato JSON
         // O Android vai procurar pela chave "itens" que definimos aqui
         return res.status(200).json({
             itens 

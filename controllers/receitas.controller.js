@@ -1,3 +1,4 @@
+//controller não utilizado
 import { response } from "express"
 import{pool} from "../bd.js"
 

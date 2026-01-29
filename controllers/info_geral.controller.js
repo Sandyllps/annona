@@ -1,3 +1,4 @@
+//controller não utilizado
 import { pool } from "../bd.js";
 
 async function pegarInfoGeral(req, res){

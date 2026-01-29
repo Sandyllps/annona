@@ -3,11 +3,12 @@ import{pool} from "../bd.js"
 
 //req: Requisição (o que vem do front-end)
 //res: Resposta (o que o servidor envia de volta)
+//essa função de login serve pra verificar se as informações enviadas pelo Android batem com o banco
 async function login(req, res){
     try{
         const email = req.body.email //a requisição de login precisa receber no body email e senha.
         const senha = req.body.senha
-        const resposta = await pool.execute('SELECT id_usuario, nome_usuario, email FROM usuarios WHERE email = ? and senha = ?', [email, senha]);
+        const resposta = await pool.execute('SELECT id_usuario, nome_usuario, email FROM usuarios WHERE email = ? and senha = ?', [email, senha]); //pool.execute() envia a query SQL para o banco.
         const linhas = resposta[0]
         if(!linhas[0]){ //se na posição [0] do array não tiver resposta com esse usuario e senha, retorna "usuário inválido"
             return res.status(401).json({
@@ -34,15 +35,14 @@ async function login(req, res){
 //Função para cadastrar um novo item para o usuário no banco de dados.
 async function adicionarItemUsuario(req, res){
     try{
-        // Aqui estamos pegando as informações que o front-end enviou no corpo da requisição, o body
-        // armazeno em constantes para facilitar o uso na query SQL.
+        // Aqui estamos pegando as informações que o front-end enviou no corpo da requisição
         const id_usuario = req.body.id_usuario
         const nome = req.body.nome
         const id_categoria = req.body.id_categoria
         const imagem = req.body.imagem
         const consumindo = req.body.consumindo
         const possui_data_validade = req.body.possui_data_validade
-        const data_validade = req.body.data_validade || null
+        const data_validade = req.body.data_validade || null //se não vier data, salvamos como nulo
         const id_local_armazenamento = req.body.id_local_armazenamento
         const quantidade = req.body.quantidade
         const id_medida = req.body.id_medida
@@ -50,8 +50,10 @@ async function adicionarItemUsuario(req, res){
         const id_flag = req.body.id_flag
         console.log(req.body)
         
-
+        //EXECUÇÃO: O comando INSERT cria um novo registro.
+        //a ordem das ? deve ser EXATAMENTE a mesma do array que vem depois.
         // Usamos 'await' para o código parar aqui até que o banco confirme o salvamento.
+        //as ? no SQL se Placeholders (espaços reservados). Usamos isso por segurança, para evitar um ataque chamado SQL Injection
         const resposta = await pool.execute('INSERT INTO itens_usuario (id_usuario, nome, id_categoria, imagem, consumindo, possui_data_validade, data_validade, id_local_armazenamento, quantidade, id_medida, preco, id_flag) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [id_usuario, nome, id_categoria, imagem, consumindo, possui_data_validade, data_validade, id_local_armazenamento, quantidade, id_medida, preco, id_flag]);
         const resultado = resposta[0] //No caso do insert, pool.execute() retorna um array onde a posição [0] é um objeto com a informação do insert.
 
