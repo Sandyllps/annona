@@ -19,6 +19,7 @@ class TelaLogin : AppCompatActivity() {
 
         val session = SecaoUsuario(this)
 
+        //verificação para saber se o usuário está logado, se ele estiver fecha a tela de login e ja abre diretamente a tela despensa.
         if (session.estaLogado()) {
             val intent = Intent(this, MainActivity::class.java)
             // Enviando o ID do usuario pra MainActivity
@@ -53,6 +54,7 @@ class TelaLogin : AppCompatActivity() {
             .baseUrl(urlApi)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+        //cria a implementação da interface
         val api = retrofit.create(ServicoApi::class.java)
 
         val activityContext = this
@@ -91,7 +93,7 @@ class TelaLogin : AppCompatActivity() {
                     ).show()
                 }
             } catch (e: Exception) {
-                // ---------- LOGIN COM ERRO (FALHA NA CONEXAO COM A API) ------------
+                //LOGIN COM ERRO (FALHA NA CONEXAO COM A API)
                 Toast.makeText(
                     activityContext,
                     "Falha na requisição: ${e.message}",

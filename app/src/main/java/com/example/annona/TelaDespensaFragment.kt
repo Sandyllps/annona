@@ -39,7 +39,8 @@ class TelaDespensaFragment : Fragment() {
     // --- VARIÁVEL DE MEMÓRIA PARA O FILTRO ---
     // Guarda qual filtro está selecionado para não "perder" a seleção ao consumir um item [novo]
     private var filtroAtual: String = "Todos os Itens"
-    //walysson
+    //walysson -> criação de um viewModel que será compartilhado com todos os fragments
+    //by activityViewModels() - > Eu quero o view que pertence a essa activity
     private val viewModel: ItensCompartilhadosViewModel by activityViewModels()
 
     // [NOVO] Este receptor fica "ouvindo" o aviso de que um item foi salvo para recarregar a lista na hora
@@ -192,6 +193,8 @@ class TelaDespensaFragment : Fragment() {
                 // --- AJUSTE INTELIGENTE: Pega os dados e já calcula os prazos reais antes de mostrar ---
                 listaCompleta = processarValidades(itens.toMutableList())
                 //walysson
+
+                //está entrando lá na tela doações e atualizando a lista de lá.
                 viewModel.atualizarItensParaDoacao(
                     listaCompleta.filter { (it.flag == 2 || it.flag == 3) && it.estado != "Consumindo" }
                 )
