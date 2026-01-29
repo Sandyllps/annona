@@ -16,7 +16,6 @@ class DoacoesAdapter : RecyclerView.Adapter<DoacoesAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // por enquanto vazio (layout estático)
     }
 
     override fun getItemCount(): Int = 5 // ← força 5 cards na tela

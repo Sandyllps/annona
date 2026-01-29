@@ -2,21 +2,37 @@ package com.example.annona
 
 object ReceitasData {
 
+    //Criação de uma lista que irá guardar os objetos do tipo receita
+    // Essa lista será usada para exibir as receitas e aplicar filtros
     val receitas = listOf(
+        //Criação do objeto
+        // Cada objeto contém todas as informações necessárias para exibição, tanto na tela receitas quanto na tela de detalhes
+
         Receita(
+            //nome da receita que será exibido na tela
             nome = "Feijoada",
+            // Descrição da receita, resumo das caracteristicas do prato
             descricao = "Essa feijoada é ideal para quem busca o sabor autêntico do prato, sem um longo tempo de preparo. Assim, você pode fazê-la para um almoço delicioso em qualquer dia da semana.",
+            // Tempo de preparo da receita
             tempoPreparo = "50 Min",
+            // Quantas Porções a Receita serve
             porcoes = "10",
+            // Ingredientes Nescessários
             ingredientes = listOf("1 kg de feijão preto\n", "800 gramas de pé de porco\n",
                 "800 gramas de costelinha de porco\n", "350 gramas de linguiça calabresa\n",
                 "300 gramas de bacon\n", "2 cubos de caldo de carne ou bacon\n", "1 cebola grande (160 gramas)\n",
                 "10 dentes de alho\n", "3 folhas de louro\n", "1 colher de sopa de sal (ou a gosto)"),
+
+            // Lista de etapas do modo de preparo
+            // Cada etapa é um objeto que relaciona, numero, passo a passo e imagem
             modoPreparo = listOf(
                 EtapaPreparo(
+                    // Número da etapa, usado para ordenar
                     numero = 1,
+                    // Texto explicativo do que deve ser feito nesse passo
                     descricao = "Antes de começar, lave o feijão preto em água corrente," +
                             " coloque 2 xícaras de água e escorra. Reúna os outros ingredientes e inicie o preparo;",
+                    // Imagem referente a etapa desse prato
                     imagem = R.drawable.feijoada_preparo_1
                 ),
                 EtapaPreparo(
@@ -65,7 +81,10 @@ object ReceitasData {
                     imagem = R.drawable.feijoada_preparo_7
                 )
             ),
+            // Categoria da receita nesse caso é um prato principal
+            // Será usada essa informação para o funcionamento do filtro
             tag = "PRINCIPAL",
+            // Imagem da receita feita que aparecerá tanto na tela receitas, quanto na tela de detalhes
             imagem = R.drawable.feijoada_capa
         ),
 
@@ -558,8 +577,4 @@ object ReceitasData {
             imagem = R.drawable.bolo_de_cenoura_capa
         ),
     )
-
-    fun buscarPorNome(nome: String): Receita? {
-        return receitas.find { it.nome == nome }
-    }
 }
