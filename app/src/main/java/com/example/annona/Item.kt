@@ -10,12 +10,11 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 
 //CLASSE DATA CLASS ITEM
-//Esta é a "Ficha do Produto". Toda vez que o app busca ou cria um alimento,
+//Toda vez que o app busca ou cria um alimento,
 //ele segue este molde. Ele é dividido em duas partes:
 //1. O que vem da API (Banco de Dados).
 //2. O que o Android calcula sozinho (Lógica de exibição).
 data class Item(
-
     // 1. CAMPOS DA API (MAPEADOS DO BANCO DE DADOS)
 
     @SerializedName("id_item_usuario")
@@ -47,8 +46,10 @@ data class Item(
     var flag: Int,
 
 
-    // 2. ATRIBUTOS CALCULADOS PELO ANDROID (PARA A TELA)
-    // Estes campos não existem no banco, nós os criamos para facilitar o preenchimento dos cards.
+
+
+    // 2. ATRIBUTOS CALCULADOS NO PROJETO DE ANDROID
+    // Estes campos não existem no banco, eu criei pra facilitar o preenchimento dos cards.
 
     var estado: String? = "", // Texto "Consumindo" ou "Por consumir"
     var prazo: String? = "",  // Texto "X DIAS"
@@ -62,12 +63,14 @@ data class Item(
     var dataVencimentoMs: Long? // A data de vencimento em milissegundos para cálculos matemáticos
 )
 
-//FUNÇÃO MAPEARECAMPOS
-//Esta função é a "mágica" que transforma os números da API em coisas visuais.
+
+
+//FUNÇÃO MAPEAR CAMPOS
+//Esta função é a que transforma os números da API em coisas visuais
 //Ela é chamada toda vez que o app recebe dados do Node.js.
 fun Item.mapearCampos(context: Context) {
 
-    // Transforma o 0 ou 1 do banco em um texto amigável
+    // Transforma o 0 ou 1 do banco em um texto
     estado = if (consumindo == 1) "Consumindo" else "Por consumir"
 
     // Busca o nome da categoria e do local usando os IDs (converte 1 em "Geladeira")
@@ -87,6 +90,8 @@ fun Item.mapearCampos(context: Context) {
     else if (idCategoria == 10) { dica = "Mantenha em local arejado." }
     else { dica = "Verifique o melhor local para armazenamento 😊" }
 
+
+
     // LÓGICA DE ÍCONES DE LOCAL: Escolhe o desenho correto para o card
     localIconRes = when(idLocal) {
         1 -> R.drawable.local_icone_geladeira
@@ -98,24 +103,12 @@ fun Item.mapearCampos(context: Context) {
         else -> R.drawable.local_icone_armario
     }
 
-    // LÓGICA DE IMAGEM DO PRODUTO: Converte o nome "arroz.png" em um recurso interno do Android
+    // LÓGICA DE IMAGEM DO PRODUTO: Por exemplo, converte o nome "arroz.png" em R.drawable.arroz e assim pra todas as imagens
     val imageName = imagem.substringBeforeLast(".").trim()
     imageRes = if (!imageName.isNullOrBlank()) {
         context.resources.getIdentifier(imageName, "drawable", context.packageName).takeIf { it != 0 } ?: R.drawable.item_padrao
     } else {
         R.drawable.item_padrao
-    }
-
-    // LÓGICA DE VALIDADE: Decide o que fazer com o prazo e a flag
-    val hoje = Calendar.getInstance().timeInMillis
-    if(possuiDataValidade == 1) {
-        // Se tem validade: calculamos os milissegundos para o sistema poder contar os dias depois
-        dataVencimentoMs = dataValidade?.time ?: (hoje + TimeUnit.DAYS.toMillis(3650))
-    } else {
-        // Se não tem validade: limpamos o prazo e forçamos a cor VERDE (Seguro)
-        dataVencimentoMs = null
-        prazo = ""
-        flag = 4
     }
 }
 

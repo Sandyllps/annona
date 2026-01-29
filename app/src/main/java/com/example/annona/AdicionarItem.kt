@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log.e
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -67,7 +68,7 @@ class AdicionarItem : AppCompatActivity() {
     }
 
     // [EDIÇÃO] Função simples para identificar se a tela deve carregar dados de um item existente
-    private fun verificarSeEhEdicao() {
+    private fun verificarSeEhEdicao() { //TODO CORRIGIR O  OME DESSA FUNÇÃO
         val idRecebido = intent.getLongExtra("ITEM_ID", -1L)
         if (idRecebido != -1L) {
             idItemEdicao = idRecebido
@@ -193,10 +194,20 @@ class AdicionarItem : AppCompatActivity() {
                 }
 
                 if (resp.isSuccessful) {
-                    LocalBroadcastManager.getInstance(this@AdicionarItem).sendBroadcast(Intent("ATUALIZAR_LISTA_ANONA"))
-                    Toast.makeText(this@AdicionarItem, "Sucesso!", Toast.LENGTH_SHORT).show()
+                    LocalBroadcastManager.getInstance(this@AdicionarItem)
+                        .sendBroadcast(Intent("ATUALIZAR_LISTA_ANONA"))
+
+                    // Decide a mensagem dependendo se é adição ou edição
+                    val mensagem = if (idItemEdicao == -1L) {
+                        "Item adicionado com sucesso"
+                    } else {
+                        "Item editado com sucesso"
+                    }
+
+                    Toast.makeText(this@AdicionarItem, mensagem, Toast.LENGTH_SHORT).show()
                     finish()
                 }
+
             } catch (e: Exception) {
                 Toast.makeText(this@AdicionarItem, "Erro ao conectar com o servidor", Toast.LENGTH_SHORT).show()
             }

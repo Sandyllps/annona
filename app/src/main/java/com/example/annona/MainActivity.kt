@@ -13,12 +13,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.annona.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-// Esta é a tela principal que segura todas as outras abas (Despensa, Receitas, etc.)
+// Esta é a tela principal que segura todas as outras abas (Despensa, Receitas, Doação, Perfil...)
 class MainActivity : AppCompatActivity() {
 
     // O 'binding' ajuda o código a encontrar os componentes do XML sem erros
     private lateinit var binding: ActivityMainBinding
-
     private lateinit var viewPager: ViewPager2
     private lateinit var bottomNav: BottomNavigationView
 
@@ -30,11 +29,7 @@ class MainActivity : AppCompatActivity() {
         R.id.nav_perfil
     )
 
-    // [AJUSTE] Mantemos o launcher, mas agora ele não precisa mais procurar o fragmento manualmente,
-    // pois a própria TelaDespensaFragment já está "ouvindo" o aviso global de atualização.
-    private val adicionarItemLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        // O código de recarregar agora é disparado via Broadcast dentro do AdicionarItem e capturado na Fragment.
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         val fragments = listOf(
             TelaDespensaFragment.newInstance("page", 0, userId), // Aba 0: Despensa
             ReceitasFragment(),                                 // Aba 1: Receitas
-            DoacoesFragment(), // Aba 2: Doação (Temporário)
+            DoacoesFragment(),                                  // Aba 2: Doação
             TelaPerfilFragment()                                // Aba 3: Perfil
         )
 
@@ -81,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         // Mantém pelo menos 1 tela carregada na memória para o app não empancar
         viewPager.offscreenPageLimit = 1
 
-        // --- SINCRONIA: SE DESLIZAR A TELA, O MENU DE BAIXO MUDA ---
+        //SE DESLIZAMOS A TELA, O MENU DE BAIXO MUDA ---
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -105,10 +100,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // [AJUSTE] Esta função abre a tela de cadastro.
-    // Como a TelaDespensaFragment agora tem um "ouvinte" (Broadcast), a atualização será automática ao fechar esta tela.
+
+    //A tarefa dessa launcher é levar o usuário até a tela de cadastro e ficar esperando ele voltar.
+    private val adicionarItemLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        // Quando o usuário fecha a tela de cadastro e volta para cá, este bloco é executado.
+        // Atualmente ele está vazio porque o aviso de atualizar a lista está sendo feito
+        // por um grito (Broadcast) que a tela da Despensa escuta sozinha.
+    }
+
+
+    // Essa função abre a tela de cadastro.
+    // Como a TelaDespensaFragment agora tem um ouvinte (Broadcast), a atualização será automática quando fechar essa tela.
     fun abrirAdicionarItem() {
         val intent = Intent(this, AdicionarItem::class.java)
+
+
+        // Dizemos para o launcher levar esse intent e abrir a tela.
+        // Sem essa linha, o botão clicará, mas o app não saberá que deve abrir uma nova janela.
         adicionarItemLauncher.launch(intent)
     }
 }
