@@ -28,24 +28,39 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-// Esta é a tela principal da Despensa, onde os alimentos aparecem listados
+// Essa é a tela principal da Despensa, onde os alimentos vão aparecer listados
 class TelaDespensaFragment : Fragment() {
 
     // Aqui criamos uma lista para guardar todos os produtos da despensa
     private var listaCompleta: MutableList<Item> = mutableListOf()
+
     // O adapter é o ajudante que pega os dados da lista e desenha eles na tela
     private var adapterGlobal: AdaptadorItem? = null
 
-    // --- VARIÁVEL DE MEMÓRIA PARA O FILTRO ---
-    // Guarda qual filtro está selecionado para não "perder" a seleção ao consumir um item [novo]
+
+
+
+
+    //VARIÁVEL DO FILTRO!
+    // Guarda qual filtro está selecionado ao abrir a tela
     private var filtroAtual: String = "Todos os Itens"
     //walysson -> criação de um viewModel que será compartilhado com todos os fragments
     //by activityViewModels() - > Eu quero o view que pertence a essa activity
     private val viewModel: ItensCompartilhadosViewModel by activityViewModels()
 
 
+
+
+
+    //No android, Fragments devem ter sempre um construtor vazio. Por isso foi preciso usar esse companion
+    // companion objet funciona como uma fábrica de telas.
+    // Ele permite criar o Fragment e salvar dados importantes (como o ID do usuário)
+    // Isso garante que as informações não se percam caso o Android precise recriar
+    // a tela (ex: ao girar o celular)
     companion object {
-        // Esta função serve para "abrir" a tela da despensa dentro do menu principal
+        // O 'newInstance' é o "portal de entrada" oficial da tela.
+        // Ele cria o Fragment e já configura o ID do usuário com segurança,
+        // permitindo que a MainActivity o carregue corretamente no menu.
         fun newInstance(page: String, position: Int, userId: Int) = TelaDespensaFragment().apply {
             arguments = Bundle().apply {
                 putString("page", page)
@@ -55,6 +70,11 @@ class TelaDespensaFragment : Fragment() {
         }
     }
 
+
+
+
+
+    //FUNÇÕES DE CICLO DE VIDA
     // Aqui o app desenha o visual da tela usando o arquivo XML
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,12 +83,15 @@ class TelaDespensaFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_tela_despensa, container, false)
     }
 
+
+
     //O onResume roda toda vez que a tela volta a ficar visível (ex: após fechar a tela de Adicionar)
     override fun onResume() {
         super.onResume()
         // Chamamos a função de carregar itens sempre que voltamos para a tela para garantir que a lista atualize
         carregarItensApi()
     }
+
 
 
     override fun onStart() {
@@ -79,6 +102,8 @@ class TelaDespensaFragment : Fragment() {
             .registerReceiver(recarregarReceiver, IntentFilter("ATUALIZAR_LISTA_ANONA")) //Esse é o grito!
     }
 
+
+
     override fun onStop() {
         super.onStop()
 
@@ -87,11 +112,19 @@ class TelaDespensaFragment : Fragment() {
             .unregisterReceiver(recarregarReceiver)
     }
 
-    // Aqui é onde damos vida aos botões e listas depois que a tela aparece
+
+
+    // Aqui é onde damos funcionalidade aos botões e listas depois que a tela aparece
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // --- PARTE 1: O BOTÃO DE FILTRAR (A BARRA AZUL) ---
+
+
+
+
+
+
+        //O BOTÃO DE FILTRAR (o azulzinho)
         val cardFiltro = view.findViewById<View>(R.id.card_filtro_status)
         val txtStatus = view.findViewById<TextView>(R.id.txt_status_selecionado)
 
@@ -102,7 +135,7 @@ class TelaDespensaFragment : Fragment() {
         cardFiltro.setOnClickListener {
             val popup = PopupMenu(requireContext(), cardFiltro)
 
-            // Opções simplificadas: Apenas estados e cores do semáforo
+            // Opções de filtro
             popup.menu.add("Todos os Itens")
             popup.menu.add("Consumindo")
             popup.menu.add("Por consumir")
@@ -121,24 +154,40 @@ class TelaDespensaFragment : Fragment() {
             popup.show()
         }
 
-        // --- PARTE 2: CONFIGURAR A LISTA DE PRODUTOS ---
-        val rv = view.findViewById<RecyclerView>(R.id.rvItems)
-        rv.layoutManager = LinearLayoutManager(requireContext()) // Faz a lista ser de cima para baixo
 
+
+
+
+
+        //CONFIGURAR A LISTA DE PRODUTOS
+        //1. Localizando a prateleira (RecyclerView) que desenhamos no XML
+        val rv = view.findViewById<RecyclerView>(R.id.rvItems)
+
+        // 2. Definindo que a lista será vertical (uma embaixo da outra)
+        rv.layoutManager = LinearLayoutManager(requireContext())
+
+        // 3. Aqui criamos o Garçom (Adapter) e dizemos o que ele deve fazer ao ser clicado
         val adapter = AdaptadorItem(
             onClick = { item -> /* O que acontece se clicar no item (vazio por enquanto) */ },
             onOptionsMenuClick = { anchorView, item ->
-                // Quando clica nos 3 pontinhos do item, abre as opções (editar, excluir...)
+                // Quando clica nos 3 pontinhos do item, abre as opções (editar, consumir item, excluir)
                 mostrarMenuOpcoes(anchorView, item)
             }
         )
 
+        // 4. Aqui entregamos o garçom pro recycler trabalhar
         rv.adapter = adapter
-        adapterGlobal = adapter //aqui estou dando um valor pra variável global. Agora posso usar ela em todas as funções desse arquivo
+        adapterGlobal = adapter //Por fim, aqui estou dando um valor pra variável global. Agora posso usar ela em todas as funções desse arquivo
 
         //A chamada inicial foi movida para carregarItensApi() que é executada no onResume
 
-        // --- PARTE 3: O SEMÁFORO (BOTÕES COLORIDOS DO TOPO) ---
+
+
+
+
+
+
+        //O SEMÁFORO (BOTÕES COLORIDOS DO TOPO)
         // Se clicar no botão Marrom, mostra só os Vencidos (Flag 1)
         view.findViewById<View>(R.id.card_vencido).setOnClickListener {
             filtroAtual = "Vencido"
@@ -164,47 +213,82 @@ class TelaDespensaFragment : Fragment() {
             atualizarListaNaTela()
         }
 
-        // --- PARTE 4: BOTÃO DE ADICIONAR (+) ---
+
+
+
+
+
+
+
+        //BOTÃO DE ADICIONAR (+)
+        // 1. Essa sintaxe serve pra localizar o botão verdinho de adicionar (+)
         val btnAdd = view.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fab_add_item)
+
+        // 2. Quando clicado, ele pede para a MainActivity abrir a tela de cadastro
         btnAdd.setOnClickListener {
             (activity as? MainActivity)?.abrirAdicionarItem()
         }
     }
 
-    // [AJUSTE 1] Função isolada para carregar os dados.
+
+
+
+
+
+
+    // Esta função é muito importante na busca dos daos. Ela vai até o servidor buscar a despensa.
     private fun carregarItensApi() {
-        // --- TRAZENDO A LISTA DE ITENS DO BACKEND DEPENDENDO DO ID DO USUÁRIO ---
+        //CONFIGURAÇÃO DA CONEXÃO (RETROFIT)
+        // Buscamos o endereço do servidor (URL) que está guardado no arquivo strings.xml
         val urlApi = requireContext().getString(R.string.api_base_url)
+
+        // Montando o Retrofit que sabe se comunicar com o servidor.
         val retrofit = Retrofit.Builder()
             .baseUrl(urlApi)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create()) // Esse é o tradutor que converte JSON pra Kotlin
             .build()
+
+        // Criando a conexão oficial usando as regras que defini na interface ServicoApi
         val api = retrofit.create(ServicoApi::class.java)
 
-        viewLifecycleOwner.lifecycleScope.launch {
+        //O viewLife... é uma forma segura de iniciar operações como chamadas de rede e banco de dados.
+        viewLifecycleOwner.lifecycleScope.launch { // Usamos o launch para criar uma estrada secundária. Assim a busca não trava a tela do celular.
             try {
+                // Pegamos o ID do usuário que o 'companion object' guardou na mala (Bundle).
+                // Se não encontrar o ID, ele usa o número 1 por padrão (Elvis Operator ?: que o professor José ensinou!)
                 val userId = arguments?.getInt("USER_ID") ?: 1
+
+                // Aqui pedimos para a API listar todos os itens desse usuário.
                 val resp = api.listarItens(userId)
+
+                // Para cada item que chegou, chamamos o mapearCampos (função criada em Item.kt) para definir ícones e imagens. TODO
                 val itens = resp.listaItens.onEach { it.mapearCampos(requireContext()) }
 
-                //Pega os dados e já calcula os prazos reais antes de mostrar ---
+                //Pega os dados e já calcula os prazos reais antes de mostrar
                 listaCompleta = processarValidades(itens.toMutableList())
                 //walysson
 
-                //está entrando lá na tela doações e atualizando a lista de lá.
+                //está entrando lá na tela doações e atualizando a lista de lá. (Walyson)
                 viewModel.atualizarItensParaDoacao(
                     listaCompleta.filter { (it.flag == 2 || it.flag == 3) && it.estado != "Consumindo" }
                 )
 
+                //ATUALIZAÇÃO DA TELA
+                // Manda o Adapter redesenhar a lista respeitando o filtro atual (ex: Seguro ou Crítico).
                 atualizarListaNaTela() // Mantém o filtro que o usuário já tinha selecionado
                 view?.let { atualizarContadores(it) } // Atualiza os números coloridos lá no topo
 
             } catch (e: Exception) {
-                // Erro tratado silenciosamente para não atrapalhar a UX
             }
         }
     }
 
+
+
+
+
+
+    //TODO
     // --- NOVA FUNÇÃO: REAPLICA O FILTRO SELECIONADO NA TELA ---
     // Esta função garante que, ao mudar um status, o app continue respeitando o filtro ativo (ex: Crítico) [novo]
     private fun atualizarListaNaTela() {
@@ -260,6 +344,12 @@ class TelaDespensaFragment : Fragment() {
             }
         }.toMutableList()
     }
+
+
+
+
+
+
 
     // Esta função mostra o menu de "Editar", "Consumir" ou "Excluir" cada alimento
     private fun mostrarMenuOpcoes(anchorView: View, item: Item) {

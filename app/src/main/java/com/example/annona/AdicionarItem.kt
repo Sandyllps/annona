@@ -165,7 +165,7 @@ class AdicionarItem : AppCompatActivity() {
         val secaoUsuario = SecaoUsuario(this)
         val userId = secaoUsuario.obterUserId() ?: 0
 
-        val itemNovo = BodyCriarItem(
+        val itemNovo = BodyCriarItem( //aqui estou criando um objeto com a informação do cadastro, e esse objeto vai ser enviado como body pra API e a API manda pro banco de dados
             userId,
             binding.autoNomeAlimento.text.toString(),
             Categoria.obterPeloNome(binding.spinnerCategoria.selectedItem.toString()).id_categoria,
@@ -180,13 +180,19 @@ class AdicionarItem : AppCompatActivity() {
             1
         )
 
+
+        //resumo dessas 3 linhas:
+        // 1. estou pegando a URL que está no arquivo string XML
+        // 2. depois, dizendo pro retrofit qual é a url base (a url base é a url sem a parte da rota)
+        // 3. por fim, digo pro retrofit qual é a interface com a lista de rotas e funções (que é ServicoApi.kt)
         val urlApi = this.getString(R.string.api_base_url)
         val retrofit = Retrofit.Builder().baseUrl(urlApi).addConverterFactory(GsonConverterFactory.create()).build()
         val api = retrofit.create(ServicoApi::class.java)
 
-        lifecycleScope.launch {
+
+        lifecycleScope.launch { //lembrete: isso é pra não travar a tela enquanto realizo a requisição
             try {
-                // [EDIÇÃO] Lógica simples: Se temos um ID, usamos a rota de Editar (PUT), senão Criar (POST)
+                //Se temos um ID, usamos a rota de Editar (PUT), senão Criar (POST)
                 val resp = if (idItemEdicao == -1L) {
                     api.criarItemUsuario(itemNovo)
                 } else {

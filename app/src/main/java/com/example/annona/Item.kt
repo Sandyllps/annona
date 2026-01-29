@@ -65,9 +65,14 @@ data class Item(
 
 
 
+
+
 //FUNÇÃO MAPEAR CAMPOS
-//Esta função é a que transforma os números da API em coisas visuais
+//Essa função é a que transforma os números da API em coisas visuais
 //Ela é chamada toda vez que o app recebe dados do Node.js.
+
+//Ao escrever Item. antes do nome da função, estou dizendo ao Android:
+//"Sempre que eu tiver um objeto do tipo Item, ele agora terá essa funcionalidade de mapearCampos".
 fun Item.mapearCampos(context: Context) {
 
     // Transforma o 0 ou 1 do banco em um texto

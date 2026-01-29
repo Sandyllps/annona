@@ -52,11 +52,11 @@ class MainActivity : AppCompatActivity() {
         // Mantém as cores originais dos ícones que eu defini
         bottomNav.itemIconTintList = null
 
-        // --- CONFIGURAÇÃO DAS TELAS (Fragments) ---
+        //CONFIGURAÇÃO DAS TELAS (Fragments)
         // Recupera o ID do usuário que veio da tela de Login
         val userId = intent.getIntExtra("USER_ID", 0)
 
-        // Cria a lista de telas que vão "deslizar" no meio do app
+        // É aqui que definimos a lista de Fragments que vão existir:
         val fragments = listOf(
             TelaDespensaFragment.newInstance("page", 0, userId), // Aba 0: Despensa
             ReceitasFragment(),                                 // Aba 1: Receitas
@@ -70,13 +70,13 @@ class MainActivity : AppCompatActivity() {
             override fun createFragment(position: Int) = fragments[position]
         }
 
-        // Faz o app começar mostrando a aba 0 (Despensa) sem animação de deslize
+        // Faz o app começar mostrando a aba 0 (Despensa) sem animação de deslize porque tava feio
         viewPager.post { viewPager.setCurrentItem(0, false) }
 
         // Mantém pelo menos 1 tela carregada na memória para o app não empancar
         viewPager.offscreenPageLimit = 1
 
-        //SE DESLIZAMOS A TELA, O MENU DE BAIXO MUDA ---
+        //SE DESLIZAMOS A TELA, O MENU DE BAIXO MUDA
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // --- SINCRONIA: SE CLICAR NO MENU, A TELA MUDA ---
+        //SE CLICAR NO MENU, A TELA MUDA
         bottomNav.setOnItemSelectedListener { item ->
             val index = menuItemIdAtPos.indexOf(item.itemId)
             // Quando clica num ícone, o ViewPager pula para a tela correspondente

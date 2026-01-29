@@ -84,19 +84,18 @@ data class BodyDeletarItem(
     val razao_delecao: String
 )
 
-//CLASSES DE RESPOSTA (RESPONSE)/
-//Estas classes representam o que o Android RECEBE do servidor.
+//CLASSES DE RESPOSTA (RESPONSE)
+//Essas classes representam o que o Android RECEBE do servidor.
 //Elas transformam o texto JSON que o Node.js envia em objetos que o Kotlin consegue ler.
 
-// Resposta da lista de despensa. O servidor manda um JSON com "listaItens": [...]
+// Resposta da lista de despensa. O servidor manda um JSON com listaItens[e os itens aqui]
 data class RespostaListarItens(
     val listaItens: List<Item>
 )
 
-// Resposta após o login.
+// Resposta após o login
 data class RespostaLogin(
-    // O @SerializedName é usado quando o nome no banco/Node (ex: "response")
-    // é diferente ou precisa ser mapeado exatamente para a variável no Kotlin.
+    // O @SerializedName é usado quando o nome no banco/Node (ex: "response") é diferente ou precisa ser mapeado exatamente para a variável no Kotlin.
     @SerializedName("response")
     val Response: String,
 
@@ -121,8 +120,8 @@ data class RespostaCriarItem(
 )
 
 
-// MODELOS PARA SUGESTÕES (AUTOCOMPLETE)
-//Classes criadas para facilitar a leitura dos itens padrão que vêm do banco.
+// AUTOCOMPLETE
+//Essas classes abaixo foram criadas pra facilitar a leitura dos itens padrão que vêm do banco.
 data class RespostaItensPadrao(
     // No servidor Node, eu  envioi: res.json({ itens: [...] })
     // O @SerializedName("itens") garante que o Kotlin ache essa chave no JSON.
