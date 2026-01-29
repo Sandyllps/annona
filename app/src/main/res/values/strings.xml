@@ -10,7 +10,7 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
-    <!--URL BASE DA API. Em emulador -> http://10.0.2.2:PORTA_DO_BACKEND ; Em device real use a IP do servidor-->
+    <!--URL BASE DA API. Em emulador -> http://10.0.2.2:PORTA_DO_BACKEND ; Em device real usaremos o IP do servidor-->
     <string name="api_base_url">https://innumerable-mesogloeal-ammie.ngrok-free.dev/</string>
 
     <string name="lorem_ipsum">

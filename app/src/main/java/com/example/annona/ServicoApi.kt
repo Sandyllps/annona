@@ -46,7 +46,7 @@ interface ServicoApi {
     ): Response<ResponseBody>
 
 
-    // [AJUSTE] Usamos @HTTP(method = "DELETE") para permitir o uso de @Body
+    //Usamos @HTTP(method = "DELETE") para permitir o uso de @Body
     @HTTP(method = "DELETE", path = "users/deletarItem/{id_item_usuario}", hasBody = true)
     suspend fun deletarItemUsuario(
         @Path("id_item_usuario") idItem: Int,
@@ -109,6 +109,7 @@ data class RespostaLogin(
     @SerializedName("email")
     val Email: String,
 )
+
 
 // Resposta após criar um item. O servidor devolve o ID do item que acabou de ser gerado no banco.
 data class RespostaCriarItem(

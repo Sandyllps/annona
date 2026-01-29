@@ -31,9 +31,9 @@ import java.util.concurrent.TimeUnit
 // Esta é a tela principal da Despensa, onde os alimentos aparecem listados
 class TelaDespensaFragment : Fragment() {
 
-    // Aqui criamos uma "caixa" (lista) para guardar todos os produtos da despensa
+    // Aqui criamos uma lista para guardar todos os produtos da despensa
     private var listaCompleta: MutableList<Item> = mutableListOf()
-    // O 'adapter' é o ajudante que pega os dados da lista e desenha eles na tela
+    // O adapter é o ajudante que pega os dados da lista e desenha eles na tela
     private var adapterGlobal: AdaptadorItem? = null
 
     // --- VARIÁVEL DE MEMÓRIA PARA O FILTRO ---
@@ -43,12 +43,6 @@ class TelaDespensaFragment : Fragment() {
     //by activityViewModels() - > Eu quero o view que pertence a essa activity
     private val viewModel: ItensCompartilhadosViewModel by activityViewModels()
 
-    // [NOVO] Este receptor fica "ouvindo" o aviso de que um item foi salvo para recarregar a lista na hora
-    private val recarregarReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            carregarItensApi()
-        }
-    }
 
     companion object {
         // Esta função serve para "abrir" a tela da despensa dentro do menu principal
@@ -61,7 +55,7 @@ class TelaDespensaFragment : Fragment() {
         }
     }
 
-    // Aqui o app "desenha" o visual da tela usando o arquivo XML
+    // Aqui o app desenha o visual da tela usando o arquivo XML
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -69,23 +63,26 @@ class TelaDespensaFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_tela_despensa, container, false)
     }
 
-    // [AJUSTE 1] O onResume roda toda vez que a tela volta a ficar visível (ex: após fechar a tela de Adicionar)
+    //O onResume roda toda vez que a tela volta a ficar visível (ex: após fechar a tela de Adicionar)
     override fun onResume() {
         super.onResume()
         // Chamamos a função de carregar itens sempre que voltamos para a tela para garantir que a lista atualize
         carregarItensApi()
     }
 
-    // [NOVO] Registramos o "ouvido" do app quando a tela inicia
+
     override fun onStart() {
         super.onStart()
+
+        //Registrando o listener do app quando a tela inicia
         LocalBroadcastManager.getInstance(requireContext())
-            .registerReceiver(recarregarReceiver, IntentFilter("ATUALIZAR_LISTA_ANONA"))
+            .registerReceiver(recarregarReceiver, IntentFilter("ATUALIZAR_LISTA_ANONA")) //Esse é o grito!
     }
 
-    // [NOVO] Removemos o receptor ao parar para economizar recursos
     override fun onStop() {
         super.onStop()
+
+        //Removendo o receptor ao parar para economizar recursos
         LocalBroadcastManager.getInstance(requireContext())
             .unregisterReceiver(recarregarReceiver)
     }
@@ -137,9 +134,9 @@ class TelaDespensaFragment : Fragment() {
         )
 
         rv.adapter = adapter
-        adapterGlobal = adapter
+        adapterGlobal = adapter //aqui estou dando um valor pra variável global. Agora posso usar ela em todas as funções desse arquivo
 
-        // [AJUSTE 1] A chamada inicial foi movida para carregarItensApi() que é executada no onResume
+        //A chamada inicial foi movida para carregarItensApi() que é executada no onResume
 
         // --- PARTE 3: O SEMÁFORO (BOTÕES COLORIDOS DO TOPO) ---
         // Se clicar no botão Marrom, mostra só os Vencidos (Flag 1)
@@ -190,7 +187,7 @@ class TelaDespensaFragment : Fragment() {
                 val resp = api.listarItens(userId)
                 val itens = resp.listaItens.onEach { it.mapearCampos(requireContext()) }
 
-                // --- AJUSTE INTELIGENTE: Pega os dados e já calcula os prazos reais antes de mostrar ---
+                //Pega os dados e já calcula os prazos reais antes de mostrar ---
                 listaCompleta = processarValidades(itens.toMutableList())
                 //walysson
 
@@ -223,20 +220,28 @@ class TelaDespensaFragment : Fragment() {
         adapterGlobal?.submitList(listaFiltrada.toList())
     }
 
-    // --- NOVA FUNÇÃO: CALCULA O PRAZO E A COR (FLAG) PARA CADA ITEM DA LISTA ---
-    // Esta função percorre a lista e define as cores baseadas no tempo de validade
+    //CÁLCULO DO PRAZO E COR (FLAG) PARA CADA ITEM DA LISTA
+    //Essa função percorre a lista e define as cores baseadas no tempo de validade
     private fun processarValidades(lista: MutableList<Item>): MutableList<Item> {
         val hojeMs = Calendar.getInstance().timeInMillis
 
         return lista.map { item ->
 
-            // [AJUSTE 3] Proteção para itens sem data: se não tem validade, não calculamos o semáforo.
-            // Isso evita que itens sem data apareçam como "Vencidos" ou com "0 dias".
+            //Para itens sem darta,como não tem validade, não calculamos o semáforo.
+            // Isso evita que eles apareçam como "Vencidos" ou com "0 dias".
             if (item.possuiDataValidade == 0) {
-                // Retornamos o item como ele está (com a flag 4 verde que definimos no Item.kt)
+                // Se não tem validade: limpamos o prazo e forçamos a cor VERDE de flag segura
+                item.dataVencimentoMs = null
+                item.prazo = ""
+                item.flag = 4
                 item
+
             } else {
-                // Se o item POSSUI data, fazemos o cálculo normal de diferença de dias
+                val hoje = Calendar.getInstance().timeInMillis
+                // Se tem validade: calculamos os milissegundos para o sistema poder contar os dias depois
+                item.dataVencimentoMs = item.dataValidade?.time ?: (hoje + TimeUnit.DAYS.toMillis(3650))
+
+                // Agora, fazemos o cálculo normal de diferença de dias
                 val diffMs = (item.dataVencimentoMs ?: 0) - hojeMs
                 val dias = if (diffMs > 0) TimeUnit.MILLISECONDS.toDays(diffMs) else 0
 
@@ -352,6 +357,8 @@ class TelaDespensaFragment : Fragment() {
         val retrofit = Retrofit.Builder().baseUrl(urlApi).addConverterFactory(GsonConverterFactory.create()).build()
         val api = retrofit.create(ServicoApi::class.java)
 
+
+        //esse viewLife... serve para não travar a tela enquanto se faz a requisição
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val resp = api.deletarItemUsuario(id_item,bodyDelecao)
@@ -369,6 +376,18 @@ class TelaDespensaFragment : Fragment() {
             }
         }
     }
+
+
+
+
+
+    //Este receptor fica "ouvindo" o aviso de que um item foi salvo para recarregar a lista na hora
+    private val recarregarReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            carregarItensApi()
+        }
+    }
+
 }
 
 
