@@ -64,6 +64,7 @@ class DoacoesFragment : Fragment() {
     // POPUP DE RELATÓRIO
     private fun mostrarPopupRelatorio() {
 
+        // Recupera os itens marcados para doação vindos do ViewModel
         val itens = viewModel.itensDoacao.value
 
         // Caso não tenha itens
@@ -78,16 +79,16 @@ class DoacoesFragment : Fragment() {
 
         // Monta mensagem automática
         val mensagem = buildString {
-            append("Oi, gente!        \n" +
-                    "Tô organizando aqui em casa e tenho alguns itens que quero doar. \n" +
-                    "Se alguém quiser ou souber de quem precise, é só me avisar:\n\n")
+            append("Olá! 😊\n" +
+                    "Estou organizando minha despensa e separei alguns alimentos que não irei usar. " +
+                    "Se alguém quiser ou souber de quem precise, é só me avisar:\n \n")
             itens.forEach { item ->
                 append("• ${item.nome}\n")
             }
         }
 
         // Exibe popup
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Itens para doação")
             .setMessage(mensagem)
             .setPositiveButton("Copiar") { _, _ ->
@@ -97,7 +98,20 @@ class DoacoesFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-            .show()
+
+            // botão fechar
+            .setNegativeButton("Fechar                                       ") { dialog, _ ->
+                dialog.dismiss()
+            }
+
+            .create()
+
+        dialog.show()
+
+        //arredonda fundo
+        dialog.window?.setBackgroundDrawableResource(
+            R.drawable.bg_dialog_arredondado
+        )
     }
 }
 

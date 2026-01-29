@@ -44,7 +44,7 @@
             android:textSize="14dp"
             android:textColor="@color/marrom_cafe"
             android:drawableStart="@drawable/ic_informacao"
-            android:background="@drawable/bg_btn_copiar"
+            android:background="@drawable/bg_dialog_arredondado"
             android:fontFamily="@font/century_gothic" />
 
         <!-- TEXTO EXPLICATIVO -->
@@ -52,7 +52,7 @@
             android:id="@+id/card_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="10dp"
             android:visibility="gone"
             app:cardCornerRadius="16dp"
             app:cardElevation="6dp">
@@ -65,7 +65,7 @@
                 android:padding="14dp"
                 android:text="Aqui estão listados alimentos próximos do vencimento. Caso perceba que não conseguirá consumi-los a tempo, você pode gerar uma lista para doação e compartilhar."
                 android:textColor="@color/marrom_escuro"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:fontFamily="@font/century_gothic"/>
 
         </com.google.android.material.card.MaterialCardView>
