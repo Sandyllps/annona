@@ -224,8 +224,8 @@ class TelaDespensaFragment : Fragment() {
 
         return lista.map { item ->
 
-            //Proteção para itens sem data: se não tem validade, não calculamos o semáforo.
-            // Isso evita que itens sem data apareçam como "Vencidos" ou com "0 dias".
+            //Para itens sem darta,como não tem validade, não calculamos o semáforo.
+            // Isso evita que eles apareçam como "Vencidos" ou com "0 dias".
             if (item.possuiDataValidade == 0) {
                 // Se não tem validade: limpamos o prazo e forçamos a cor VERDE de flag segura
                 item.dataVencimentoMs = null
