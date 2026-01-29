@@ -48,7 +48,7 @@ data class Item(
 
 
 
-    // 2. ATRIBUTOS CALCULADOS NO PROJETO DE ANDROID
+    // ATRIBUTOS CALCULADOS NO PROJETO DE ANDROID
     // Estes campos não existem no banco, eu criei pra facilitar o preenchimento dos cards.
 
     var estado: String? = "", // Texto "Consumindo" ou "Por consumir"

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-// O Adaptador é como um "garçom": ele pega os dados (itens) e os serve na tela (RecyclerView)
+// O Adaptador é como um garçom: ele pega os dados (itens) e os serve na tela (RecyclerView)
 class AdaptadorItem(
     private val onClick: (Item) -> Unit = {}, // O que acontece se clicar no card
     private val onOptionsMenuClick: (View, Item) -> Unit = { _, _ -> } // Clique nos 3 pontinhos
@@ -48,7 +48,8 @@ class AdaptadorItem(
         private var currentItem: Item? = null
 
         init {
-            // Configura o clique no card inteiro
+            //TODO: Para atualizações futuras
+            // Configura o clique no card inteiro (ainda não acontece nada ao clicar no card inteiro)
             itemView.setOnClickListener {
                 currentItem?.let { onClick(it) }
             }
@@ -71,7 +72,7 @@ class AdaptadorItem(
             }
         }
 
-        // Esta função "preenche" o card com os dados reais de cada alimento
+        // Esta função preenche o card com os dados reais de cada alimento
         fun bind(item: Item) {
             currentItem = item
             titulo.text = item.nome
@@ -79,7 +80,7 @@ class AdaptadorItem(
             prazo.text = item.prazo
             dica.text = item.dica
 
-            // --- LÓGICA DO SEMÁFORO (Cores por validade) ---
+            //LÓGICA DO SEMÁFORO (Cores por validade)
             // Aqui o código decide qual cor a barrinha lateral (flag) terá
             if(item.flag == 1){
                 // Marrom: Vencido

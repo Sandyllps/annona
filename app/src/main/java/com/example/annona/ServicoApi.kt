@@ -16,6 +16,7 @@ import java.util.Objects
 //INTERFACE SERVICO API
 //Esta interface é o "catálogo" de todas as chamadas que o Android pode fazer ao Servidor (Node.js).
 //O Retrofit usa esta interface para saber qual URL chamar e que tipo de dado esperar de volta.
+// Com essas chamadas @GET, @POST ... e rota, eu estou mapeando como o app app deve conversar com o servidor Node.js.
 interface ServicoApi {
 
     // [GET] Busca a lista de itens da despensa de um usuário específico.
@@ -53,7 +54,7 @@ interface ServicoApi {
         @Body bodyDeletarItem: BodyDeletarItem): Response<Object>
 }
 
-//CLASSES DE CORPO (BODY)/
+//CLASSES DE CORPO (BODY)
 //Estas classes representam o que o Android ENVIA para o servidor.
 //É como se fosse a ficha que você preenche e entrega no balcão.
 

@@ -19,56 +19,73 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-/**
- * Esta tela é responsável por cadastrar ou editar um item na despensa do usuário.
- * Ela consome a API para sugerir nomes de alimentos e salvar/atualizar no banco de dados.
- */
+
+ //A tela AdicionarItem é responsável por cadastrar ou editar um item na despensa do usuário.
+ //Ela consome a API para sugerir nomes de alimentos e salvar/atualizar no banco de dados.
 class AdicionarItem : AppCompatActivity() {
 
-    private lateinit var binding: ActivityAdicionarItemBinding
-    private var dataVencimentoSelecionadaMs: Long = 0
-    private var listaDeSugestoesBackend: List<ModeloItemSugestao> = emptyList()
-    private var imagemSelecionada: String = "item_padrao.png"
+     //VARIÁVEIS DE CONTROLE (O que o app precisa lembrar enquanto o usuario digita)
+    private lateinit var binding: ActivityAdicionarItemBinding // essa sintaxe é um atalho para os componentes da tela.
+    private var dataVencimentoSelecionadaMs: Long = 0 // Guarda a data de validade em milissegundos.
+    private var listaDeSugestoesBackend: List<ModeloItemSugestao> = emptyList() // A lista de nomes que o servidor sugere.
+    private var imagemSelecionada: String = "item_padrao.png" // Nome da imagem que será salva (se o usuario não selecionar um item da lista padrão)
 
-    // [EDIÇÃO] Variável para controlar se estamos editando (-1 significa novo item)
+    // Essa variável serve para controlar se estamos editando. -1 significa novo item. Se for outro número, estamos editando um que já existe.
     private var idItemEdicao: Long = -1L
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityAdicionarItemBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+
+
+    override fun onCreate(savedInstanceState: Bundle?) { // É aqui que preparamos o esqueleto e os botões da tela.
+        super.onCreate(savedInstanceState) //Essa sintaxe ao Android para executar as configurações padrão de sistema.
+        binding = ActivityAdicionarItemBinding.inflate(layoutInflater) //aqui cria-se a conexão entre o código Kotlin e o lauout xml.
+        setContentView(binding.root) //Aqui define-se qual arquivo visual deve aparecer para o usuário (o conteúdo da tela).
 
         setSupportActionBar(binding.toolbarAdicionar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-        binding.toolbarAdicionar.setNavigationOnClickListener { finish() }
+        supportActionBar?.setDisplayHomeAsUpEnabled(true) //aqui habilito a setinha de voltar no topo da tela.
+        supportActionBar?.setDisplayShowTitleEnabled(false) //essa sintaxe remove o título padrão annona para ficar mais bonitinho
+        binding.toolbarAdicionar.setNavigationOnClickListener { finish() } //Ao clicar na setinha de voltar, a tela atual deve ser fechada (finish).
 
-        buscarSugestoesDoServidor()
+        buscarSugestoesDoServidor() //aqui faz-se uma chamada para a API pra buscar nomes de alimentos e sugerir enquanto o usuário digita.
 
-        // Configura as listas e calendários antes de preencher os dados de edição
+        // Configura as listas de categoria, local de arm. e calendários antes de preencher os dados de edição
         configurarListasDeEscolha()
         configurarValidadeECalendario()
 
-        // [EDIÇÃO] Verifica se recebemos dados para editar
+        //Verifica se recebemos dados para editar
         verificarSeEhEdicao()
 
+
+        //LÓGICA DO AUTOCOMPLETE (sugestões de nome)
+        //Quando o usuário clica em um nome sugerido (ex: clicou em "Leite"):
         binding.autoNomeAlimento.setOnItemClickListener { parent, _, position, _ ->
+
+            // Descobre qual nome foi clicado
             val nomeClicado = parent.getItemAtPosition(position).toString()
+
+            // Procura na lista que veio do servidor qual é o ícone e a categoria desse alimento.
             val itemEncontrado = listaDeSugestoesBackend.find { it.nome == nomeClicado }
+
             if (itemEncontrado != null) {
+                // Se encontrou, já seleciona a categoria certa no Spinner automaticamente.
                 binding.spinnerCategoria.setSelection(itemEncontrado.id_categoria)
+
+                // Guarda o nome do arquivo de imagem (ex: "leite.png") para salvar depois.
                 imagemSelecionada = itemEncontrado.imagem
+
+                // Atualiza a frase de dica (função que fiz mais abaixo).
                 atualizarDica()
             }
         }
 
+        //BOTÃO DE FINALIZAR
+        // Define a ação do botão principal (Adicionar ou Salvar Alterações).
         binding.btnAdicionarItem.setOnClickListener {
-            validarESalvar()
+            validarESalvar() //Antes de enviar para o banco, ele verifica se os campos estão preenchidos corretamente
         }
     }
 
-    // [EDIÇÃO] Função simples para identificar se a tela deve carregar dados de um item existente
-    private fun verificarSeEhEdicao() { //TODO CORRIGIR O  OME DESSA FUNÇÃO
+    //Função para identificar se a tela deve carregar dados de um item existente (se o usuario for editar)
+    private fun verificarSeEhEdicao() {
         val idRecebido = intent.getLongExtra("ITEM_ID", -1L)
         if (idRecebido != -1L) {
             idItemEdicao = idRecebido
@@ -101,6 +118,8 @@ class AdicionarItem : AppCompatActivity() {
         }
     }
 
+
+
     // Auxiliar para selecionar um item no Spinner baseado no nome
     private fun selecionarSpinnerPorTexto(spinner: Spinner, texto: String?) {
         val adapter = spinner.adapter as ArrayAdapter<String>
@@ -108,18 +127,25 @@ class AdicionarItem : AppCompatActivity() {
         if (posicao >= 0) spinner.setSelection(posicao)
     }
 
+
+     //FUNÇÃO DE API
+    // Esta função vai até o servidor buscar nomes de alimentos (que estejam na lista de itens padrão) para sugerir ao usuário.
     private fun buscarSugestoesDoServidor() {
+         // aqui pegamos o endereço do servidor e preparamos o Retrofit
         val urlApi = this.getString(R.string.api_base_url)
-        val retrofit = Retrofit.Builder().baseUrl(urlApi).addConverterFactory(GsonConverterFactory.create()).build()
+        val retrofit = Retrofit.Builder().baseUrl(urlApi).addConverterFactory(GsonConverterFactory.create()).build() //Tradutor de JSON para Kotlin
         val api = retrofit.create(ServicoApi::class.java)
 
+         //Usamos o lifecycleScope para que se o usuário fechar a tela, a busca pare na hora.
         lifecycleScope.launch {
             try {
-                val resposta = api.listarItensPadrao()
-                listaDeSugestoesBackend = resposta.listaDeSugestoes
-                val apenasNomes = listaDeSugestoesBackend.map { it.nome }
+                val resposta = api.listarItensPadrao() //Pedindo para a API a lista de itens padrão (sugestões)
+                listaDeSugestoesBackend = resposta.listaDeSugestoes //Guardamos a lista completa (com nomes, ícones e categorias) na nossa variável global.
+                val apenasNomes = listaDeSugestoesBackend.map { it.nome } //aqui extraímos apenas os nomes para mostrar na lista de sugestão do campo de texto.
+
+                //criando o adapter que vai mostrar esses nomes enquanto o usuário digita
                 val adapterSugestao = ArrayAdapter(this@AdicionarItem, android.R.layout.simple_dropdown_item_1line, apenasNomes)
-                binding.autoNomeAlimento.setAdapter(adapterSugestao)
+                binding.autoNomeAlimento.setAdapter(adapterSugestao) //Conectando esse adaptador ao campo de AutoComplete da tela.
             } catch (e: Exception) {
                 println("Erro ao buscar sugestões: ${e.message}")
             }
@@ -158,9 +184,15 @@ class AdicionarItem : AppCompatActivity() {
             Toast.makeText(this, "Preencha todos os campos de seleção", Toast.LENGTH_SHORT).show()
             return
         }
-        enviarParaOBanco()
+        enviarParaOBanco() //chamando a função que estou criando logo abaixo
     }
 
+
+
+
+
+     //A FUNÇÃO DE ENVIO
+     // Ela serve pra criar um item NOVO ou SALVAR as alterações de um item já existente.
     private fun enviarParaOBanco() {
         val secaoUsuario = SecaoUsuario(this)
         val userId = secaoUsuario.obterUserId() ?: 0
@@ -201,7 +233,7 @@ class AdicionarItem : AppCompatActivity() {
 
                 if (resp.isSuccessful) {
                     LocalBroadcastManager.getInstance(this@AdicionarItem)
-                        .sendBroadcast(Intent("ATUALIZAR_LISTA_ANONA"))
+                        .sendBroadcast(Intent("ATUALIZAR_LISTA_ANONA")) //o grito nvamente
 
                     // Decide a mensagem dependendo se é adição ou edição
                     val mensagem = if (idItemEdicao == -1L) {
@@ -219,6 +251,10 @@ class AdicionarItem : AppCompatActivity() {
             }
         }
     }
+
+
+
+
 
     private fun configurarListasDeEscolha() {
         val categorias = listOf("Selecione uma categoria", "Bebidas", "Carnes e Peixes", "Enlatados", "Grãos", "Hortifruti", "Pães, Massas e Doces", "Laticínios", "Ovos", "Higiene, Perfumaria e Farmacia", "Limpeza")
@@ -238,29 +274,46 @@ class AdicionarItem : AppCompatActivity() {
         binding.spinnerMedida.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, medidas).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
     }
 
+
+
+
+
+
     private fun configurarValidadeECalendario() {
-        binding.editDataExibicao.isEnabled = false
+        binding.editDataExibicao.isEnabled = false //Começa com o campo de data desativado (cinza).
+
+        // Se o usuário marcar/desmarcar a caixinha Possui validade:
         binding.checkValidade.setOnCheckedChangeListener { _, isChecked ->
-            binding.editDataExibicao.isEnabled = isChecked
-            if (!isChecked) { binding.editDataExibicao.setText(""); dataVencimentoSelecionadaMs = 0 }
+            binding.editDataExibicao.isEnabled = isChecked //Ativa ou desativa o campo.
+            if (!isChecked) { binding.editDataExibicao.setText(""); dataVencimentoSelecionadaMs = 0 } //Limpa o texto se desmarcar.
         }
-        binding.editDataExibicao.setOnClickListener {
+        binding.editDataExibicao.setOnClickListener { //Ao clicar no campo de texto da data, abre o calendário do Android.
             val c = Calendar.getInstance()
             DatePickerDialog(this, { _, year, month, day ->
-                val dataFormatada = String.format("%02d/%02d/%d", day, month + 1, year)
+                val dataFormatada = String.format("%02d/%02d/%d", day, month + 1, year) //formatando para o usuário ler: DD/MM/AAAA.
                 binding.editDataExibicao.setText(dataFormatada)
+
+                // Converte a data escolhida para Milissegundos, muito imoortante para cáculos matemáticos.
                 val cal = Calendar.getInstance().apply { set(year, month, day, 23, 59, 59) }
                 dataVencimentoSelecionadaMs = cal.timeInMillis
             }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show()
         }
     }
 
+
+
+
+     // Transforma o texto "20/05/2026" em um objeto do tipo Date.
     private fun obterDataValidade(binding: ActivityAdicionarItemBinding): Date? {
         val str = binding.editDataExibicao.text.toString()
         if (str.isBlank()) return null
         return try { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(str) } catch (e: Exception) { null }
     }
 
+
+
+
+     // Transforma o objeto Date em uma String formatada para o Banco de Dados (ex: 2026-05-20).
     private fun dateToString(date: Date?, pattern: String): String? {
         if (date == null) return null
         return SimpleDateFormat(pattern, Locale.getDefault()).format(date)

@@ -75,8 +75,7 @@ class TelaDespensaFragment : Fragment() {
 
 
     //FUNÇÕES DE CICLO DE VIDA
-    // Aqui o app desenha o visual da tela usando o arquivo XML
-    override fun onCreateView(
+    override fun onCreateView( //O onCreateView é exclusivo dos Fragments. É aqui que o Fragment desenhao xml e o devolve para a Activity.
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
@@ -94,7 +93,7 @@ class TelaDespensaFragment : Fragment() {
 
 
 
-    override fun onStart() {
+    override fun onStart() { //aqui a tela se torna visível para o usuário, mas ele ainda não pode interagir com ela.
         super.onStart()
 
         //Registrando o listener do app quando a tela inicia
@@ -128,7 +127,7 @@ class TelaDespensaFragment : Fragment() {
         val cardFiltro = view.findViewById<View>(R.id.card_filtro_status)
         val txtStatus = view.findViewById<TextView>(R.id.txt_status_selecionado)
 
-        // Ajustado: Agora o texto inicial padrão é "Todos os Itens"
+        //O texto inicial padrão é "Todos os Itens"
         txtStatus.text = "Todos os Itens"
 
         // Quando o usuário clica na barra de filtro, sobe uma listinha de opções
@@ -288,8 +287,9 @@ class TelaDespensaFragment : Fragment() {
 
 
 
-    //TODO
-    // --- NOVA FUNÇÃO: REAPLICA O FILTRO SELECIONADO NA TELA ---
+
+
+    // FUNÇÃO QUE REAPLICA O FILTRO SELECIONADO NA TELA
     // Esta função garante que, ao mudar um status, o app continue respeitando o filtro ativo (ex: Crítico) [novo]
     private fun atualizarListaNaTela() {
         val listaFiltrada = when (filtroAtual) {
@@ -303,6 +303,14 @@ class TelaDespensaFragment : Fragment() {
         }
         adapterGlobal?.submitList(listaFiltrada.toList())
     }
+
+
+
+
+
+
+
+
 
     //CÁLCULO DO PRAZO E COR (FLAG) PARA CADA ITEM DA LISTA
     //Essa função percorre a lista e define as cores baseadas no tempo de validade
@@ -351,21 +359,28 @@ class TelaDespensaFragment : Fragment() {
 
 
 
-    // Esta função mostra o menu de "Editar", "Consumir" ou "Excluir" cada alimento
+    // Esta função mostra o menu de "Editar", "Consumir" ou "Excluir" que aparece quando clica nos 3 pontinhos do item
     private fun mostrarMenuOpcoes(anchorView: View, item: Item) {
-        val popup = PopupMenu(requireContext(), anchorView)
+        val popup = PopupMenu(requireContext(), anchorView) //o popUp é aquela janelinha que pula na tela
         popup.menu.add("Editar item")
 
-        // Verifica se o item já está sendo usado para mudar o texto do botão
+        //LÓGICA DINÂMICA: Se o item já estiver aberto, o menu muda o nome do botão pra "Por consumir".
+        // Se estiver fechado, oferece "Consumir item".
         val textoConsumo = if (item.estado == "Consumindo") "Por consumir" else "Consumir item"
         popup.menu.add(textoConsumo)
         popup.menu.add("Excluir item")
 
+
+
+        // AQUI ESTÁ ESCUTANDO O CLIQUE, o que vai acontecer quando o usuario escolhe uma opção
         popup.setOnMenuItemClickListener { menuIt ->
             when (menuIt.title) {
                 "Editar item" -> {
-                    // [AJUSTE EDIÇÃO] Enviamos os dados EXATOS que a tela AdicionarItem espera receber
+
+                    //CAMINHO DE EDIÇÃO Esse é o caminho da Despensa para a Tela de Cadastro(Edição)
                     val intent = Intent(requireContext(), AdicionarItem::class.java)
+
+                    // Colocamos todos os dados ATUAIS do alimento para a outra tela já abrir preenchida. Acaba com o problema da tela vazia ao editar o item.
                     intent.putExtra("ITEM_ID", item.id)
                     intent.putExtra("NOME", item.nome)
                     intent.putExtra("QUANTIDADE", item.id) // Você pode ajustar se tiver o campo qtd real no objeto
@@ -375,7 +390,7 @@ class TelaDespensaFragment : Fragment() {
                     intent.putExtra("CONSUMINDO", item.consumindo == 1)
                     intent.putExtra("IMAGEM", item.imagem)
 
-                    // Formata a data para exibir no campo de texto do formulário
+                    //// FORMATANDO A DATA: aqui transformarmos a data do banco no formato que humanos entendem: dia/mês/ano
                     if (item.possuiDataValidade == 1 && item.dataValidade != null) {
                         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                         intent.putExtra("DATA_VALIDADE", sdf.format(item.dataValidade))
@@ -383,42 +398,64 @@ class TelaDespensaFragment : Fragment() {
 
                     startActivity(intent)
                 }
-                "Consumir item", "Por consumir" -> {
-                    // Lógica de consumo rápido (Offline por enquanto até integrar o PUT de consumo)
-                    val novoEstadoNum = if (item.consumindo == 1) 0 else 1
-                    val index = listaCompleta.indexOf(item)
-                    if (index != -1) {
-                        listaCompleta[index] = item.copy(consumindo = novoEstadoNum).apply { mapearCampos(requireContext()) }
-                        atualizarListaNaTela()
-                    }
-                }
+
+
+
+                    //CAMINHO DE CONSUMIR ITEM
+                    // TODO Não usei essa função. Ela muda o estado na tela, mas como ainda não FIZ a rota no Backend,
+                    //os dados não são salvos permanentemente e resetam ao reiniciar o app.
+//                "Consumir item", "Por consumir" -> {
+//                    // Lógica de consumo rápido (Offline por enquanto até integrar o PUT de consumo)
+//                    val novoEstadoNum = if (item.consumindo == 1) 0 else 1
+//                    val index = listaCompleta.indexOf(item)
+//                    if (index != -1) {
+//                        listaCompleta[index] = item.copy(consumindo = novoEstadoNum).apply { mapearCampos(requireContext()) }
+//                        atualizarListaNaTela()
+//                    }
+//                }
+
+
+
+               //CAMINHO DE EXCLUIR ITEM
+                //Se o usuário clicar na opção "Excluir item" no menu flutuante
+                // Chamamos a função confirmarExclusao passando o ite' escolhido.
+                // Esta função vai abrir aquela janelinha (AlertDialog) perguntando
+                // o motivo da exclusão (se consumiu, se venceu, etc).
                 "Excluir item" -> confirmarExclusao(item)
             }
-            true
+            true //true dizao Android que o clique foi processado com sucesso.
         }
+        popup.show() // Por fim, o popup.show() é o comando que faz o menu realmente aparecer
+        // na tela para o usuário ver. Ela é muito importante!
         popup.show()
     }
 
     // Janela que pergunta o motivo antes de apagar o item da lista
     private fun confirmarExclusao(item: Item) {
-        // Ajustado: Removido "Item doado" da lista de motivos de exclusão
         val motivos = arrayOf("Item consumido", "Item vencido/estragado", "Outro")
         var motivoSelecionado = motivos[0]
-
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Excluir \"${item.nome}\"")
+
+            //Cria a lista de seleção única (os botões redondos de marcar).
             .setSingleChoiceItems(motivos, 0) { _, which -> motivoSelecionado = motivos[which] }
+
+            //AÇÃO DE CONFIRMAR: Só aqui o item é realmente enviado para a lixeira!
             .setPositiveButton("Confirmar Exclusão") { d, _ ->
-                deletarItem(item.id.toInt(), motivoSelecionado)
-                d.dismiss()
+                deletarItem(item.id.toInt(), motivoSelecionado) // aqui chamo a função deletarItem que fala com a API. (A que criei mais ambaixo nesse arquivo)
+                d.dismiss() // Fecha a janelinha.
             }
-            .setNegativeButton("Cancelar") { d, _ -> d.dismiss() }
+            .setNegativeButton("Cancelar") { d, _ -> d.dismiss() }// Essa ação apenas fecha a janela se o usuário cancelar a exclusão.
             .create()
 
-        dialog.show()
+        dialog.show() //doalog(show) faz a janela aparecer na tela.
+
+        //Isso aqui é só pra mudar as cores dos botões excluir e cancelar
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.vermelho_murango))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.GRAY)
     }
+
+
 
     // Esta função conta quantos produtos têm em cada cor do semáforo (1, 2, 3 ou 4)
     private fun atualizarContadores(view: View) {
@@ -445,22 +482,31 @@ class TelaDespensaFragment : Fragment() {
 
         val urlApi = requireContext().getString(R.string.api_base_url)
         val retrofit = Retrofit.Builder().baseUrl(urlApi).addConverterFactory(GsonConverterFactory.create()).build()
+
+        // aqui o Retrofit cria uma instância (um objeto real) baseada no meu contrato (lá em servicoApi)
         val api = retrofit.create(ServicoApi::class.java)
 
 
         //esse viewLife... serve para não travar a tela enquanto se faz a requisição
         viewLifecycleOwner.lifecycleScope.launch {
             try {
+
+                // Essa parte é muito importante. É Aqui que a função do Fragment TelaDesepensa CHAMA a função que eu criei na Interface
                 val resp = api.deletarItemUsuario(id_item,bodyDelecao)
 
+                //VERIFICANDO O SUCESSO: se o servidor respondeu "OK" e conseguiu deletar
                 if (resp.isSuccessful) {
+
+                    // O GRITO DE ATUALIZAÇÃO (Broadcast):
+                    //Avisamos o app inteiro que a lista mudou. O 'recarregarReceiver' vai ouvir
+                    //esse sinal e chamar a API para atualizar a tela da despensa na hora.
                     LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(Intent("ATUALIZAR_LISTA_ANONA"))
                     Toast.makeText(requireContext(), "Item excluido", Toast.LENGTH_SHORT).show()
                 }else{
                     Toast.makeText(requireContext(), "Erro ao deletar item. ", Toast.LENGTH_SHORT).show()
 
                 }
-            } catch (e: Exception) {
+            } catch (e: Exception) { //tratamento pro caso da rde cair, o app não fechar, só manda um aviso pro usuario
                 val erro = e.message
                 Toast.makeText(requireContext(), "Erro ao conectar com o servidor", Toast.LENGTH_SHORT).show()
             }
@@ -471,9 +517,16 @@ class TelaDespensaFragment : Fragment() {
 
 
 
-    //Este receptor fica "ouvindo" o aviso de que um item foi salvo para recarregar a lista na hora
+
+    //O RECEPTOR: Criamos um objeto que funciona como um rádio
+    //Ele herda de BroadcastReceiver, que é a ferramenta do Android para ouvir mensagens do sistema.
+    //Essse receptor fica ouvindo o aviso de que um item foi salvo para recarregar a lista na hora
     private val recarregarReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+
+            //Assim que ele recebe o aviso de que algo mudou (um item foi salvo ou excluído),
+            //ele chama a função carregarItensApi().
+            //Isso faz com que o app busque os dados novos no servidor e atualize a lista na tela na hora.
             carregarItensApi()
         }
     }
