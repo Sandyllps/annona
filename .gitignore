@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 *.iml
 .gradle
 /local.properties
@@ -18,3 +17,15 @@ local.properties
 /.idea/gradle.xml
 /.idea/runConfigurations.xml
 /.idea/vcs.xml
+node_modules/
+api/node_modules/
+.env
+api/.env
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+.kotlin/
+Documentacao_Funcional_Annona.docx
+/.idea/.name
+/.idea/markdown.xml

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -19,6 +20,14 @@
             android:exported="false" />
         <activity
             android:name=".AdicionarItem"
+            android:exported="false"
+            android:theme="@style/Theme.ANNONA" />
+        <activity
+            android:name=".TelaCadastro"
+            android:exported="false"
+            android:theme="@style/Theme.ANNONA" />
+        <activity
+            android:name=".HistoricoActivity"
             android:exported="false"
             android:theme="@style/Theme.ANNONA" />
         <activity

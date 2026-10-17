@@ -32,9 +32,11 @@ class DetalheReceitaActivity : AppCompatActivity() {
         // Dados vindos do Fragment
         val nome = intent.getStringExtra("NOME") ?: ""
 
-        // Procura o nome da receita na lista
-        val receita = ReceitasData.receitas.find {
-            it.nome == nome
+        // Procura o nome da receita na lista carregada da API ou no catálogo padrão
+        val receita = ReceitasData.receitasAtuais.find {
+            it.nome.equals(nome, ignoreCase = true)
+        } ?: ReceitasData.receitas.find {
+            it.nome.equals(nome, ignoreCase = true)
         }
         if (receita == null) { // Caso não encontre, encerra a Activity
             finish()

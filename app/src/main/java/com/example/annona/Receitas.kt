@@ -1,8 +1,6 @@
 package com.example.annona
 
-// Classe que representa uma receita completa
-// Essa classe é usada para armazenar todas as informações de uma receita,
-// como nome, descrição, tempo de preparo, porções, ingredientes, modo de preparo, tag e imagem
+// Classe que representa uma receita completa (RF17, RF18, RF19, RF22, RN14)
 data class Receita(
     val nome: String,
     val descricao: String,
@@ -11,11 +9,14 @@ data class Receita(
     val ingredientes: List<String>,
     val modoPreparo: List<EtapaPreparo>,
     val tag: String,
-    val imagem: Int
+    val imagem: Int,
+    // Lista dos itens padrão ligados a esta receita (para sugestão inteligente pela despensa - RF17, RN14)
+    val itensPadraoRelacionados: List<String> = emptyList(),
+    // Lista de ingredientes que o usuário tem atualmente na despensa
+    var ingredientesDisponiveis: List<String> = emptyList()
 )
 
-// Essa classe representa uma etapa do modo de preparo de uma receita
-// Ela contém informações como o número da etapa, a descrição da etapa e a imagem correspondente
+// Representa uma etapa do modo de preparo de uma receita
 data class EtapaPreparo(
     val numero: Int,
     val descricao: String,
