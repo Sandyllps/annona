@@ -41,7 +41,7 @@
             android:paddingVertical="6dp"
             android:text="Info"
             android:textStyle="italic"
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:textColor="@color/marrom_cafe"
             android:drawableStart="@drawable/ic_informacao"
             android:background="@drawable/bg_dialog_arredondado"
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:padding="14dp"
-                android:text="Aqui estão listados alimentos próximos do vencimento. Caso perceba que não conseguirá consumi-los a tempo, você pode gerar uma lista para doação e compartilhar."
+                android:text="Aqui estão listados alimentos próximos do vencimento. Caso perceba que não conseguirá consumi-los a tempo, você pode gerar uma lista para doação, copiar o texto e compartilhar."
                 android:textColor="@color/marrom_escuro"
                 android:textSize="13sp"
                 android:fontFamily="@font/century_gothic"/>
@@ -74,29 +74,51 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_doacoes"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="7dp"
             android:layout_marginStart="5dp"
             android:layout_weight="1"
             android:paddingHorizontal="2dp"
             android:clipToPadding="false"/>
 
-        <!-- BOTÃO -->
-        <Button
-            android:id="@+id/btn_gerar_lista_doacao"
+        <!-- BOTÕES DE AÇÃO: GERAR RELATÓRIO E COPIAR TEXTO DIRETO -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:paddingVertical="16dp"
-            android:text="Gerar lista de doação"
-            android:textAllCaps="false"
-            android:textColor="@color/bege_champagne"
-            android:textSize="18dp"
-            android:backgroundTint="@color/bege_chai"
-            android:fontFamily="@font/century_gothic"
-            android:textStyle="bold"/>
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp">
+
+            <Button
+                android:id="@+id/btn_gerar_lista_doacao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:paddingVertical="14dp"
+                android:text="Gerar lista de doação"
+                android:textAllCaps="false"
+                android:textColor="@color/bege_champagne"
+                android:textSize="15sp"
+                android:backgroundTint="@color/bege_chai"
+                android:fontFamily="@font/century_gothic"
+                android:textStyle="bold"/>
+
+            <Button
+                android:id="@+id/btn_copiar_lista_doacao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:paddingVertical="14dp"
+                android:paddingHorizontal="16dp"
+                android:text="Copiar texto"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:backgroundTint="@color/verde_abacate"
+                android:fontFamily="@font/century_gothic"
+                android:textStyle="bold"/>
+        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>

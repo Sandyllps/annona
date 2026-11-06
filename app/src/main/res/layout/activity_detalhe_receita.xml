@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootDetalheReceita"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="#FCF3EA">
 
     <androidx.core.widget.NestedScrollView
@@ -14,7 +16,8 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="24dp">
 
             <!-- IMAGEM -->
             <FrameLayout
@@ -28,14 +31,20 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/feijoada_capa" />
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/btnVoltar"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_margin="16dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:padding="6dp"
+                    android:background="@android:color/transparent"
                     android:src="@drawable/btn_voltar_receitas"
-                    android:contentDescription="Voltar"
-                    android:scaleType="center"
+                    android:contentDescription="Voltar para Receitas"
+                    android:scaleType="fitCenter"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:elevation="12dp"
                     android:layout_gravity="top|start" />
 
                 <!-- TAG sobre a imagem -->
@@ -91,7 +100,6 @@
                         android:id="@+id/txtPorcoesReceita"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:text="Porções: 4"
                         android:textSize="14sp"
                         android:textColor="#6D4C41" />
@@ -140,7 +148,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="3dp"
-
                 android:textSize="13sp"
                 android:textColor="#5D4037" />
 
@@ -166,6 +173,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"/>
+
+            <Button
+                android:id="@+id/btnVoltarInferior"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="16dp"
+                android:text="Voltar para Receitas"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/verde_abacate" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

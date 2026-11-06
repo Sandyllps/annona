@@ -178,7 +178,7 @@ Ao iniciar a API, o arquivo [`api/bd.js`](api/bd.js) lê automaticamente o scrip
 3. **Usando em celular físico (opcional)**:
    - Caso queira testar em um aparelho físico na mesma rede Wi-Fi, abra o app em **Perfil > Ajustes** e altere a URL para `http://SEU_IP_LOCAL:8080/`.
 4. Crie uma nova conta em **"Criar conta"** ou entre com um dos usuários de teste já cadastrados automaticamente:
-   - E-mail: `sandy@gmail.com`, `ana@gmail.com` ou `walyson@gmail.com`
+   - E-mail: `sandy@gmail.com`, `ana@gmail.com`, `walysson@gmail.com` ou `natalia@gmail.com`
    - Senha: `123`
 
 ---
@@ -188,6 +188,6 @@ Ao iniciar a API, o arquivo [`api/bd.js`](api/bd.js) lê automaticamente o scrip
 - **Sandy Lopes Silva**
 - **Ana Francisca Mendes dos Santos**
 - **Natália**
-- **Walyson Gabriel**
+- **Walysson Gabriel**
 
 Disciplina: **Programação para Dispositivos Móveis II** — Prof. Mayana.

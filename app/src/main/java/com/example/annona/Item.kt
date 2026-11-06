@@ -110,13 +110,20 @@ fun Item.mapearCampos(context: Context) {
         R.drawable.item_padrao
     }
 
-    // Caso a API já tenha enviado o prazo e flag calculados no servidor, respeitamos;
-    // senão calculamos comparando apenas as datas locais sem erro de meia-noite/fuso (B03, B14, RN01, RN02)
-    val resultadoSemaforo = calcularSemaforoData(possuiDataValidade == 1, dataValidade)
-    flag = resultadoSemaforo.first
-    diasRestantes = resultadoSemaforo.second
-    prazo = resultadoSemaforo.third
-    dataVencimentoMs = dataValidade?.time
+    // Proteção explícita para itens sem data de validade: nunca ficam vencidos, sempre flag 4 (Seguro - Verde)
+    val temDataValida = (possuiDataValidade == 1) && (dataValidade != null)
+    if (!temDataValida) {
+        flag = 4
+        diasRestantes = null
+        prazo = ""
+        dataVencimentoMs = null
+    } else {
+        val resultadoSemaforo = calcularSemaforoData(true, dataValidade)
+        flag = resultadoSemaforo.first
+        diasRestantes = resultadoSemaforo.second
+        prazo = resultadoSemaforo.third
+        dataVencimentoMs = dataValidade?.time
+    }
 }
 
 // Função única para calcular semáforo comparando apenas datas civis (ano, mês, dia) (RN01, RN02, B03, B14)
@@ -125,15 +132,20 @@ fun calcularSemaforoData(possuiValidade: Boolean, dataValidade: Date?): Triple<I
         return Triple(4, null, "")
     }
 
-    val calHoje = Calendar.getInstance().apply {
+    val calVal = Calendar.getInstance().apply {
+        time = dataValidade
         set(Calendar.HOUR_OF_DAY, 0)
         set(Calendar.MINUTE, 0)
         set(Calendar.SECOND, 0)
         set(Calendar.MILLISECOND, 0)
     }
 
-    val calVal = Calendar.getInstance().apply {
-        time = dataValidade
+    // Caso alguma data nula tenha vindo como epoch (1970), trata como item sem validade (Seguro)
+    if (calVal.get(Calendar.YEAR) <= 1970) {
+        return Triple(4, null, "")
+    }
+
+    val calHoje = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, 0)
         set(Calendar.MINUTE, 0)
         set(Calendar.SECOND, 0)
@@ -145,7 +157,8 @@ fun calcularSemaforoData(possuiValidade: Boolean, dataValidade: Date?): Triple<I
 
     return when {
         dias < 0 -> Triple(1, dias, "VENCIDO")
-        dias == 0 -> Triple(2, 0, "0 DIAS")
+        dias == 0 -> Triple(2, 0, "HOJE")
+        dias == 1 -> Triple(2, 1, "1 DIA")
         dias <= 3 -> Triple(2, dias, "$dias DIAS")
         dias <= 7 -> Triple(3, dias, "$dias DIAS")
         else -> Triple(4, dias, "$dias DIAS")

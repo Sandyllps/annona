@@ -13,21 +13,116 @@
         android:orientation="vertical"
         android:paddingTop="20dp">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:paddingHorizontal="20dp">
+
             <TextView
                 android:id="@+id/txt_titulo_app"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:layout_marginVertical="10dp"
                 android:text="annona"
                 android:textColor="@color/marrom_escuro"
                 android:textSize="32sp"
                 android:fontFamily="@font/century_gothic" />
-        </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btn_alerta_topo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_popup_reminder"
+                android:contentDescription="Alertas de validade"
+                app:tint="@color/vermelho_mais_clarinho" />
+        </RelativeLayout>
+
+        <!-- BANNER VISUAL HARMÔNICO DE RESUMO DE VALIDADE -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_alerta_despensa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/bege_mel"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="10dp">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    app:cardBackgroundColor="@color/bege_coco"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="center"
+                        android:src="@android:drawable/ic_popup_reminder"
+                        app:tint="@color/verde_escurao" />
+                </androidx.cardview.widget.CardView>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/century_gothic"
+                        android:text="Avisos de validade na despensa"
+                        android:textColor="@color/marrom_expresso"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txt_resumo_alerta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/century_gothic"
+                        android:text="Toque para conferir os itens prioritários"
+                        android:textColor="#7D6B5D"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="26dp"
+                    app:cardBackgroundColor="@color/verde_folha"
+                    app:cardCornerRadius="13dp"
+                    app:cardElevation="0dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/century_gothic"
+                        android:gravity="center"
+                        android:paddingHorizontal="10dp"
+                        android:text="Ver"
+                        android:textColor="@color/white"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <LinearLayout
             android:id="@+id/layout_filtros"
@@ -128,7 +223,7 @@
             android:id="@+id/card_filtro_status"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             app:cardBackgroundColor="#E3F2FD"

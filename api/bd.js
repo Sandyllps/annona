@@ -62,6 +62,7 @@ function adaptarSqlParaSqlite(sql) {
         .replace(/INT\s+AUTO_INCREMENT\s+PRIMARY\s+KEY/gi, "INTEGER PRIMARY KEY AUTOINCREMENT")
         .replace(/CREATE\s+TABLE\s+`/gi, "CREATE TABLE IF NOT EXISTS `")
         .replace(/CREATE\s+TABLE\s+(?!IF\s+NOT\s+EXISTS)/gi, "CREATE TABLE IF NOT EXISTS ")
+        .replace(/INSERT\s+INTO\s+itens_usuario/gi, "INSERT OR REPLACE INTO itens_usuario")
         .replace(/INSERT\s+INTO/gi, "INSERT OR IGNORE INTO")
         .replace(/DATE_ADD\s*\(\s*CURDATE\s*\(\s*\)\s*,\s*INTERVAL\s+(-?\d+)\s+DAY\s*\)/gi, (_, dias) => {
             const n = Number(dias)
@@ -96,6 +97,45 @@ function criarPoolSqliteLocal() {
         } catch (err) {
             console.warn("Aviso ao executar comando inicial no SQLite:", err.message)
         }
+    }
+
+    // Garante que alimentos cadastrados sem data de validade assumam por padrão hoje + 7 dias
+    // e mantém as datas dos itens de exemplo (1..69) sempre fidedignas em relação à data atual
+    try {
+        db.exec("UPDATE usuarios SET email = 'walysson@gmail.com', nome_usuario = 'Walysson' WHERE id_usuario = 3;")
+        db.exec("UPDATE itens_usuario SET possui_data_validade = 1, data_validade = date('now', 'localtime', '+7 day'), id_flag = 3 WHERE (possui_data_validade = 0 OR data_validade IS NULL) AND id_categoria <= 8;")
+        db.exec("UPDATE itens_usuario SET id_flag = 4 WHERE possui_data_validade = 0 OR data_validade IS NULL;")
+        const mapaDatasFidedignas = [
+            ["Pão", "-1 day", 1],
+            ["Iogurte", "-2 day", 1],
+            ["Peixe", "+1 day", 2],
+            ["Tomates", "+1 day", 2],
+            ["Leite", "+2 day", 2],
+            ["Frango", "+3 day", 2],
+            ["Queijo", "+4 day", 3],
+            ["Cenoura", "+5 day", 3],
+            ["Ovos", "+6 day", 3],
+            ["Biscoito", "+7 day", 3],
+            ["Batatas", "+10 day", 4],
+            ["Cebola", "+12 day", 4],
+            ["Café", "+15 day", 4],
+            ["Manteiga", "+18 day", 4],
+            ["Farinha de Trigo", "+22 day", 4],
+            ["Arroz", "+25 day", 4],
+            ["Feijão", "+28 day", 4],
+            ["Macarrão", "+30 day", 4],
+            ["Açúcar", "+35 day", 4],
+            ["Milho em Conserva", "+40 day", 4],
+            ["Banana", "-2 day", 1],
+            ["Suco", "+2 day", 2]
+        ]
+        const stmtUpdate = db.prepare(
+            "UPDATE itens_usuario SET data_validade = date('now', 'localtime', ?), id_flag = ? WHERE id_item_usuario <= 92 AND nome = ?"
+        )
+        for (const [nome, offset, flag] of mapaDatasFidedignas) {
+            stmtUpdate.run(offset, flag, nome)
+        }
+    } catch {
     }
 
     console.log("📦 Banco de dados local (SQLite) inicializado automaticamente a partir de scripts_bd/script.sql!")

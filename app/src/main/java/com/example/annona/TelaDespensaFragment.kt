@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
@@ -94,6 +95,14 @@ class TelaDespensaFragment : Fragment() {
             popup.show()
         }
 
+        // Botão de sino no topo e Banner de Alerta para abrir o resumo de alertas de validade
+        view.findViewById<View>(R.id.btn_alerta_topo)?.setOnClickListener {
+            mostrarDialogoAlertaItens(txtStatus)
+        }
+        view.findViewById<View>(R.id.card_alerta_despensa)?.setOnClickListener {
+            mostrarDialogoAlertaItens(txtStatus)
+        }
+
         // Configurar a lista de produtos (RecyclerView)
         val rv = view.findViewById<RecyclerView>(R.id.rvItems)
         rv.layoutManager = LinearLayoutManager(requireContext())
@@ -149,12 +158,11 @@ class TelaDespensaFragment : Fragment() {
         return SecaoUsuario(requireContext()).obterUserId()
     }
 
-    // Busca a despensa do usuário na API, ordena por prioridade e atualiza contadores/notificações (RF05, RF10, RF12, RN10, B03, B05, B06, B08, B14, B15)
+    // Busca a despensa do usuário na API, ordena por prioridade e atualiza contadores/notificações
     private fun carregarItensApi() {
         val ctx = context ?: return
         val userId = obterUserIdSegura()
         if (userId == null) {
-            // B08: Se não houver usuário logado, volta ao login em vez de usar id 1
             val intent = Intent(ctx, TelaLogin::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -166,7 +174,6 @@ class TelaDespensaFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                // Sincroniza listas de apoio caso o servidor responda em /infoGeral (RF23)
                 try {
                     val info = api.buscarInfoGeral()
                     atualizarListasDeApoio(info)
@@ -196,13 +203,15 @@ class TelaDespensaFragment : Fragment() {
                 )
 
                 atualizarListaNaTela()
-                view?.let { atualizarContadores(it) }
+                view?.let {
+                    atualizarContadores(it)
+                    atualizarBannerEAlertas(it)
+                }
 
-                // RF16 / RN15: Dispara alerta local caso existam itens críticos/vencidos e notificações estejam ativas
+                // RF16 / RN15: Dispara alerta de notificação caso existam itens críticos/vencidos/em atenção
                 NotificacaoValidadeHelper.verificarENotificar(requireContext(), listaCompleta)
 
             } catch (e: Exception) {
-                // B06 / RNF11: Não ignorar erros silenciosamente; registrar no Logcat e avisar o usuário
                 Log.e("TelaDespensa", "Falha ao carregar itens da despensa", e)
                 if (isAdded) {
                     Toast.makeText(
@@ -213,6 +222,165 @@ class TelaDespensaFragment : Fragment() {
                 }
             }
         }
+    }
+
+    // Atualiza o banner de alerta na tela e exibe o popup de alerta de validade ao abrir a despensa
+    private fun atualizarBannerEAlertas(rootView: View) {
+        val ctx = context ?: return
+        val session = SecaoUsuario(ctx)
+        val cardAlerta = rootView.findViewById<View>(R.id.card_alerta_despensa)
+        val txtResumo = rootView.findViewById<TextView>(R.id.txt_resumo_alerta)
+        val txtStatus = rootView.findViewById<TextView>(R.id.txt_status_selecionado)
+
+        val vencidos = listaCompleta.count { it.flag == 1 }
+        val criticos = listaCompleta.count { it.flag == 2 }
+        val atencao = listaCompleta.count { it.flag == 3 }
+
+        if (!session.notificacoesAtivas() || (vencidos == 0 && criticos == 0 && atencao == 0)) {
+            cardAlerta?.visibility = View.GONE
+            return
+        }
+
+        val partes = mutableListOf<String>()
+        if (criticos > 0) partes.add("$criticos crítico(s)")
+        if (atencao > 0) partes.add("$atencao em atenção")
+        if (vencidos > 0) partes.add("$vencidos vencido(s)")
+
+        txtResumo?.text = partes.joinToString("  •  ")
+        cardAlerta?.visibility = View.VISIBLE
+
+        if (!NotificacaoValidadeHelper.alertaDialogExibidoNaSessao && (criticos > 0 || vencidos > 0)) {
+            NotificacaoValidadeHelper.alertaDialogExibidoNaSessao = true
+            mostrarDialogoAlertaItens(txtStatus)
+        }
+    }
+
+    private fun formatarPrazoElegante(item: Item): String {
+        val sdf = SimpleDateFormat("dd/MM", Locale("pt", "BR"))
+        val dataCurta = item.dataValidade?.let { sdf.format(it) } ?: ""
+        val dias = item.diasRestantes
+        val prazo = when {
+            item.flag == 1 -> "Vencido"
+            dias == 0 -> "Vence hoje"
+            dias == 1 -> "Falta 1 dia"
+            dias != null && dias > 1 -> "Faltam $dias dias"
+            else -> item.prazo?.lowercase()?.replaceFirstChar { it.uppercase() }.orEmpty()
+        }
+        return if (dataCurta.isNotEmpty() && prazo.isNotEmpty()) "$prazo ($dataCurta)" else prazo.ifEmpty { dataCurta }
+    }
+
+    private fun adicionarLinhaItemDialog(
+        container: LinearLayout,
+        item: Item,
+        corTextoPrazo: Int
+    ) {
+        val ctx = container.context
+        val linha = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER_VERTICAL
+            setPadding(4, 8, 4, 8)
+        }
+
+        val txtNome = TextView(ctx).apply {
+            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+            text = "•  ${item.nome}"
+            textSize = 13f
+            setTextColor(android.graphics.Color.parseColor("#4A3B31"))
+            typeface = androidx.core.content.res.ResourcesCompat.getFont(ctx, R.font.century_gothic)
+        }
+
+        val txtPrazo = TextView(ctx).apply {
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            text = formatarPrazoElegante(item)
+            textSize = 11.5f
+            setTextColor(corTextoPrazo)
+            setTypeface(
+                androidx.core.content.res.ResourcesCompat.getFont(ctx, R.font.century_gothic),
+                android.graphics.Typeface.BOLD
+            )
+        }
+
+        linha.addView(txtNome)
+        linha.addView(txtPrazo)
+        container.addView(linha)
+    }
+
+    private fun mostrarDialogoAlertaItens(txtStatus: TextView?) {
+        val ctx = context ?: return
+        val criticos = listaCompleta.filter { it.flag == 2 }
+        val atencao = listaCompleta.filter { it.flag == 3 }
+        val vencidos = listaCompleta.filter { it.flag == 1 }
+
+        val dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_alerta_validade, null)
+        val dialog = AlertDialog.Builder(ctx)
+            .setView(dialogView)
+            .create()
+
+        val secaoCritico = dialogView.findViewById<View>(R.id.secao_alerta_critico)
+        val badgeCritico = dialogView.findViewById<TextView>(R.id.badge_qtd_critico)
+        val listaCritico = dialogView.findViewById<LinearLayout>(R.id.lista_itens_critico)
+
+        val secaoAtencao = dialogView.findViewById<View>(R.id.secao_alerta_atencao)
+        val badgeAtencao = dialogView.findViewById<TextView>(R.id.badge_qtd_atencao)
+        val listaAtencao = dialogView.findViewById<LinearLayout>(R.id.lista_itens_atencao)
+
+        val secaoVencido = dialogView.findViewById<View>(R.id.secao_alerta_vencido)
+        val badgeVencido = dialogView.findViewById<TextView>(R.id.badge_qtd_vencido)
+        val listaVencido = dialogView.findViewById<LinearLayout>(R.id.lista_itens_vencido)
+
+        val txtSubtitulo = dialogView.findViewById<TextView>(R.id.txt_subtitulo_dialog_alerta)
+        val txtDica = dialogView.findViewById<TextView>(R.id.txt_dica_dialog_alerta)
+        val btnFechar = dialogView.findViewById<View>(R.id.btn_fechar_dialog_alerta)
+        val btnDoacao = dialogView.findViewById<View>(R.id.btn_dialog_ir_doacao)
+        val btnVerCriticos = dialogView.findViewById<View>(R.id.btn_dialog_ver_criticos)
+
+        if (criticos.isEmpty() && atencao.isEmpty() && vencidos.isEmpty()) {
+            txtSubtitulo.text = "Sua despensa está em dia!"
+            txtDica.text = "Todos os itens estão dentro do prazo seguro de validade."
+            btnDoacao.visibility = View.GONE
+        } else {
+            if (criticos.isNotEmpty()) {
+                secaoCritico.visibility = View.VISIBLE
+                badgeCritico.text = "Crítico • ${criticos.size}"
+                val corCritico = android.graphics.Color.parseColor("#C94A4A")
+                criticos.forEach { adicionarLinhaItemDialog(listaCritico, it, corCritico) }
+            }
+            if (atencao.isNotEmpty()) {
+                secaoAtencao.visibility = View.VISIBLE
+                badgeAtencao.text = "Atenção • ${atencao.size}"
+                val corAtencao = android.graphics.Color.parseColor("#B07D1A")
+                atencao.forEach { adicionarLinhaItemDialog(listaAtencao, it, corAtencao) }
+            }
+            if (vencidos.isNotEmpty()) {
+                secaoVencido.visibility = View.VISIBLE
+                badgeVencido.text = "Vencido • ${vencidos.size}"
+                val corVencido = android.graphics.Color.parseColor("#7D6856")
+                vencidos.forEach { adicionarLinhaItemDialog(listaVencido, it, corVencido) }
+            }
+        }
+
+        btnFechar.setOnClickListener { dialog.dismiss() }
+
+        btnDoacao.setOnClickListener {
+            (activity as? MainActivity)?.irParaDoacao()
+            dialog.dismiss()
+        }
+
+        btnVerCriticos.setOnClickListener {
+            if (criticos.isNotEmpty()) {
+                filtroAtual = "Crítico"
+                txtStatus?.text = "Crítico"
+                atualizarListaNaTela()
+            } else if (atencao.isNotEmpty()) {
+                filtroAtual = "Atenção"
+                txtStatus?.text = "Atenção"
+                atualizarListaNaTela()
+            }
+            dialog.dismiss()
+        }
+
+        dialog.show()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
     }
 
     private fun atualizarListaNaTela() {
@@ -230,7 +398,6 @@ class TelaDespensaFragment : Fragment() {
 
     private fun abrirTelaEdicao(item: Item) {
         val intent = Intent(requireContext(), AdicionarItem::class.java)
-        // B02: Repassa quantidade, preço e id_medida reais para não perder dados ao editar
         intent.putExtra("ITEM_ID", item.id)
         intent.putExtra("NOME", item.nome)
         intent.putExtra("QUANTIDADE", item.quantidade)
@@ -277,14 +444,12 @@ class TelaDespensaFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                // Tenta usar a nova rota específica PUT /users/itens/{id}/consumo
                 val resp = try {
                     api.alterarConsumoItem(item.id, BodyAlterarConsumo(userId, novoConsumoBool))
                 } catch (_: Exception) {
                     null
                 }
 
-                // Caso o servidor antigo não tenha a rota /consumo, usa PUT /users/editarItem/{id} como fallback
                 val sucesso = if (resp != null && resp.isSuccessful) {
                     true
                 } else {

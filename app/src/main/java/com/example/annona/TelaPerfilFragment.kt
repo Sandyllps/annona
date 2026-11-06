@@ -1,10 +1,7 @@
 package com.example.annona
 
-import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,9 +10,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SwitchCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -24,18 +19,6 @@ import kotlinx.coroutines.launch
 class TelaPerfilFragment : Fragment() {
 
     private val viewModel: ItensCompartilhadosViewModel by activityViewModels()
-
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            NotificacaoValidadeHelper.verificarENotificar(
-                requireContext(),
-                viewModel.itensDespensa.value ?: emptyList(),
-                forcarEnvio = true
-            )
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,7 +35,6 @@ class TelaPerfilFragment : Fragment() {
         val btnSair = view.findViewById<View>(R.id.btn_sair_perfil)
         val btnHistorico = view.findViewById<View>(R.id.btn_historico_perfil)
         val btnAjustes = view.findViewById<View>(R.id.btn_ajustes_perfil)
-        val btnFechar = view.findViewById<View>(R.id.btn_fechar_perfil)
         val switchNotif = view.findViewById<SwitchCompat>(R.id.switch_notificacoes_perfil)
         val textEmail = view.findViewById<TextView>(R.id.txt_email)
         val textNome = view.findViewById<TextView>(R.id.txt_nome_perfil)
@@ -61,26 +43,29 @@ class TelaPerfilFragment : Fragment() {
         textNome?.text = session.obterNome() ?: "Meu Perfil"
 
         // RF16 / RN15: Estado salvo das notificações
-        switchNotif.isChecked = session.notificacoesAtivas()
+        fun atualizarCoresSwitch(ativo: Boolean) {
+            val corThumb = if (ativo) android.graphics.Color.parseColor("#386641") else android.graphics.Color.parseColor("#9E9E9E")
+            val corTrack = if (ativo) android.graphics.Color.parseColor("#C8E6C9") else android.graphics.Color.parseColor("#E0E0E0")
+            switchNotif.thumbTintList = android.content.res.ColorStateList.valueOf(corThumb)
+            switchNotif.trackTintList = android.content.res.ColorStateList.valueOf(corTrack)
+        }
+
+        val notifAtivasInicial = session.notificacoesAtivas()
+        switchNotif.isChecked = notifAtivasInicial
+        atualizarCoresSwitch(notifAtivasInicial)
 
         switchNotif.setOnCheckedChangeListener { _, isChecked ->
+            atualizarCoresSwitch(isChecked)
             session.salvarNotificacoesAtivas(isChecked)
             val status = if (isChecked) "Ativadas" else "Desativadas"
             Toast.makeText(requireContext(), "Notificações $status", Toast.LENGTH_SHORT).show()
 
             if (isChecked) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                    ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED
-                ) {
-                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                } else {
-                    NotificacaoValidadeHelper.verificarENotificar(
-                        requireContext(),
-                        viewModel.itensDespensa.value ?: emptyList(),
-                        forcarEnvio = true
-                    )
-                }
+                NotificacaoValidadeHelper.verificarENotificar(
+                    requireContext(),
+                    viewModel.itensDespensa.value ?: emptyList(),
+                    forcarEnvio = true
+                )
             } else {
                 NotificacaoValidadeHelper.cancelarNotificacoes(requireContext())
             }
@@ -104,7 +89,7 @@ class TelaPerfilFragment : Fragment() {
             startActivity(intent)
         }
 
-        // RF20 / B18: Abre os Ajustes (permite configurar URL da API para emulador/Wi-Fi/ngrok e restaurar doações)
+        // RF20 / B18: Abre os Ajustes (permite configurar URL da API)
         btnAjustes.setOnClickListener {
             mostrarDialogoAjustes()
         }
@@ -115,11 +100,6 @@ class TelaPerfilFragment : Fragment() {
             val intent = Intent(requireContext(), TelaLogin::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
-        }
-
-        // B10: Ao tocar no X do Perfil, volta para a aba Despensa sem travar o app (sem chamar findNavController)
-        btnFechar.setOnClickListener {
-            (activity as? MainActivity)?.irParaDespensa()
         }
     }
 
@@ -135,13 +115,13 @@ class TelaPerfilFragment : Fragment() {
         }
 
         val label = TextView(ctx).apply {
-            text = "Endereço do servidor (API Base URL):\nEx: http://10.0.2.2:8080/ (Emulador) ou endereço do ngrok"
+            text = "Endereço do servidor (API Base URL):\nEx: http://10.0.2.2:8080/ (Emulador) ou endereço da rede Wi-Fi"
             textSize = 13f
         }
 
         val inputUrl = EditText(ctx).apply {
             setText(urlAtual)
-            hint = "https://..."
+            hint = "http://10.0.2.2:8080/"
         }
 
         container.addView(label)

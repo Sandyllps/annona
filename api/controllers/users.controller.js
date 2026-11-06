@@ -54,7 +54,14 @@ export function lerToken(req) {
 
 // --- Cálculo do Semáforo e Prazo no Servidor (RN01, RN02, B03, B14) ---
 export function calcularSemaforo(possuiDataValidade, dataValidade) {
-    if (!possuiDataValidade || !dataValidade) {
+    const temValidade =
+        possuiDataValidade === true ||
+        possuiDataValidade === 1 ||
+        possuiDataValidade === "1" ||
+        possuiDataValidade === "true";
+
+    const strVal = dataValidade ? String(dataValidade).trim() : "";
+    if (!temValidade || !dataValidade || strVal === "" || strVal.startsWith("0000") || strVal.startsWith("1970-01-01")) {
         return {
             id_flag: 4,
             dias_restantes: null,
@@ -69,9 +76,17 @@ export function calcularSemaforo(possuiDataValidade, dataValidade) {
     if (dataValidade instanceof Date) {
         dVal = new Date(dataValidade.getFullYear(), dataValidade.getMonth(), dataValidade.getDate());
     } else {
-        const str = String(dataValidade).split("T")[0];
+        const str = strVal.split("T")[0];
         const [ano, mes, dia] = str.split("-").map(Number);
         dVal = new Date(ano, mes - 1, dia);
+    }
+
+    if (isNaN(dVal.getTime()) || dVal.getFullYear() <= 1970) {
+        return {
+            id_flag: 4,
+            dias_restantes: null,
+            prazo: ""
+        };
     }
 
     const diffMs = dVal.getTime() - hojeData.getTime();
@@ -104,12 +119,19 @@ export function calcularSemaforo(possuiDataValidade, dataValidade) {
 // --- Enriquecer e Ordenar Itens por Prioridade (RF12, RN10, B15) ---
 export function processarEOrdenarItens(linhas) {
     const processados = linhas.map(item => {
+        const temData = Boolean(
+            (item.possui_data_validade === 1 || item.possui_data_validade === true) &&
+            item.data_validade &&
+            String(item.data_validade).trim() !== ""
+        );
         const { id_flag, dias_restantes, prazo } = calcularSemaforo(
-            item.possui_data_validade,
-            item.data_validade
+            temData,
+            temData ? item.data_validade : null
         );
         return {
             ...item,
+            possui_data_validade: temData ? 1 : 0,
+            data_validade: temData ? item.data_validade : null,
             id_flag,
             dias_restantes,
             prazo,
@@ -254,6 +276,16 @@ async function cadastrarUsuario(req, res) {
     }
 }
 
+// Função auxiliar para gerar a data atual + N dias no formato YYYY-MM-DD
+function obterDataMaisDiasIso(diasExtras = 7) {
+    const d = new Date();
+    d.setDate(d.getDate() + diasExtras);
+    const ano = d.getFullYear();
+    const mes = String(d.getMonth() + 1).padStart(2, "0");
+    const dia = String(d.getDate()).padStart(2, "0");
+    return `${ano}-${mes}-${dia}`;
+}
+
 // --- ADICIONAR ITEM (RF04, RN04, RN05, B03, B13) ---
 async function adicionarItemUsuario(req, res) {
     try {
@@ -263,8 +295,17 @@ async function adicionarItemUsuario(req, res) {
         const id_categoria = Number(req.body.id_categoria);
         const imagem = req.body.imagem || "item_padrao.png";
         const consumindo = Boolean(req.body.consumindo);
-        const possui_data_validade = Boolean(req.body.possui_data_validade);
-        const data_validade = possui_data_validade && req.body.data_validade ? req.body.data_validade : null;
+        const marcouValidade =
+            req.body.possui_data_validade === true ||
+            req.body.possui_data_validade === 1 ||
+            req.body.possui_data_validade === "1" ||
+            req.body.possui_data_validade === "true";
+        const dataInformada = req.body.data_validade && String(req.body.data_validade).trim() !== ""
+            ? String(req.body.data_validade).trim()
+            : null;
+        // Quando registrado sem rótulo de validade, assume por padrão a data atual + 7 dias
+        const data_validade = (marcouValidade && dataInformada) ? dataInformada : obterDataMaisDiasIso(7);
+        const possui_data_validade = true;
         const id_local_armazenamento = Number(req.body.id_local_armazenamento);
         const quantidade = req.body.quantidade !== undefined && req.body.quantidade !== null ? Number(req.body.quantidade) : 0;
         const id_medida = Number(req.body.id_medida) || 1;
@@ -276,7 +317,7 @@ async function adicionarItemUsuario(req, res) {
         if (!nome || !id_categoria || !id_local_armazenamento) {
             return res.status(400).json({ response: "Nome, categoria e local são obrigatórios" });
         }
-        if (possui_data_validade && !data_validade) {
+        if (marcouValidade && !dataInformada) {
             return res.status(400).json({ response: "Informe a data de validade ou desmarque a opção" });
         }
 
@@ -288,7 +329,7 @@ async function adicionarItemUsuario(req, res) {
             }
         }
 
-        const { id_flag } = calcularSemaforo(possui_data_validade, data_validade);
+        const { id_flag } = calcularSemaforo(true, data_validade);
 
         const [resultado] = await pool.execute(
             "INSERT INTO itens_usuario (id_usuario, nome, id_categoria, imagem, consumindo, possui_data_validade, data_validade, id_local_armazenamento, quantidade, id_medida, preco, id_flag) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -356,8 +397,17 @@ async function editarItemUsuario(req, res) {
         const id_categoria = Number(req.body.id_categoria);
         const imagem = req.body.imagem || "item_padrao.png";
         const consumindo = Boolean(req.body.consumindo);
-        const possui_data_validade = Boolean(req.body.possui_data_validade);
-        const data_validade = possui_data_validade && req.body.data_validade ? req.body.data_validade : null;
+        const marcouValidade =
+            req.body.possui_data_validade === true ||
+            req.body.possui_data_validade === 1 ||
+            req.body.possui_data_validade === "1" ||
+            req.body.possui_data_validade === "true";
+        const dataInformada = req.body.data_validade && String(req.body.data_validade).trim() !== ""
+            ? String(req.body.data_validade).trim()
+            : null;
+        // Quando registrado sem rótulo de validade, assume por padrão a data atual + 7 dias
+        const data_validade = (marcouValidade && dataInformada) ? dataInformada : obterDataMaisDiasIso(7);
+        const possui_data_validade = true;
         const id_local_armazenamento = Number(req.body.id_local_armazenamento);
         const quantidade = req.body.quantidade !== undefined && req.body.quantidade !== null ? Number(req.body.quantidade) : 0;
         const id_medida = Number(req.body.id_medida) || 1;
@@ -366,11 +416,11 @@ async function editarItemUsuario(req, res) {
         if (!nome || !id_categoria || !id_local_armazenamento) {
             return res.status(400).json({ response: "Nome, categoria e local são obrigatórios" });
         }
-        if (possui_data_validade && !data_validade) {
+        if (marcouValidade && !dataInformada) {
             return res.status(400).json({ response: "Informe a data de validade ou desmarque a opção" });
         }
 
-        const { id_flag } = calcularSemaforo(possui_data_validade, data_validade);
+        const { id_flag } = calcularSemaforo(true, data_validade);
 
         let query = "UPDATE itens_usuario SET nome = ?, id_categoria = ?, imagem = ?, consumindo = ?, possui_data_validade = ?, data_validade = ?, id_local_armazenamento = ?, quantidade = ?, id_medida = ?, preco = ?, id_flag = ? WHERE id_item_usuario = ?";
         const params = [nome, id_categoria, imagem, consumindo, possui_data_validade, data_validade, id_local_armazenamento, quantidade, id_medida, preco, id_flag, id_item_usuario];

@@ -5,14 +5,20 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.PopupMenu
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -67,6 +73,16 @@ class DoacoesFragment : Fragment() {
         val btnRelatorio = view.findViewById<Button>(R.id.btn_gerar_lista_doacao)
         btnRelatorio.setOnClickListener {
             mostrarPopupRelatorio()
+        }
+
+        val btnCopiarDireto = view.findViewById<Button>(R.id.btn_copiar_lista_doacao)
+        btnCopiarDireto?.setOnClickListener {
+            val texto = gerarTextoDoacao()
+            if (texto == null) {
+                Toast.makeText(requireContext(), "Nenhum item disponível para doação.", Toast.LENGTH_SHORT).show()
+            } else {
+                copiarTextoParaClipboard(texto)
+            }
         }
 
         return view
@@ -187,12 +203,45 @@ class DoacoesFragment : Fragment() {
         }
     }
 
+    private fun gerarTextoDoacao(): String? {
+        val itens = if (listaAtualDoacao.isNotEmpty()) listaAtualDoacao else (viewModel.itensDoacao.value ?: emptyList())
+        if (itens.isEmpty()) return null
+
+        return buildString {
+            append(
+                "Olá! 😊\n" +
+                    "Estou organizando minha despensa e separei alguns alimentos que não irei usar. " +
+                    "Se alguém quiser ou souber de quem precise, é só me avisar:\n\n"
+            )
+            itens.forEach { item ->
+                val p = item.prazo?.trim().orEmpty()
+                val prazoInfo = if (p.isNotEmpty()) " (vence em ${p.lowercase()})" else ""
+                append("• ${item.nome}$prazoInfo\n")
+            }
+        }.trim()
+    }
+
+    // B09: Copia o texto de fato para a área de transferência do Android (ClipboardManager)
+    private fun copiarTextoParaClipboard(texto: String) {
+        val ctx = requireContext()
+        val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Lista de Doação Annona", texto)
+        clipboard.setPrimaryClip(clip)
+
+        Toast.makeText(
+            ctx,
+            "Texto copiado para a área de transferência!",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
     // Gera texto pronto, copia para o ClipboardManager (B09) e permite compartilhar (RF15)
     private fun mostrarPopupRelatorio() {
-        val itens = if (listaAtualDoacao.isNotEmpty()) listaAtualDoacao else (viewModel.itensDoacao.value ?: emptyList())
+        val ctx = requireContext()
+        val mensagem = gerarTextoDoacao()
 
-        if (itens.isEmpty()) {
-            AlertDialog.Builder(requireContext())
+        if (mensagem == null) {
+            AlertDialog.Builder(ctx)
                 .setTitle("Itens para doação")
                 .setMessage("Nenhum item disponível para doação.")
                 .setPositiveButton("OK", null)
@@ -200,48 +249,100 @@ class DoacoesFragment : Fragment() {
             return
         }
 
-        val mensagem = buildString {
-            append(
-                "Olá! 😊\n" +
-                    "Estou organizando minha despensa e separei alguns alimentos que não irei usar. " +
-                    "Se alguém quiser ou souber de quem precise, é só me avisar:\n\n"
-            )
-            itens.forEach { item ->
-                append("• ${item.nome}\n")
-            }
+        val container = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(48, 40, 48, 32)
         }
 
-        val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("Itens para doação")
-            .setMessage(mensagem)
-            .setPositiveButton("Copiar") { _, _ ->
-                // B09: Copia o texto gerado para a área de transferência do Android
-                val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText("Lista de Doação Annona", mensagem)
-                clipboard.setPrimaryClip(clip)
+        val txtTitulo = TextView(ctx).apply {
+            text = "Lista de Itens para Doação"
+            textSize = 18f
+            setTypeface(typeface, Typeface.BOLD)
+            setTextColor(ContextCompat.getColor(ctx, R.color.marrom_escuro))
+        }
 
-                Toast.makeText(
-                    requireContext(),
-                    "Copiado para a área de transferência!",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            .setNeutralButton("Compartilhar") { _, _ ->
-                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_TEXT, mensagem)
-                }
-                startActivity(Intent.createChooser(shareIntent, "Compartilhar lista de doação"))
-            }
-            .setNegativeButton("Fechar") { d, _ ->
-                d.dismiss()
-            }
+        val scrollMensagem = ScrollView(ctx).apply {
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.setMargins(0, 24, 0, 28)
+            layoutParams = params
+        }
+
+        val txtMensagem = TextView(ctx).apply {
+            text = mensagem
+            textSize = 14f
+            setTextColor(Color.parseColor("#333333"))
+            setBackgroundColor(Color.parseColor("#FAF6F0"))
+            setPadding(28, 24, 28, 24)
+            setTextIsSelectable(true)
+        }
+        scrollMensagem.addView(txtMensagem)
+
+        val btnCopiarPopup = Button(ctx).apply {
+            text = "📋 Copiar texto para a área de transferência"
+            isAllCaps = false
+            setTextColor(Color.WHITE)
+            setBackgroundColor(ContextCompat.getColor(ctx, R.color.verde_abacate))
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.bottomMargin = 16
+            layoutParams = params
+        }
+
+        val linhaBotoes = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.END
+        }
+
+        val btnCompartilhar = Button(ctx).apply {
+            text = "Compartilhar"
+            isAllCaps = false
+            setTextColor(ContextCompat.getColor(ctx, R.color.marrom_cafe))
+            setBackgroundColor(Color.TRANSPARENT)
+        }
+
+        val btnFechar = Button(ctx).apply {
+            text = "Fechar"
+            isAllCaps = false
+            setTextColor(Color.GRAY)
+            setBackgroundColor(Color.TRANSPARENT)
+        }
+
+        linhaBotoes.addView(btnCompartilhar)
+        linhaBotoes.addView(btnFechar)
+
+        container.addView(txtTitulo)
+        container.addView(scrollMensagem)
+        container.addView(btnCopiarPopup)
+        container.addView(linhaBotoes)
+
+        val dialog = AlertDialog.Builder(ctx)
+            .setView(container)
             .create()
 
-        dialog.show()
+        btnCopiarPopup.setOnClickListener {
+            copiarTextoParaClipboard(mensagem)
+            btnCopiarPopup.text = "✓ Texto copiado!"
+        }
 
-        dialog.window?.setBackgroundDrawableResource(
-            R.drawable.bg_dialog_arredondado
-        )
+        btnCompartilhar.setOnClickListener {
+            copiarTextoParaClipboard(mensagem)
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, mensagem)
+            }
+            startActivity(Intent.createChooser(shareIntent, "Compartilhar lista de doação"))
+        }
+
+        btnFechar.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+        dialog.window?.setBackgroundDrawableResource(R.drawable.bg_dialog_arredondado)
     }
 }

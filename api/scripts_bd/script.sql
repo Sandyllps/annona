@@ -11,7 +11,8 @@ CREATE TABLE usuarios (
 INSERT INTO usuarios (id_usuario, email, nome_usuario, senha, notificacoes_ativas) VALUES
 (1, 'sandy@gmail.com', 'Sandy', '1618033988749894:bf878ded5b4f4e3d2d4d19637277907d9cac74c8d93083ab2890516b52a9e22ee84327730ffe1f3a0bed366e5661e5760b33aa910dcd54a3352d1fe3350005e1', TRUE),
 (2, 'ana@gmail.com', 'Ana', '1618033988749894:bf878ded5b4f4e3d2d4d19637277907d9cac74c8d93083ab2890516b52a9e22ee84327730ffe1f3a0bed366e5661e5760b33aa910dcd54a3352d1fe3350005e1', TRUE),
-(3, 'walyson@gmail.com', 'Walyson', '1618033988749894:bf878ded5b4f4e3d2d4d19637277907d9cac74c8d93083ab2890516b52a9e22ee84327730ffe1f3a0bed366e5661e5760b33aa910dcd54a3352d1fe3350005e1', TRUE);
+(3, 'walysson@gmail.com', 'Walysson', '1618033988749894:bf878ded5b4f4e3d2d4d19637277907d9cac74c8d93083ab2890516b52a9e22ee84327730ffe1f3a0bed366e5661e5760b33aa910dcd54a3352d1fe3350005e1', TRUE),
+(4, 'natalia@gmail.com', 'Natalia', '1618033988749894:bf878ded5b4f4e3d2d4d19637277907d9cac74c8d93083ab2890516b52a9e22ee84327730ffe1f3a0bed366e5661e5760b33aa910dcd54a3352d1fe3350005e1', TRUE);
 
 
 
@@ -175,93 +176,123 @@ INSERT INTO itens_usuario (
 ) VALUES
 -- ==================== USUÁRIO 1 (Sandy) ====================
 -- Vencido (id_flag = 1)
-(1, 1, 'Iogurte', 7, 'laticinios_iogurte.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -3 DAY), 1, 2, 1, 4.50, 1, FALSE, FALSE, NULL, NULL),
-(2, 1, 'Pão', 6, 'paes_massas_e_doces_pao_frances.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -2 DAY), 4, 1, 2, 7.90, 1, FALSE, FALSE, NULL, NULL),
+(1, 1, 'Iogurte', 7, 'laticinios_iogurte.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -2 DAY), 1, 2, 1, 4.50, 1, FALSE, FALSE, NULL, NULL),
+(2, 1, 'Pão', 6, 'paes_massas_e_doces_pao_frances.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -1 DAY), 4, 1, 2, 7.90, 1, FALSE, FALSE, NULL, NULL),
 -- Crítico (id_flag = 2 | 0 a 3 dias -> Por consumir aparecem em DOAÇÃO)
-(3, 1, 'Leite', 7, 'laticinios_leite.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 1 DAY), 1, 3, 3, 5.49, 2, FALSE, FALSE, NULL, NULL),
-(4, 1, 'Peixe', 2, 'carnes_e_peixes_peixe_tilapia.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1, 1, 5, 32.90, 2, FALSE, FALSE, NULL, NULL),
+(3, 1, 'Leite', 7, 'laticinios_leite.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1, 3, 3, 5.49, 2, FALSE, FALSE, NULL, NULL),
+(4, 1, 'Peixe', 2, 'carnes_e_peixes_peixe_tilapia.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 1 DAY), 1, 1, 5, 32.90, 2, FALSE, FALSE, NULL, NULL),
 (5, 1, 'Frango', 2, 'carnes_e_peixes_frango.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 3 DAY), 2, 1, 5, 21.90, 2, FALSE, FALSE, NULL, NULL),
 (6, 1, 'Tomates', 5, 'hortifruti_tomates.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 1 DAY), 1, 500, 4, 6.50, 2, FALSE, FALSE, NULL, NULL),
 -- Atenção (id_flag = 3 | 4 a 7 dias -> Por consumir aparecem em DOAÇÃO)
-(7, 1, 'Queijo', 7, 'laticinios_queijo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 1, 400, 4, 18.90, 3, FALSE, FALSE, NULL, NULL),
-(8, 1, 'Biscoito', 6, 'paes_massas_e_doces_biscoito_recheado.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 6 DAY), 4, 3, 2, 4.20, 3, FALSE, FALSE, NULL, NULL),
-(9, 1, 'Cenoura', 5, 'hortifruti_cenoura.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 3, 4, 1, 4.80, 3, FALSE, FALSE, NULL, NULL),
-(10, 1, 'Ovos', 8, 'ovos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 1, 12, 1, 11.90, 3, FALSE, FALSE, NULL, NULL),
+(7, 1, 'Queijo', 7, 'laticinios_queijo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 4 DAY), 1, 400, 4, 18.90, 3, FALSE, FALSE, NULL, NULL),
+(8, 1, 'Biscoito', 6, 'paes_massas_e_doces_biscoito_recheado.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 4, 3, 2, 4.20, 3, FALSE, FALSE, NULL, NULL),
+(9, 1, 'Cenoura', 5, 'hortifruti_cenoura.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 3, 4, 1, 4.80, 3, FALSE, FALSE, NULL, NULL),
+(10, 1, 'Ovos', 8, 'ovos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 6 DAY), 1, 12, 1, 11.90, 3, FALSE, FALSE, NULL, NULL),
 -- Seguro (id_flag = 4 | 8+ dias ou sem validade -> Ingredientes para todas as receitas)
-(11, 1, 'Arroz', 4, 'graos_arroz.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 45 DAY), 4, 5, 5, 26.90, 4, FALSE, FALSE, NULL, NULL),
-(12, 1, 'Feijão', 4, 'graos_feijao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 60 DAY), 4, 2, 5, 16.50, 4, FALSE, FALSE, NULL, NULL),
-(13, 1, 'Macarrão', 6, 'paes_massas_e_doces_macarrao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 90 DAY), 4, 2, 2, 6.90, 4, FALSE, FALSE, NULL, NULL),
-(14, 1, 'Açúcar', 6, 'paes_massas_e_doces_acucar_cubos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 120 DAY), 4, 1, 5, 5.20, 4, FALSE, FALSE, NULL, NULL),
-(15, 1, 'Farinha de Trigo', 6, 'paes_massas_e_doces_farinha_de_trigo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 75 DAY), 4, 1, 5, 6.40, 4, FALSE, FALSE, NULL, NULL),
-(16, 1, 'Batatas', 5, 'hortifruti_batatas.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 12 DAY), 3, 1, 5, 8.90, 4, FALSE, FALSE, NULL, NULL),
-(17, 1, 'Manteiga', 7, 'laticinios_manteiga.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 30 DAY), 1, 200, 4, 12.50, 4, FALSE, FALSE, NULL, NULL),
-(18, 1, 'Cebola', 5, 'hortifruti_cebola.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 15 DAY), 3, 6, 1, 5.60, 4, FALSE, FALSE, NULL, NULL),
-(19, 1, 'Milho em Conserva', 3, 'enlatados_milho_conserva.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 180 DAY), 4, 2, 1, 4.30, 4, FALSE, FALSE, NULL, NULL),
+(11, 1, 'Arroz', 4, 'graos_arroz.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 25 DAY), 4, 5, 5, 26.90, 4, FALSE, FALSE, NULL, NULL),
+(12, 1, 'Feijão', 4, 'graos_feijao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 28 DAY), 4, 2, 5, 16.50, 4, FALSE, FALSE, NULL, NULL),
+(13, 1, 'Macarrão', 6, 'paes_massas_e_doces_macarrao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 30 DAY), 4, 2, 2, 6.90, 4, FALSE, FALSE, NULL, NULL),
+(14, 1, 'Açúcar', 6, 'paes_massas_e_doces_acucar_cubos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 35 DAY), 4, 1, 5, 5.20, 4, FALSE, FALSE, NULL, NULL),
+(15, 1, 'Farinha de Trigo', 6, 'paes_massas_e_doces_farinha_de_trigo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 22 DAY), 4, 1, 5, 6.40, 4, FALSE, FALSE, NULL, NULL),
+(16, 1, 'Batatas', 5, 'hortifruti_batatas.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 10 DAY), 3, 1, 5, 8.90, 4, FALSE, FALSE, NULL, NULL),
+(17, 1, 'Manteiga', 7, 'laticinios_manteiga.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 18 DAY), 1, 200, 4, 12.50, 4, FALSE, FALSE, NULL, NULL),
+(18, 1, 'Cebola', 5, 'hortifruti_cebola.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 12 DAY), 3, 6, 1, 5.60, 4, FALSE, FALSE, NULL, NULL),
+(19, 1, 'Milho em Conserva', 3, 'enlatados_milho_conserva.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 40 DAY), 4, 2, 1, 4.30, 4, FALSE, FALSE, NULL, NULL),
 (20, 1, 'Sabão em Pó', 10, 'limpeza_sabao_po.png', TRUE, FALSE, NULL, 6, 1, 3, 14.90, 4, FALSE, FALSE, NULL, NULL),
 -- Histórico (deletado = TRUE)
-(21, 1, 'Café', 4, 'graos_cafe.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 20 DAY), 4, 1, 2, 18.90, 4, FALSE, TRUE, 'Item consumido', NOW()),
-(22, 1, 'Banana', 5, 'hortifruti_banana.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL -4 DAY), 3, 6, 1, 5.90, 1, FALSE, TRUE, 'Item vencido / estragado', NOW()),
-(23, 1, 'Suco', 1, 'bebidas_suco.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 3 DAY), 1, 2, 7, 9.80, 2, FALSE, TRUE, 'Item doado', NOW()),
+(21, 1, 'Café', 4, 'graos_cafe.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 15 DAY), 4, 1, 2, 18.90, 4, FALSE, TRUE, 'Item consumido', NOW()),
+(22, 1, 'Banana', 5, 'hortifruti_banana.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL -2 DAY), 3, 6, 1, 5.90, 1, FALSE, TRUE, 'Item vencido / estragado', NOW()),
+(23, 1, 'Suco', 1, 'bebidas_suco.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1, 2, 7, 9.80, 2, FALSE, TRUE, 'Item doado', NOW()),
 
 -- ==================== USUÁRIO 2 (Ana) ====================
 -- Vencido (id_flag = 1)
-(24, 2, 'Iogurte', 7, 'laticinios_iogurte.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -3 DAY), 1, 2, 1, 4.50, 1, FALSE, FALSE, NULL, NULL),
-(25, 2, 'Pão', 6, 'paes_massas_e_doces_pao_frances.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -2 DAY), 4, 1, 2, 7.90, 1, FALSE, FALSE, NULL, NULL),
+(24, 2, 'Iogurte', 7, 'laticinios_iogurte.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -2 DAY), 1, 2, 1, 4.50, 1, FALSE, FALSE, NULL, NULL),
+(25, 2, 'Pão', 6, 'paes_massas_e_doces_pao_frances.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -1 DAY), 4, 1, 2, 7.90, 1, FALSE, FALSE, NULL, NULL),
 -- Crítico (id_flag = 2 | 0 a 3 dias -> Por consumir aparecem em DOAÇÃO)
-(26, 2, 'Leite', 7, 'laticinios_leite.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 1 DAY), 1, 3, 3, 5.49, 2, FALSE, FALSE, NULL, NULL),
-(27, 2, 'Peixe', 2, 'carnes_e_peixes_peixe_tilapia.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1, 1, 5, 32.90, 2, FALSE, FALSE, NULL, NULL),
+(26, 2, 'Leite', 7, 'laticinios_leite.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1, 3, 3, 5.49, 2, FALSE, FALSE, NULL, NULL),
+(27, 2, 'Peixe', 2, 'carnes_e_peixes_peixe_tilapia.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 1 DAY), 1, 1, 5, 32.90, 2, FALSE, FALSE, NULL, NULL),
 (28, 2, 'Frango', 2, 'carnes_e_peixes_frango.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 3 DAY), 2, 1, 5, 21.90, 2, FALSE, FALSE, NULL, NULL),
 (29, 2, 'Tomates', 5, 'hortifruti_tomates.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 1 DAY), 1, 500, 4, 6.50, 2, FALSE, FALSE, NULL, NULL),
 -- Atenção (id_flag = 3 | 4 a 7 dias -> Por consumir aparecem em DOAÇÃO)
-(30, 2, 'Queijo', 7, 'laticinios_queijo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 1, 400, 4, 18.90, 3, FALSE, FALSE, NULL, NULL),
-(31, 2, 'Biscoito', 6, 'paes_massas_e_doces_biscoito_recheado.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 6 DAY), 4, 3, 2, 4.20, 3, FALSE, FALSE, NULL, NULL),
-(32, 2, 'Cenoura', 5, 'hortifruti_cenoura.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 3, 4, 1, 4.80, 3, FALSE, FALSE, NULL, NULL),
-(33, 2, 'Ovos', 8, 'ovos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 1, 12, 1, 11.90, 3, FALSE, FALSE, NULL, NULL),
+(30, 2, 'Queijo', 7, 'laticinios_queijo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 4 DAY), 1, 400, 4, 18.90, 3, FALSE, FALSE, NULL, NULL),
+(31, 2, 'Biscoito', 6, 'paes_massas_e_doces_biscoito_recheado.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 4, 3, 2, 4.20, 3, FALSE, FALSE, NULL, NULL),
+(32, 2, 'Cenoura', 5, 'hortifruti_cenoura.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 3, 4, 1, 4.80, 3, FALSE, FALSE, NULL, NULL),
+(33, 2, 'Ovos', 8, 'ovos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 6 DAY), 1, 12, 1, 11.90, 3, FALSE, FALSE, NULL, NULL),
 -- Seguro (id_flag = 4 | 8+ dias ou sem validade -> Ingredientes para todas as receitas)
-(34, 2, 'Arroz', 4, 'graos_arroz.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 45 DAY), 4, 5, 5, 26.90, 4, FALSE, FALSE, NULL, NULL),
-(35, 2, 'Feijão', 4, 'graos_feijao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 60 DAY), 4, 2, 5, 16.50, 4, FALSE, FALSE, NULL, NULL),
-(36, 2, 'Macarrão', 6, 'paes_massas_e_doces_macarrao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 90 DAY), 4, 2, 2, 6.90, 4, FALSE, FALSE, NULL, NULL),
-(37, 2, 'Açúcar', 6, 'paes_massas_e_doces_acucar_cubos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 120 DAY), 4, 1, 5, 5.20, 4, FALSE, FALSE, NULL, NULL),
-(38, 2, 'Farinha de Trigo', 6, 'paes_massas_e_doces_farinha_de_trigo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 75 DAY), 4, 1, 5, 6.40, 4, FALSE, FALSE, NULL, NULL),
-(39, 2, 'Batatas', 5, 'hortifruti_batatas.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 12 DAY), 3, 1, 5, 8.90, 4, FALSE, FALSE, NULL, NULL),
-(40, 2, 'Manteiga', 7, 'laticinios_manteiga.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 30 DAY), 1, 200, 4, 12.50, 4, FALSE, FALSE, NULL, NULL),
-(41, 2, 'Cebola', 5, 'hortifruti_cebola.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 15 DAY), 3, 6, 1, 5.60, 4, FALSE, FALSE, NULL, NULL),
-(42, 2, 'Milho em Conserva', 3, 'enlatados_milho_conserva.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 180 DAY), 4, 2, 1, 4.30, 4, FALSE, FALSE, NULL, NULL),
+(34, 2, 'Arroz', 4, 'graos_arroz.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 25 DAY), 4, 5, 5, 26.90, 4, FALSE, FALSE, NULL, NULL),
+(35, 2, 'Feijão', 4, 'graos_feijao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 28 DAY), 4, 2, 5, 16.50, 4, FALSE, FALSE, NULL, NULL),
+(36, 2, 'Macarrão', 6, 'paes_massas_e_doces_macarrao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 30 DAY), 4, 2, 2, 6.90, 4, FALSE, FALSE, NULL, NULL),
+(37, 2, 'Açúcar', 6, 'paes_massas_e_doces_acucar_cubos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 35 DAY), 4, 1, 5, 5.20, 4, FALSE, FALSE, NULL, NULL),
+(38, 2, 'Farinha de Trigo', 6, 'paes_massas_e_doces_farinha_de_trigo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 22 DAY), 4, 1, 5, 6.40, 4, FALSE, FALSE, NULL, NULL),
+(39, 2, 'Batatas', 5, 'hortifruti_batatas.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 10 DAY), 3, 1, 5, 8.90, 4, FALSE, FALSE, NULL, NULL),
+(40, 2, 'Manteiga', 7, 'laticinios_manteiga.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 18 DAY), 1, 200, 4, 12.50, 4, FALSE, FALSE, NULL, NULL),
+(41, 2, 'Cebola', 5, 'hortifruti_cebola.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 12 DAY), 3, 6, 1, 5.60, 4, FALSE, FALSE, NULL, NULL),
+(42, 2, 'Milho em Conserva', 3, 'enlatados_milho_conserva.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 40 DAY), 4, 2, 1, 4.30, 4, FALSE, FALSE, NULL, NULL),
 (43, 2, 'Sabão em Pó', 10, 'limpeza_sabao_po.png', TRUE, FALSE, NULL, 6, 1, 3, 14.90, 4, FALSE, FALSE, NULL, NULL),
 -- Histórico (deletado = TRUE)
-(44, 2, 'Café', 4, 'graos_cafe.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 20 DAY), 4, 1, 2, 18.90, 4, FALSE, TRUE, 'Item consumido', NOW()),
-(45, 2, 'Banana', 5, 'hortifruti_banana.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL -4 DAY), 3, 6, 1, 5.90, 1, FALSE, TRUE, 'Item vencido / estragado', NOW()),
-(46, 2, 'Suco', 1, 'bebidas_suco.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 3 DAY), 1, 2, 7, 9.80, 2, FALSE, TRUE, 'Item doado', NOW()),
+(44, 2, 'Café', 4, 'graos_cafe.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 15 DAY), 4, 1, 2, 18.90, 4, FALSE, TRUE, 'Item consumido', NOW()),
+(45, 2, 'Banana', 5, 'hortifruti_banana.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL -2 DAY), 3, 6, 1, 5.90, 1, FALSE, TRUE, 'Item vencido / estragado', NOW()),
+(46, 2, 'Suco', 1, 'bebidas_suco.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1, 2, 7, 9.80, 2, FALSE, TRUE, 'Item doado', NOW()),
 
--- ==================== USUÁRIO 3 (Walyson) ====================
+-- ==================== USUÁRIO 3 (Walysson) ====================
 -- Vencido (id_flag = 1)
-(47, 3, 'Iogurte', 7, 'laticinios_iogurte.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -3 DAY), 1, 2, 1, 4.50, 1, FALSE, FALSE, NULL, NULL),
-(48, 3, 'Pão', 6, 'paes_massas_e_doces_pao_frances.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -2 DAY), 4, 1, 2, 7.90, 1, FALSE, FALSE, NULL, NULL),
+(47, 3, 'Iogurte', 7, 'laticinios_iogurte.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -2 DAY), 1, 2, 1, 4.50, 1, FALSE, FALSE, NULL, NULL),
+(48, 3, 'Pão', 6, 'paes_massas_e_doces_pao_frances.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -1 DAY), 4, 1, 2, 7.90, 1, FALSE, FALSE, NULL, NULL),
 -- Crítico (id_flag = 2 | 0 a 3 dias -> Por consumir aparecem em DOAÇÃO)
-(49, 3, 'Leite', 7, 'laticinios_leite.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 1 DAY), 1, 3, 3, 5.49, 2, FALSE, FALSE, NULL, NULL),
-(50, 3, 'Peixe', 2, 'carnes_e_peixes_peixe_tilapia.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1, 1, 5, 32.90, 2, FALSE, FALSE, NULL, NULL),
+(49, 3, 'Leite', 7, 'laticinios_leite.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1, 3, 3, 5.49, 2, FALSE, FALSE, NULL, NULL),
+(50, 3, 'Peixe', 2, 'carnes_e_peixes_peixe_tilapia.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 1 DAY), 1, 1, 5, 32.90, 2, FALSE, FALSE, NULL, NULL),
 (51, 3, 'Frango', 2, 'carnes_e_peixes_frango.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 3 DAY), 2, 1, 5, 21.90, 2, FALSE, FALSE, NULL, NULL),
 (52, 3, 'Tomates', 5, 'hortifruti_tomates.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 1 DAY), 1, 500, 4, 6.50, 2, FALSE, FALSE, NULL, NULL),
 -- Atenção (id_flag = 3 | 4 a 7 dias -> Por consumir aparecem em DOAÇÃO)
-(53, 3, 'Queijo', 7, 'laticinios_queijo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 1, 400, 4, 18.90, 3, FALSE, FALSE, NULL, NULL),
-(54, 3, 'Biscoito', 6, 'paes_massas_e_doces_biscoito_recheado.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 6 DAY), 4, 3, 2, 4.20, 3, FALSE, FALSE, NULL, NULL),
-(55, 3, 'Cenoura', 5, 'hortifruti_cenoura.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 3, 4, 1, 4.80, 3, FALSE, FALSE, NULL, NULL),
-(56, 3, 'Ovos', 8, 'ovos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 1, 12, 1, 11.90, 3, FALSE, FALSE, NULL, NULL),
+(53, 3, 'Queijo', 7, 'laticinios_queijo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 4 DAY), 1, 400, 4, 18.90, 3, FALSE, FALSE, NULL, NULL),
+(54, 3, 'Biscoito', 6, 'paes_massas_e_doces_biscoito_recheado.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 4, 3, 2, 4.20, 3, FALSE, FALSE, NULL, NULL),
+(55, 3, 'Cenoura', 5, 'hortifruti_cenoura.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 3, 4, 1, 4.80, 3, FALSE, FALSE, NULL, NULL),
+(56, 3, 'Ovos', 8, 'ovos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 6 DAY), 1, 12, 1, 11.90, 3, FALSE, FALSE, NULL, NULL),
 -- Seguro (id_flag = 4 | 8+ dias ou sem validade -> Ingredientes para todas as receitas)
-(57, 3, 'Arroz', 4, 'graos_arroz.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 45 DAY), 4, 5, 5, 26.90, 4, FALSE, FALSE, NULL, NULL),
-(58, 3, 'Feijão', 4, 'graos_feijao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 60 DAY), 4, 2, 5, 16.50, 4, FALSE, FALSE, NULL, NULL),
-(59, 3, 'Macarrão', 6, 'paes_massas_e_doces_macarrao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 90 DAY), 4, 2, 2, 6.90, 4, FALSE, FALSE, NULL, NULL),
-(60, 3, 'Açúcar', 6, 'paes_massas_e_doces_acucar_cubos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 120 DAY), 4, 1, 5, 5.20, 4, FALSE, FALSE, NULL, NULL),
-(61, 3, 'Farinha de Trigo', 6, 'paes_massas_e_doces_farinha_de_trigo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 75 DAY), 4, 1, 5, 6.40, 4, FALSE, FALSE, NULL, NULL),
-(62, 3, 'Batatas', 5, 'hortifruti_batatas.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 12 DAY), 3, 1, 5, 8.90, 4, FALSE, FALSE, NULL, NULL),
-(63, 3, 'Manteiga', 7, 'laticinios_manteiga.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 30 DAY), 1, 200, 4, 12.50, 4, FALSE, FALSE, NULL, NULL),
-(64, 3, 'Cebola', 5, 'hortifruti_cebola.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 15 DAY), 3, 6, 1, 5.60, 4, FALSE, FALSE, NULL, NULL),
-(65, 3, 'Milho em Conserva', 3, 'enlatados_milho_conserva.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 180 DAY), 4, 2, 1, 4.30, 4, FALSE, FALSE, NULL, NULL),
+(57, 3, 'Arroz', 4, 'graos_arroz.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 25 DAY), 4, 5, 5, 26.90, 4, FALSE, FALSE, NULL, NULL),
+(58, 3, 'Feijão', 4, 'graos_feijao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 28 DAY), 4, 2, 5, 16.50, 4, FALSE, FALSE, NULL, NULL),
+(59, 3, 'Macarrão', 6, 'paes_massas_e_doces_macarrao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 30 DAY), 4, 2, 2, 6.90, 4, FALSE, FALSE, NULL, NULL),
+(60, 3, 'Açúcar', 6, 'paes_massas_e_doces_acucar_cubos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 35 DAY), 4, 1, 5, 5.20, 4, FALSE, FALSE, NULL, NULL),
+(61, 3, 'Farinha de Trigo', 6, 'paes_massas_e_doces_farinha_de_trigo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 22 DAY), 4, 1, 5, 6.40, 4, FALSE, FALSE, NULL, NULL),
+(62, 3, 'Batatas', 5, 'hortifruti_batatas.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 10 DAY), 3, 1, 5, 8.90, 4, FALSE, FALSE, NULL, NULL),
+(63, 3, 'Manteiga', 7, 'laticinios_manteiga.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 18 DAY), 1, 200, 4, 12.50, 4, FALSE, FALSE, NULL, NULL),
+(64, 3, 'Cebola', 5, 'hortifruti_cebola.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 12 DAY), 3, 6, 1, 5.60, 4, FALSE, FALSE, NULL, NULL),
+(65, 3, 'Milho em Conserva', 3, 'enlatados_milho_conserva.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 40 DAY), 4, 2, 1, 4.30, 4, FALSE, FALSE, NULL, NULL),
 (66, 3, 'Sabão em Pó', 10, 'limpeza_sabao_po.png', TRUE, FALSE, NULL, 6, 1, 3, 14.90, 4, FALSE, FALSE, NULL, NULL),
 -- Histórico (deletado = TRUE)
-(67, 3, 'Café', 4, 'graos_cafe.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 20 DAY), 4, 1, 2, 18.90, 4, FALSE, TRUE, 'Item consumido', NOW()),
-(68, 3, 'Banana', 5, 'hortifruti_banana.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL -4 DAY), 3, 6, 1, 5.90, 1, FALSE, TRUE, 'Item vencido / estragado', NOW()),
-(69, 3, 'Suco', 1, 'bebidas_suco.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 3 DAY), 1, 2, 7, 9.80, 2, FALSE, TRUE, 'Item doado', NOW());
+(67, 3, 'Café', 4, 'graos_cafe.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 15 DAY), 4, 1, 2, 18.90, 4, FALSE, TRUE, 'Item consumido', NOW()),
+(68, 3, 'Banana', 5, 'hortifruti_banana.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL -2 DAY), 3, 6, 1, 5.90, 1, FALSE, TRUE, 'Item vencido / estragado', NOW()),
+(69, 3, 'Suco', 1, 'bebidas_suco.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1, 2, 7, 9.80, 2, FALSE, TRUE, 'Item doado', NOW()),
+
+-- ==================== USUÁRIO 4 (Natalia) ====================
+-- Vencido (id_flag = 1)
+(70, 4, 'Iogurte', 7, 'laticinios_iogurte.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -2 DAY), 1, 2, 1, 4.50, 1, FALSE, FALSE, NULL, NULL),
+(71, 4, 'Pão', 6, 'paes_massas_e_doces_pao_frances.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL -1 DAY), 4, 1, 2, 7.90, 1, FALSE, FALSE, NULL, NULL),
+-- Crítico (id_flag = 2 | 0 a 3 dias -> Por consumir aparecem em DOAÇÃO)
+(72, 4, 'Leite', 7, 'laticinios_leite.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1, 3, 3, 5.49, 2, FALSE, FALSE, NULL, NULL),
+(73, 4, 'Peixe', 2, 'carnes_e_peixes_peixe_tilapia.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 1 DAY), 1, 1, 5, 32.90, 2, FALSE, FALSE, NULL, NULL),
+(74, 4, 'Frango', 2, 'carnes_e_peixes_frango.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 3 DAY), 2, 1, 5, 21.90, 2, FALSE, FALSE, NULL, NULL),
+(75, 4, 'Tomates', 5, 'hortifruti_tomates.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 1 DAY), 1, 500, 4, 6.50, 2, FALSE, FALSE, NULL, NULL),
+-- Atenção (id_flag = 3 | 4 a 7 dias -> Por consumir aparecem em DOAÇÃO)
+(76, 4, 'Queijo', 7, 'laticinios_queijo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 4 DAY), 1, 400, 4, 18.90, 3, FALSE, FALSE, NULL, NULL),
+(77, 4, 'Biscoito', 6, 'paes_massas_e_doces_biscoito_recheado.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 4, 3, 2, 4.20, 3, FALSE, FALSE, NULL, NULL),
+(78, 4, 'Cenoura', 5, 'hortifruti_cenoura.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 5 DAY), 3, 4, 1, 4.80, 3, FALSE, FALSE, NULL, NULL),
+(79, 4, 'Ovos', 8, 'ovos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 6 DAY), 1, 12, 1, 11.90, 3, FALSE, FALSE, NULL, NULL),
+-- Seguro (id_flag = 4 | 8+ dias ou sem validade -> Ingredientes para todas as receitas)
+(80, 4, 'Arroz', 4, 'graos_arroz.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 25 DAY), 4, 5, 5, 26.90, 4, FALSE, FALSE, NULL, NULL),
+(81, 4, 'Feijão', 4, 'graos_feijao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 28 DAY), 4, 2, 5, 16.50, 4, FALSE, FALSE, NULL, NULL),
+(82, 4, 'Macarrão', 6, 'paes_massas_e_doces_macarrao.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 30 DAY), 4, 2, 2, 6.90, 4, FALSE, FALSE, NULL, NULL),
+(83, 4, 'Açúcar', 6, 'paes_massas_e_doces_acucar_cubos.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 35 DAY), 4, 1, 5, 5.20, 4, FALSE, FALSE, NULL, NULL),
+(84, 4, 'Farinha de Trigo', 6, 'paes_massas_e_doces_farinha_de_trigo.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 22 DAY), 4, 1, 5, 6.40, 4, FALSE, FALSE, NULL, NULL),
+(85, 4, 'Batatas', 5, 'hortifruti_batatas.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 10 DAY), 3, 1, 5, 8.90, 4, FALSE, FALSE, NULL, NULL),
+(86, 4, 'Manteiga', 7, 'laticinios_manteiga.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 18 DAY), 1, 200, 4, 12.50, 4, FALSE, FALSE, NULL, NULL),
+(87, 4, 'Cebola', 5, 'hortifruti_cebola.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 12 DAY), 3, 6, 1, 5.60, 4, FALSE, FALSE, NULL, NULL),
+(88, 4, 'Milho em Conserva', 3, 'enlatados_milho_conserva.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 40 DAY), 4, 2, 1, 4.30, 4, FALSE, FALSE, NULL, NULL),
+(89, 4, 'Sabão em Pó', 10, 'limpeza_sabao_po.png', TRUE, FALSE, NULL, 6, 1, 3, 14.90, 4, FALSE, FALSE, NULL, NULL),
+-- Histórico (deletado = TRUE)
+(90, 4, 'Café', 4, 'graos_cafe.png', TRUE, TRUE, DATE_ADD(CURDATE(), INTERVAL 15 DAY), 4, 1, 2, 18.90, 4, FALSE, TRUE, 'Item consumido', NOW()),
+(91, 4, 'Banana', 5, 'hortifruti_banana.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL -2 DAY), 3, 6, 1, 5.90, 1, FALSE, TRUE, 'Item vencido / estragado', NOW()),
+(92, 4, 'Suco', 1, 'bebidas_suco.png', FALSE, TRUE, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1, 2, 7, 9.80, 2, FALSE, TRUE, 'Item doado', NOW());
 
 
 -- RECEITAS

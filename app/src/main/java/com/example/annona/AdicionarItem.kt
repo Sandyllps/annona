@@ -236,9 +236,22 @@ class AdicionarItem : AppCompatActivity() {
             return
         }
 
-        val possuiValidade = binding.checkValidade.isChecked
-        val dataVal = if (possuiValidade) obterDataValidade(binding) else null
-        val (flagCalculada, _, _) = calcularSemaforoData(possuiValidade, dataVal)
+        // Quando o usuário registra um alimento sem rótulo de validade, assume por padrão a data atual + 7 dias
+        val dataPadraoMais7Dias = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+            add(Calendar.DAY_OF_MONTH, 7)
+        }.time
+
+        val dataVal = if (binding.checkValidade.isChecked) {
+            obterDataValidade(binding) ?: dataPadraoMais7Dias
+        } else {
+            dataPadraoMais7Dias
+        }
+        val possuiValidade = true
+        val (flagCalculada, diasRestantes, _) = calcularSemaforoData(true, dataVal)
 
         val qtdStr = binding.editQuantidade.text.toString().replace(",", ".").trim()
         val precoStr = binding.editPreco.text.toString().replace(",", ".").trim()
@@ -250,7 +263,7 @@ class AdicionarItem : AppCompatActivity() {
             imagem = imagemSelecionada,
             consumindo = binding.spinnerEstado.selectedItem.toString() == "Consumindo",
             possui_data_validade = possuiValidade,
-            data_validade = dateToString(dataVal, "yyyy-MM-dd"),
+            data_validade = if (possuiValidade) dateToString(dataVal, "yyyy-MM-dd") else null,
             id_local_armazenamento = LocalArmazenamento.obterPeloNome(binding.spinnerLocal.selectedItem.toString()).idLocal,
             quantidade = qtdStr.toDoubleOrNull() ?: 0.0,
             id_medida = Medida.obterPeloNome(binding.spinnerMedida.selectedItem.toString()).idMedida,
@@ -270,6 +283,14 @@ class AdicionarItem : AppCompatActivity() {
                 }
 
                 if (resp.isSuccessful) {
+                    // Dispara alerta se o item adicionado/editado estiver próximo de vencer
+                    NotificacaoValidadeHelper.notificarItemSalvo(
+                        this@AdicionarItem,
+                        itemNovo.nome,
+                        flagCalculada,
+                        diasRestantes
+                    )
+
                     LocalBroadcastManager.getInstance(this@AdicionarItem)
                         .sendBroadcast(Intent("ATUALIZAR_LISTA_ANONA"))
 
@@ -336,13 +357,20 @@ class AdicionarItem : AppCompatActivity() {
     }
 
     private fun configurarValidadeECalendario() {
+        val dataMais7Formatada = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(
+            Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 7) }.time
+        )
         binding.editDataExibicao.isEnabled = false
+        binding.editDataExibicao.hint = "Padrão sem rótulo: $dataMais7Formatada (+7 dias)"
 
         binding.checkValidade.setOnCheckedChangeListener { _, isChecked ->
             binding.editDataExibicao.isEnabled = isChecked
             if (!isChecked) {
                 binding.editDataExibicao.setText("")
+                binding.editDataExibicao.hint = "Padrão sem rótulo: $dataMais7Formatada (+7 dias)"
                 dataVencimentoSelecionadaMs = 0
+            } else {
+                binding.editDataExibicao.hint = "dd/mm/aaaa"
             }
         }
 

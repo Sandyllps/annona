@@ -139,13 +139,13 @@ class ReceitasFragment : Fragment() {
         val rv = recyclerViewRef ?: return
 
         val listaExibida = when (filtroAtual) {
-            "Pela minha despensa" -> receitasSugeridasPelaDespensa
+            "Pela minha despensa" -> receitasSugeridasPelaDespensa.ifEmpty { todasAsReceitas }
             "Todos" -> todasAsReceitas
             "Prato: Principal" -> todasAsReceitas.filter { it.tag == "PRINCIPAL" }
             "Acompanhamento" -> todasAsReceitas.filter { it.tag == "ACOMPANHAMENTO" }
             "Entrada" -> todasAsReceitas.filter { it.tag == "ENTRADA" }
             "Sobremesa" -> todasAsReceitas.filter { it.tag == "SOBREMESA" }
-            else -> receitasSugeridasPelaDespensa
+            else -> receitasSugeridasPelaDespensa.ifEmpty { todasAsReceitas }
         }
 
         rv.adapter = ReceitasAdapter(listaExibida) { receita ->
