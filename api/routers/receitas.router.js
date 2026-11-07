@@ -1,9 +1,9 @@
-//rota não utilizada
 import express from "express"
-import {listarReceitas} from "../controllers/receitas.controller.js"
+import { listarReceitas, listarReceitasSugeridas } from "../controllers/receitas.controller.js"
 
-const receitasRouter = express.Router() //criando um objeto para chamar os controladores
+const receitasRouter = express.Router()
 
 receitasRouter.get("/", listarReceitas)
+receitasRouter.get("/sugeridas/:id_usuario", listarReceitasSugeridas)
 
-export{receitasRouter}
+export { receitasRouter }

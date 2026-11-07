@@ -131,7 +131,8 @@
                     android:id="@+id/edit_quantidade"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
+                    android:digits="0123456789.,"
                     android:background="@android:drawable/edit_text"/>
             </LinearLayout>
 

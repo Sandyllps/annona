@@ -10,23 +10,17 @@
     tools:context=".ReceitasFragment">
 
     <!-- TÍTULO DO APP -->
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/txt_titulo_app"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/txt_titulo_app"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:text="annona"
-            android:textColor="@color/marrom_escuro"
-            android:textSize="32sp"
-            android:fontFamily="@font/century_gothic" />
-    </LinearLayout>
-
+        android:layout_marginBottom="10dp"
+        android:text="annona"
+        android:textColor="@color/marrom_escuro"
+        android:textSize="32sp"
+        android:fontFamily="@font/century_gothic" />
 
     <!-- FILTRO GERAL -->
     <androidx.cardview.widget.CardView

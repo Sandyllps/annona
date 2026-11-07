@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
     android:layout_marginBottom="12dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp">
@@ -11,15 +12,12 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
+        android:minHeight="100dp"
         android:background="@color/white"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        android:padding="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:padding="12dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -29,54 +27,73 @@
             <!-- Foto da receita -->
             <ImageView
                 android:id="@+id/img_foto_receita"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_launcher_foreground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Container: Nome + Tag -->
+            <!-- Container: Nome + Tag + Ingredientes da Despensa -->
             <LinearLayout
-                android:id="@+id/layout_nome_tag"
+                android:id="@+id/layout_info_receita"
                 android:layout_width="0dp"
-                android:layout_height="55dp"
-                android:layout_marginStart="10dp"
-                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="8dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/txt_tempo_receita"
                 app:layout_constraintStart_toEndOf="@id/img_foto_receita"
-                app:layout_constraintTop_toTopOf="@id/img_foto_receita">
+                app:layout_constraintTop_toTopOf="parent">
 
-                <!-- Nome da receita -->
-                <TextView
-                    android:id="@+id/txt_nome_receita"
-                    android:layout_width="110dp"
+                <LinearLayout
+                    android:id="@+id/layout_nome_tag"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="5dp"
-                    android:text="feijoada"
-                    android:textColor="@android:color/black"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <!-- Tag da receita -->
+                    <!-- Nome da receita -->
+                    <TextView
+                        android:id="@+id/txt_nome_receita"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxWidth="135dp"
+                        android:text="Feijoada"
+                        android:textColor="@android:color/black"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <!-- Tag da receita -->
+                    <TextView
+                        android:id="@+id/txt_tag_receita"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/bg_tag_receita"
+                        android:paddingStart="8dp"
+                        android:paddingTop="3dp"
+                        android:paddingEnd="8dp"
+                        android:paddingBottom="3dp"
+                        android:text="PRINCIPAL"
+                        android:textColor="@android:color/white"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Ingredientes que o usuário tem na despensa (RF17, RN14) -->
                 <TextView
-                    android:id="@+id/txt_tag_receita"
-                    android:layout_width="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginStart="2dp"
-                    android:layout_gravity="center"
+                    android:id="@+id/txt_ingredientes_despensa"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_tag_receita"
-                    android:paddingStart="8dp"
-                    android:paddingTop="4dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="4dp"
-                    android:text="ACOMPANHAMENTO"
-                    android:textColor="@android:color/white"
-                    android:textSize="9sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="4dp"
+                    android:text="Você tem: Feijão | Cebola"
+                    android:textColor="#4E6E3A"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <!-- Tempo de preparo -->
@@ -84,10 +101,11 @@
                 android:id="@+id/txt_tempo_receita"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
                 android:text="Tempo: 50 min"
                 android:textColor="@android:color/black"
+                android:textSize="12sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

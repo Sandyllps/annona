@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.annona.databinding.ActivityDetalheReceitaBinding
@@ -24,23 +26,35 @@ class DetalheReceitaActivity : AppCompatActivity() {
         binding = ActivityDetalheReceitaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Botão voltar
+        // Garante que o botão voltar do topo nunca fique coberto pela barra de status do sistema
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rootDetalheReceita) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        // Botões voltar (topo e rodapé da receita)
+        binding.btnVoltar.bringToFront()
         binding.btnVoltar.setOnClickListener {
+            finish()
+        }
+        binding.btnVoltarInferior.setOnClickListener {
             finish()
         }
 
         // Dados vindos do Fragment
         val nome = intent.getStringExtra("NOME") ?: ""
 
-        // Procura o nome da receita na lista
-        val receita = ReceitasData.receitas.find {
-            it.nome == nome
+        // Procura o nome da receita na lista carregada da API ou no catálogo padrão
+        val receita = ReceitasData.receitasAtuais.find {
+            it.nome.equals(nome, ignoreCase = true)
+        } ?: ReceitasData.receitas.find {
+            it.nome.equals(nome, ignoreCase = true)
         }
         if (receita == null) { // Caso não encontre, encerra a Activity
             finish()
             return
         }
-
 
         // Bindando na tela
         // Exibe os dados correspondentes na tela
@@ -68,7 +82,7 @@ private class ModoPreparoAdapter(
     private val etapas: List<EtapaPreparo>
 ) : RecyclerView.Adapter<ModoPreparoAdapter.EtapaViewHolder>() {
 
-        // ViewHolder para representar cada item da lista de etapas de preparo
+    // ViewHolder para representar cada item da lista de etapas de preparo
     class EtapaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val txtNumero: TextView = itemView.findViewById(R.id.txtNumeroEtapa)
         val txtDescricao: TextView = itemView.findViewById(R.id.txtDescricaoEtapa)
@@ -90,6 +104,7 @@ private class ModoPreparoAdapter(
         holder.txtDescricao.text = etapa.descricao
         holder.imgEtapa.setImageResource(etapa.imagem)
     }
+
     // Retorna o número total de itens na lista
     override fun getItemCount(): Int = etapas.size
 }
